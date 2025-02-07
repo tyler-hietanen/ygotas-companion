@@ -3,4 +3,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <!-- Titles -->
+    <string name="title_quotes">Quotes</string>
+    <string name="title_duel">Duel!</string>
+    <string name="title_house_rules">House Rules</string>
+    <string name="title_settings">Settings</string>
 </resources>

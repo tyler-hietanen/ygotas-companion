@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/application_navigation"
+    app:startDestination="@id/welcomeFragment">
+
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.tyler_hietanen.ygotas_companion.ui.welcome.WelcomeFragment"
+        android:label="fragment_welcome"
+        tools:layout="@layout/fragment_welcome" />
+    <fragment
+        android:id="@+id/quotesFragment"
+        android:name="com.tyler_hietanen.ygotas_companion.ui.quotes.QuotesFragment"
+        android:label="fragment_quotes"
+        tools:layout="@layout/fragment_quotes" />
+    <fragment
+        android:id="@+id/duelFragment"
+        android:name="com.tyler_hietanen.ygotas_companion.ui.duel.DuelFragment"
+        android:label="fragment_duel"
+        tools:layout="@layout/fragment_duel" />
+    <fragment
+        android:id="@+id/houseRulesFragment"
+        android:name="com.tyler_hietanen.ygotas_companion.ui.houserules.HouseRulesFragment"
+        android:label="fragment_house_rules"
+        tools:layout="@layout/fragment_house_rules" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.tyler_hietanen.ygotas_companion.ui.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>
