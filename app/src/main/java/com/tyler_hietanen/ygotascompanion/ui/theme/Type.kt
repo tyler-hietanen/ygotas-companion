@@ -1,4 +1,8 @@
-package com.tyler_hietanen.composeexample.ui.theme
+/*******************************************************************************************************************************************
+ *           Source:    Type.kt
+ *      Description:    Defines resources for text resources.
+ ******************************************************************************************************************************************/
+package com.tyler_hietanen.ygotascompanion.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,6 +10,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+// TODO Update text styles.
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

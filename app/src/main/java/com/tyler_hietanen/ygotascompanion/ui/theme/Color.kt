@@ -1,4 +1,8 @@
-package com.tyler_hietanen.composeexample.ui.theme
+/*******************************************************************************************************************************************
+ *           Source:    Color.kt
+ *      Description:    Color definitions for the application.
+ ******************************************************************************************************************************************/
+package com.tyler_hietanen.ygotascompanion.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

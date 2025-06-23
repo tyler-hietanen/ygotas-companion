@@ -1,6 +1,9 @@
-package com.tyler_hietanen.composeexample.ui.theme
+/*******************************************************************************************************************************************
+ *           Source:    Theme.kt
+ *      Description:    Theme definitions for the application.
+ ******************************************************************************************************************************************/
+package com.tyler_hietanen.ygotascompanion.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -11,6 +14,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+// TODO Update color schemes.
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -34,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun ComposeExampleTheme(
+fun CompanionMaterialTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
