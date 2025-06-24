@@ -52,8 +52,6 @@ class MainActivity : ComponentActivity()
                 MainActivityScreen()
             }
         }
-
-
     }
 
     //endregion
@@ -78,7 +76,7 @@ class MainActivity : ComponentActivity()
         val navController: NavHostController = rememberNavController()
 
         // Actually draws the application view.
-        CompanionBottomNavigationBar.ComposeBottomNavBar(navController)
+        CompanionBottomNavigationBar.Compose(navController)
     }
 
     //endregion

@@ -13,7 +13,7 @@ import com.tyler_hietanen.ygotascompanion.ui.screens.DuelScreenComposable
 import com.tyler_hietanen.ygotascompanion.ui.screens.HouseRulesScreenComposable
 import com.tyler_hietanen.ygotascompanion.ui.screens.QuotesScreenComposable
 import com.tyler_hietanen.ygotascompanion.ui.screens.SettingsScreenComposable
-import com.tyler_hietanen.ygotascompanion.ui.screens.WelcomeScreenComposable
+import com.tyler_hietanen.ygotascompanion.ui.screens.WelcomeScreen
 
 object ApplicationNavigationHost
 {
@@ -71,7 +71,7 @@ object ApplicationNavigationHost
                     when (destination) {
                         Destination.WELCOME ->
                         {
-                            WelcomeScreenComposable(navController = controller)
+                            WelcomeScreen.Composable(navController = controller)
                         }
                         Destination.QUOTES ->
                         {

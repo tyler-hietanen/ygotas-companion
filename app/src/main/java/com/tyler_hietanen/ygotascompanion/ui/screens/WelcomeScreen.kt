@@ -1,23 +1,163 @@
 /*******************************************************************************************************************************************
- *           Source:    WelcomeScreenComposable.kt
- *      Description:    Draws the composable screen for the Welcome Screen.
+ *           Source:    WelcomeScreen.kt
+ *      Description:    Contains content for the Welcome Screen.
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.ygotascompanion.ui.screens
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.tyler_hietanen.ygotascompanion.navigation.Destination
+import com.tyler_hietanen.ygotascompanion.ui.theme.Typography
 
-@Composable
-fun WelcomeScreenComposable(navController: NavHostController)
+object WelcomeScreen
 {
-    Box(modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center)
+    /***************************************************************************************************************************************
+     *      Enum + Class Definitions
+     **************************************************************************************************************************************/
+    //region Enum + Class Definitions
+
+    // Defines a shared types used for navigation card items.
+    data class NavCardItem(
+        // Text for card.
+        val titleText: String,
+
+        // Icon used to represent selected state.
+        @androidx.annotation.DrawableRes
+        val buttonIcon: Int,
+
+        // On Click callback.
+        val onClick: () -> Unit
+    )
+
+    //endregion
+
+    /***************************************************************************************************************************************
+     *      Constants
+     **************************************************************************************************************************************/
+    //region Constants
+
+    // Title text for the welcome screen.
+    private const val WELCOME_SCREEN_TITLE = "Welcome to the YGOTAS Companion Application!"
+
+    // Body text for the welcome screen.
+    private const val WELCOME_SCREEN_BODY = "To begin, select one of the following button(s) to jump to this app's content."
+
+    //endregion
+
+    /***************************************************************************************************************************************
+     *      Composable Methods
+     **************************************************************************************************************************************/
+    //region Composable Methods
+
+    /***************************************************************************************************************************************
+     *           Method:    Composable
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Composable function manages drawing the Welcome screen.
+     **************************************************************************************************************************************/
+    @Composable
+    fun Composable(navController: NavHostController)
     {
-        Text("Welcome Screen")
+        // Defines list of nav card items.
+        val navCardItems: List<NavCardItem> = listOf(
+            NavCardItem(Destination.QUOTES.title, Destination.QUOTES.unselectedIcon!!) { navController.navigate(Destination.QUOTES.routeID) },
+            NavCardItem(Destination.DUEL.title, Destination.DUEL.unselectedIcon!!) { navController.navigate(Destination.DUEL.routeID) },
+            NavCardItem(Destination.HOUSERULES.title, Destination.HOUSERULES.unselectedIcon!!) { navController.navigate(Destination.HOUSERULES.routeID) },
+            NavCardItem(Destination.SETTINGS.title, Destination.SETTINGS.unselectedIcon!!) { navController.navigate(Destination.SETTINGS.routeID) },
+        )
+
+        Column {
+            Text(text = WELCOME_SCREEN_TITLE,
+                style = Typography.titleLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                textAlign = TextAlign.Center)
+            HorizontalDivider(modifier = Modifier)
+            Text(text = WELCOME_SCREEN_BODY,
+                style = Typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp))
+            Column (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row (modifier = Modifier) {
+                    Column (modifier = Modifier.weight(1f)){
+                        NavCardComposable(navCardItems[0])
+                        NavCardComposable(navCardItems[2])
+                    }
+                    Column (modifier = Modifier.weight(1f)){
+                        NavCardComposable(navCardItems[1])
+                        NavCardComposable(navCardItems[3])
+                    }
+                }
+            }
+        }
     }
+
+    /***************************************************************************************************************************************
+     *           Method:    NavCardComposable
+     *       Parameters:    cardItem
+     *                          - Item used to create a navigation card.
+     *          Returns:    None.
+     *      Description:    Composable function manages drawing a Navigation Card.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun NavCardComposable(cardItem: NavCardItem)
+    {
+        Card(
+            modifier = Modifier
+                .padding(8.dp)
+                .aspectRatio(1f)
+                .clickable { cardItem.onClick() },
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = cardItem.buttonIcon),
+                    contentDescription = "",
+                    modifier = Modifier.size(96.dp)
+                )
+                Text(
+                    text = cardItem.titleText,
+                    style = Typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+
+    //endregion
 }

@@ -29,13 +29,13 @@ object CompanionBottomNavigationBar
     //region Composable Methods
 
     /***************************************************************************************************************************************
-     *           Method:    ComposeBottomNavBar
+     *           Method:    Compose
      *       Parameters:    None.
      *          Returns:    None.
-     *      Description:    Composable function manages draws a Bottom Navigation Bar.
+     *      Description:    Composable function manages drawing a Bottom Navigation Bar.
      **************************************************************************************************************************************/
     @Composable
-    fun ComposeBottomNavBar(controller: NavHostController)
+    fun Compose(controller: NavHostController)
     {
         var selectedDestinationIndex by rememberSaveable {
             mutableIntStateOf(0) }
@@ -44,7 +44,8 @@ object CompanionBottomNavigationBar
         val navigationBarItems: List<Destination> = listOf(
             Destination.QUOTES,
             Destination.DUEL,
-            Destination.HOUSERULES
+            Destination.HOUSERULES,
+            Destination.SETTINGS
         )
 
         // Start composable drawing.
