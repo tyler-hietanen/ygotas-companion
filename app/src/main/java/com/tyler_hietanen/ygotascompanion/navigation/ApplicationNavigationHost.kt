@@ -61,19 +61,34 @@ object ApplicationNavigationHost
     fun SourceNavigationHost(controller: NavHostController, modifier: Modifier = Modifier)
     {
         NavHost(
+            modifier = modifier,
             navController = controller,
-            startDestination = Destination.WELCOME.routeID,
-            modifier = modifier
+            startDestination = Destination.WELCOME.routeID
         ) {
             // List of all possible destinations offered by the application.
             Destination.entries.forEach { destination ->
                 composable(destination.routeID) {
                     when (destination) {
-                        Destination.WELCOME -> WelcomeScreenComposable()
-                        Destination.QUOTES -> QuotesScreenComposable()
-                        Destination.DUEL -> DuelScreenComposable()
-                        Destination.HOUSERULES -> HouseRulesScreenComposable()
-                        Destination.SETTINGS -> SettingsScreenComposable()
+                        Destination.WELCOME ->
+                        {
+                            WelcomeScreenComposable(navController = controller)
+                        }
+                        Destination.QUOTES ->
+                        {
+                            QuotesScreenComposable(navController = controller)
+                        }
+                        Destination.DUEL ->
+                        {
+                            DuelScreenComposable(navController = controller)
+                        }
+                        Destination.HOUSERULES ->
+                        {
+                            HouseRulesScreenComposable(navController = controller)
+                        }
+                        Destination.SETTINGS ->
+                        {
+                            SettingsScreenComposable(navController = controller)
+                        }
                     }
                 }
             }

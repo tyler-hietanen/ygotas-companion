@@ -10,6 +10,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.tyler_hietanen.ygotascompanion.presentation.MainActivityViewModel
 import com.tyler_hietanen.ygotascompanion.ui.layout.CompanionBottomNavigationBar
 import com.tyler_hietanen.ygotascompanion.ui.theme.CompanionMaterialTheme
 
@@ -20,7 +24,9 @@ class MainActivity : ComponentActivity()
      **************************************************************************************************************************************/
     //region Fields
 
-    // TODO ViewModel instance.
+    // MainActivity ViewModel instance. Initializes once it has been used.
+    // Note: Still stays in reference for the lifetime of the application.
+    private val mainActivityViewModel by lazy {ViewModelProvider(this)[MainActivityViewModel::class.java]}
 
     //endregion
 
@@ -39,11 +45,15 @@ class MainActivity : ComponentActivity()
     {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Sets app content.
         setContent {
             CompanionMaterialTheme {
                 MainActivityScreen()
             }
         }
+
+
     }
 
     //endregion
@@ -58,12 +68,17 @@ class MainActivity : ComponentActivity()
      *       Parameters:    None.
      *          Returns:    None.
      *      Description:    Composable function manages drawing the MainActivity screen.
+     *             Note:    This should be called before any other components that need navigation.
      **************************************************************************************************************************************/
     @Composable
     @Preview
     fun MainActivityScreen()
     {
-        CompanionBottomNavigationBar.ComposeBottomNavBar()
+        // Creates (and remembers) the NavHostController, used by other components.
+        val navController: NavHostController = rememberNavController()
+
+        // Actually draws the application view.
+        CompanionBottomNavigationBar.ComposeBottomNavBar(navController)
     }
 
     //endregion

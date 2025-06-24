@@ -17,7 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
 import com.tyler_hietanen.ygotascompanion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.ygotascompanion.navigation.Destination
 
@@ -35,9 +35,8 @@ object CompanionBottomNavigationBar
      *      Description:    Composable function manages draws a Bottom Navigation Bar.
      **************************************************************************************************************************************/
     @Composable
-    fun ComposeBottomNavBar()
+    fun ComposeBottomNavBar(controller: NavHostController)
     {
-        val navController = rememberNavController()
         var selectedDestinationIndex by rememberSaveable {
             mutableIntStateOf(0) }
 
@@ -57,7 +56,7 @@ object CompanionBottomNavigationBar
                             selected = (selectedDestinationIndex == index),
                             onClick = {
                                 selectedDestinationIndex = index
-                                ApplicationNavigationHost.navigateTo(navController, item)
+                                ApplicationNavigationHost.navigateTo(controller, item)
                             },
                             label = {
                                 Text(item.title)
@@ -79,7 +78,7 @@ object CompanionBottomNavigationBar
             }
         ) { innerPadding ->
             ApplicationNavigationHost.SourceNavigationHost(
-                controller = navController,
+                controller = controller,
                 modifier = Modifier.padding(innerPadding)
             )
         }
