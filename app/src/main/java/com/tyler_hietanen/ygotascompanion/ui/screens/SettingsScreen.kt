@@ -18,6 +18,6 @@ fun SettingsScreenComposable(navController: NavHostController)
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center)
     {
-        Text("Settings Screen")
+        Text("Under Development")
     }
 }

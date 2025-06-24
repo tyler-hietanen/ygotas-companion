@@ -18,6 +18,6 @@ fun HouseRulesScreenComposable(navController: NavHostController)
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center)
     {
-        Text("House Rules Screen")
+        Text("Under Development")
     }
 }

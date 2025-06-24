@@ -18,6 +18,6 @@ fun DuelScreenComposable(navController: NavHostController)
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center)
     {
-        Text("Duel Screen")
+        Text("Under Development")
     }
 }
