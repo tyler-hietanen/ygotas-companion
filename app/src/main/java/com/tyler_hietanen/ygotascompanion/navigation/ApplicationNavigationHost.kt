@@ -6,6 +6,7 @@ package com.tyler_hietanen.ygotascompanion.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,7 +39,15 @@ object ApplicationNavigationHost
         // TODO.
 
         // Actually navigate.
-        controller.navigate(destination.routeID)
+        controller.navigate(destination.routeID) {
+            // Pop up to the start destination of the graph to move all other destinations.
+            popUpTo(controller.graph.findStartDestination().id) {
+                inclusive = true
+            }
+
+            // Ensures this new destination is the only one on the stack.
+            launchSingleTop = true
+        }
     }
 
     //endregion
