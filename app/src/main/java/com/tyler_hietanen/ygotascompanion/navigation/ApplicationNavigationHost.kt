@@ -10,6 +10,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
 import com.tyler_hietanen.ygotascompanion.ui.screens.DuelScreenComposable
 import com.tyler_hietanen.ygotascompanion.ui.screens.HouseRulesScreenComposable
 import com.tyler_hietanen.ygotascompanion.ui.screens.QuotesScreenComposable
@@ -24,29 +25,32 @@ object ApplicationNavigationHost
     //region Methods
 
     /***************************************************************************************************************************************
-     *           Method:    navigateTo
+     *           Method:    navigateToSingleNewScreen
      *       Parameters:    controller
      *                          - Navigation Host Controller.
      *                      destination
      *                          - New destination.
+     *                      applicationViewModel
+     *                          - View model for application.
      *          Returns:    None.
      *      Description:    Organized navigation to a specific destination. Ensures that ViewModel(s) are aware of change.
      *             Note:    This should only be called from a View component, ideally, the Main Activity.
      **************************************************************************************************************************************/
-    fun navigateTo(controller: NavHostController, destination: Destination)
+    fun navigateToSingleNewScreen(controller: NavHostController, destination: Destination, applicationViewModel: ApplicationViewModel)
     {
         // Let ViewModel(s) know of navigation change.
-        // TODO.
+        applicationViewModel.setCurrentDestination(destination)
 
         // Actually navigate.
         controller.navigate(destination.routeID) {
-            // Pop up to the start destination of the graph to move all other destinations.
+            // Pop up to the start destination of the graph to remove all other destinations.
             popUpTo(controller.graph.findStartDestination().id) {
                 inclusive = true
             }
 
             // Ensures this new destination is the only one on the stack.
             launchSingleTop = true
+            restoreState = true
         }
     }
 
@@ -63,11 +67,13 @@ object ApplicationNavigationHost
      *                          - Navigation Host Controller.
      *                      modifier
      *                          - Modifier.
+     *                      applicationViewModel
+     *                          - View model for application.
      *          Returns:    None.
      *      Description:    Composable function manages drawing the MainActivity screen..
      **************************************************************************************************************************************/
     @Composable
-    fun SourceNavigationHost(controller: NavHostController, modifier: Modifier = Modifier)
+    fun SourceNavigationHost(controller: NavHostController, modifier: Modifier = Modifier, applicationViewModel: ApplicationViewModel)
     {
         NavHost(
             modifier = modifier,
@@ -80,7 +86,7 @@ object ApplicationNavigationHost
                     when (destination) {
                         Destination.WELCOME ->
                         {
-                            WelcomeScreen.Composable(navController = controller)
+                            WelcomeScreen.Composable(navController = controller, applicationViewModel = applicationViewModel)
                         }
                         Destination.QUOTES ->
                         {

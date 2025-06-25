@@ -12,14 +12,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.tyler_hietanen.ygotascompanion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.ygotascompanion.navigation.Destination
+import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
 
 object CompanionBottomNavigationBar
 {
@@ -35,10 +33,10 @@ object CompanionBottomNavigationBar
      *      Description:    Composable function manages drawing a Bottom Navigation Bar.
      **************************************************************************************************************************************/
     @Composable
-    fun Compose(controller: NavHostController)
+    fun Compose(controller: NavHostController, applicationViewModel: ApplicationViewModel)
     {
-        var selectedDestinationIndex by rememberSaveable {
-            mutableIntStateOf(0) }
+        // Gets current destination from VM.
+        val currentDestination by applicationViewModel.currentDestination
 
         // Lists the items accessible by the bottom navigation bar.
         val navigationBarItems: List<Destination> = listOf(
@@ -51,36 +49,38 @@ object CompanionBottomNavigationBar
         // Start composable drawing.
         Scaffold (
             bottomBar = {
-                NavigationBar {
-                    navigationBarItems.forEachIndexed{ index, item ->
-                        NavigationBarItem(
-                            selected = (selectedDestinationIndex == index),
-                            onClick = {
-                                selectedDestinationIndex = index
-                                ApplicationNavigationHost.navigateTo(controller, item)
-                            },
-                            label = {
-                                Text(item.title)
-                            },
-                            icon = {
-                                val resourceID = if (selectedDestinationIndex == index)
-                                {
-                                    item.selectedIcon
+                if (navigationBarItems.contains(currentDestination))
+                {
+                    NavigationBar {
+                        navigationBarItems.forEach { item ->
+                            val isSelected = (currentDestination == item)
+                            NavigationBarItem(
+                                selected = isSelected,
+                                onClick = {
+                                    ApplicationNavigationHost.navigateToSingleNewScreen(controller, item, applicationViewModel)
+                                },
+                                label = {
+                                    Text(item.title)
+                                },
+                                icon = {
+                                    val resourceID = if (isSelected) {
+                                        item.selectedIcon
+                                    }
+                                    else {
+                                        item.unselectedIcon
+                                    }
+                                    Icon(painter = painterResource(resourceID!!), contentDescription = item.title)
                                 }
-                                else
-                                {
-                                    item.unselectedIcon
-                                }
-                                Icon(painter = painterResource(resourceID!!), contentDescription = item.title)
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
         ) { innerPadding ->
             ApplicationNavigationHost.SourceNavigationHost(
                 controller = controller,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                applicationViewModel = applicationViewModel
             )
         }
     }

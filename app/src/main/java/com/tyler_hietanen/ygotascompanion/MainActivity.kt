@@ -9,13 +9,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.tyler_hietanen.ygotascompanion.presentation.MainActivityViewModel
+import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
 import com.tyler_hietanen.ygotascompanion.ui.layout.CompanionBottomNavigationBar
 import com.tyler_hietanen.ygotascompanion.ui.theme.CompanionMaterialTheme
+import androidx.activity.viewModels
+import androidx.compose.runtime.DisposableEffect
+import androidx.navigation.NavController
+import com.tyler_hietanen.ygotascompanion.navigation.Destination
 
 class MainActivity : ComponentActivity()
 {
@@ -24,9 +26,8 @@ class MainActivity : ComponentActivity()
      **************************************************************************************************************************************/
     //region Fields
 
-    // MainActivity ViewModel instance. Initializes once it has been used.
-    // Note: Still stays in reference for the lifetime of the application.
-    private val mainActivityViewModel by lazy {ViewModelProvider(this)[MainActivityViewModel::class.java]}
+    // MainActivity ViewModel instance.
+    private val _applicationViewModel: ApplicationViewModel by viewModels()
 
     //endregion
 
@@ -46,10 +47,33 @@ class MainActivity : ComponentActivity()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Calls into MainActivityViewModel initialization, only on the first creation of this application.
+        if (savedInstanceState == null)
+        {
+            _applicationViewModel.applicationInitialization()
+        }
+
         // Sets app content.
         setContent {
+            // Grabs instance of nav controller.
+            val navController: NavHostController = rememberNavController()
+
+            // Sets up listening to ensure that ViewModel is kept in sync with nav controller.
+            DisposableEffect(navController, _applicationViewModel) {
+                val listener = NavController.OnDestinationChangedListener { _, navigatedDestination, _ ->
+                    Destination.entries.find { it.routeID == navigatedDestination.route }?.let { destEnum ->
+                        _applicationViewModel.setCurrentDestination(destEnum)
+                    }
+                }
+                navController.addOnDestinationChangedListener(listener)
+                onDispose {
+                    navController.removeOnDestinationChangedListener(listener)
+                }
+            }
+
+            // Starts drawing app.
             CompanionMaterialTheme {
-                MainActivityScreen()
+                MainActivityScreen(navController)
             }
         }
     }
@@ -69,14 +93,10 @@ class MainActivity : ComponentActivity()
      *             Note:    This should be called before any other components that need navigation.
      **************************************************************************************************************************************/
     @Composable
-    @Preview
-    fun MainActivityScreen()
+    fun MainActivityScreen(navController: NavHostController)
     {
-        // Creates (and remembers) the NavHostController, used by other components.
-        val navController: NavHostController = rememberNavController()
-
         // Actually draws the application view.
-        CompanionBottomNavigationBar.Compose(navController)
+        CompanionBottomNavigationBar.Compose(navController, _applicationViewModel)
     }
 
     //endregion

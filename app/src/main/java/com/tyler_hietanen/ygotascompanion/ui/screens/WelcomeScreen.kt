@@ -4,6 +4,7 @@
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.ygotascompanion.ui.screens
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,7 +27,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.tyler_hietanen.ygotascompanion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.ygotascompanion.navigation.Destination
+import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
 import com.tyler_hietanen.ygotascompanion.ui.theme.Typography
 
 object WelcomeScreen
@@ -42,7 +45,7 @@ object WelcomeScreen
         val titleText: String,
 
         // Icon used to represent selected state.
-        @androidx.annotation.DrawableRes
+        @DrawableRes
         val buttonIcon: Int,
 
         // On Click callback.
@@ -71,19 +74,38 @@ object WelcomeScreen
 
     /***************************************************************************************************************************************
      *           Method:    Composable
-     *       Parameters:    None.
+     *       Parameters:    navController
+     *                          - Nav host controller.
+     *                      applicationViewModel
+     *                          - View model for application.
      *          Returns:    None.
      *      Description:    Composable function manages drawing the Welcome screen.
      **************************************************************************************************************************************/
     @Composable
-    fun Composable(navController: NavHostController)
+    fun Composable(navController: NavHostController, applicationViewModel: ApplicationViewModel)
     {
         // Defines list of nav card items.
         val navCardItems: List<NavCardItem> = listOf(
-            NavCardItem(Destination.QUOTES.title, Destination.QUOTES.unselectedIcon!!) { navController.navigate(Destination.QUOTES.routeID) },
-            NavCardItem(Destination.DUEL.title, Destination.DUEL.unselectedIcon!!) { navController.navigate(Destination.DUEL.routeID) },
-            NavCardItem(Destination.HOUSERULES.title, Destination.HOUSERULES.unselectedIcon!!) { navController.navigate(Destination.HOUSERULES.routeID) },
-            NavCardItem(Destination.SETTINGS.title, Destination.SETTINGS.unselectedIcon!!) { navController.navigate(Destination.SETTINGS.routeID) },
+            NavCardItem(Destination.QUOTES.title, Destination.QUOTES.unselectedIcon!!) {
+                ApplicationNavigationHost.navigateToSingleNewScreen(
+                    navController,
+                    Destination.QUOTES,
+                    applicationViewModel) },
+            NavCardItem(Destination.DUEL.title, Destination.DUEL.unselectedIcon!!) {
+                ApplicationNavigationHost.navigateToSingleNewScreen(
+                    navController,
+                    Destination.DUEL,
+                    applicationViewModel) },
+            NavCardItem(Destination.HOUSERULES.title, Destination.HOUSERULES.unselectedIcon!!) {
+                ApplicationNavigationHost.navigateToSingleNewScreen(
+                    navController,
+                    Destination.HOUSERULES,
+                    applicationViewModel) },
+            NavCardItem(Destination.SETTINGS.title, Destination.SETTINGS.unselectedIcon!!) {
+                ApplicationNavigationHost.navigateToSingleNewScreen(
+                    navController,
+                    Destination.SETTINGS,
+                    applicationViewModel) },
         )
 
         Column {
