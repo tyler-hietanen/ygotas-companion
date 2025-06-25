@@ -5,6 +5,7 @@
 package com.tyler_hietanen.ygotascompanion.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -38,20 +39,26 @@ object ApplicationNavigationHost
      **************************************************************************************************************************************/
     fun navigateToSingleNewScreen(controller: NavHostController, destination: Destination, applicationViewModel: ApplicationViewModel)
     {
-        // Let ViewModel(s) know of navigation change.
-        applicationViewModel.setCurrentDestination(destination)
+        // Only allows if navigation is allowed.
+        val doEnableNavigation by applicationViewModel.doEnableNavigation
+        if (doEnableNavigation)
+        {
+            // Let ViewModel(s) know of navigation change.
+            applicationViewModel.setCurrentDestination(destination)
 
-        // Actually navigate.
-        controller.navigate(destination.routeID) {
-            // Pop up to the start destination of the graph to remove all other destinations.
-            popUpTo(controller.graph.findStartDestination().id) {
-                inclusive = true
+            // Actually navigate.
+            controller.navigate(destination.routeID) {
+                // Pop up to the start destination of the graph to remove all other destinations.
+                popUpTo(controller.graph.findStartDestination().id) {
+                    inclusive = true
+                }
+
+                // Ensures this new destination is the only one on the stack.
+                launchSingleTop = true
+                restoreState = true
             }
-
-            // Ensures this new destination is the only one on the stack.
-            launchSingleTop = true
-            restoreState = true
         }
+        // Otherwise, ignored.
     }
 
     //endregion

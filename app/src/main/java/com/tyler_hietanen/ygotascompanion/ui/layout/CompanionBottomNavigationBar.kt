@@ -38,6 +38,9 @@ object CompanionBottomNavigationBar
         // Gets current destination from VM.
         val currentDestination by applicationViewModel.currentDestination
 
+        // Whether navigation is enabled.
+        val doEnableNavigation by applicationViewModel.doEnableNavigation
+
         // Lists the items accessible by the bottom navigation bar.
         val navigationBarItems: List<Destination> = listOf(
             Destination.QUOTES,
@@ -56,6 +59,7 @@ object CompanionBottomNavigationBar
                             val isSelected = (currentDestination == item)
                             NavigationBarItem(
                                 selected = isSelected,
+                                enabled = doEnableNavigation,
                                 onClick = {
                                     ApplicationNavigationHost.navigateToSingleNewScreen(controller, item, applicationViewModel)
                                 },

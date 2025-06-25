@@ -23,6 +23,10 @@ class ApplicationViewModel: ViewModel()
     private val _currentDestination = mutableStateOf(Destination.WELCOME)
     val currentDestination: State<Destination> = _currentDestination
 
+    // Whether navigation is allowed by the application.
+    private val _doEnableNavigation = mutableStateOf(true)
+    val doEnableNavigation: State<Boolean> = _doEnableNavigation
+
     //endregion
 
     /***************************************************************************************************************************************
@@ -39,6 +43,11 @@ class ApplicationViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun applicationInitialization()
     {
+        // Initializes other ViewModel(s).
+
+
+
+
         // TODO.
     }
 
@@ -52,6 +61,19 @@ class ApplicationViewModel: ViewModel()
     fun setCurrentDestination(destination: Destination)
     {
         _currentDestination.value = destination
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    setDoEnableNavigation
+     *       Parameters:    doEnable
+     *                          - Whether navigation is enabled.
+     *          Returns:    None.
+     *      Description:    Determines whether navigation is enabled.
+     *             Note:    Must be reset if it is toggled off. Does not actually block navigation.
+     **************************************************************************************************************************************/
+    fun setDoEnableNavigation(doEnable: Boolean)
+    {
+        _doEnableNavigation.value = doEnable
     }
 
     //endregion
