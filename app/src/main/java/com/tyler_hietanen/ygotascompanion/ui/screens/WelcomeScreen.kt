@@ -73,7 +73,7 @@ object WelcomeScreen
     //region Composable Methods
 
     /***************************************************************************************************************************************
-     *           Method:    Composable
+     *           Method:    DrawScreen
      *       Parameters:    navController
      *                          - Nav host controller.
      *                      applicationViewModel
@@ -82,7 +82,7 @@ object WelcomeScreen
      *      Description:    Composable function manages drawing the Welcome screen.
      **************************************************************************************************************************************/
     @Composable
-    fun Composable(navController: NavHostController, applicationViewModel: ApplicationViewModel)
+    fun DrawScreen(navController: NavHostController, applicationViewModel: ApplicationViewModel)
     {
         // Defines list of nav card items.
         val navCardItems: List<NavCardItem> = listOf(

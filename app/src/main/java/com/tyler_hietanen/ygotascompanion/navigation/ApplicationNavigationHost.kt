@@ -12,7 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
-import com.tyler_hietanen.ygotascompanion.ui.screens.DuelScreenComposable
+import com.tyler_hietanen.ygotascompanion.ui.screens.DuelScreen
 import com.tyler_hietanen.ygotascompanion.ui.screens.HouseRulesScreenComposable
 import com.tyler_hietanen.ygotascompanion.ui.screens.QuotesScreenComposable
 import com.tyler_hietanen.ygotascompanion.ui.screens.SettingsScreenComposable
@@ -93,7 +93,7 @@ object ApplicationNavigationHost
                     when (destination) {
                         Destination.WELCOME ->
                         {
-                            WelcomeScreen.Composable(navController = controller, applicationViewModel = applicationViewModel)
+                            WelcomeScreen.DrawScreen(navController = controller, applicationViewModel = applicationViewModel)
                         }
                         Destination.QUOTES ->
                         {
@@ -101,7 +101,7 @@ object ApplicationNavigationHost
                         }
                         Destination.DUEL ->
                         {
-                            DuelScreenComposable(navController = controller)
+                            DuelScreen.DrawScreen(navController = controller, applicationViewModel.duelViewModel)
                         }
                         Destination.HOUSERULES ->
                         {

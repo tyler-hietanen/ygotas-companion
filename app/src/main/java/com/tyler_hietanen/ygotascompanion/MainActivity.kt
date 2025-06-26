@@ -18,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.DisposableEffect
 import androidx.navigation.NavController
 import com.tyler_hietanen.ygotascompanion.navigation.Destination
+import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
 
 class MainActivity : ComponentActivity()
 {
@@ -47,11 +48,19 @@ class MainActivity : ComponentActivity()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Calls into MainActivityViewModel initialization, only on the first creation of this application.
+        // Note: It is incredibly vital that this call happens before anything else and that any copied references to view models are copied
+        // into the application view model. This allows nested compose functions access to view models.
+        // Create view model(s).
+        val duelViewModel: DuelViewModel by viewModels()
+
+        // Only call initialization functions if saved state is null (indicating fresh app start, not recreation from config change)
         if (savedInstanceState == null)
         {
-            _applicationViewModel.applicationInitialization()
+            duelViewModel.initialize()
         }
+
+        // Set references.
+        _applicationViewModel.setDuelistViewModelReference(duelViewModel)
 
         // Sets app content.
         setContent {

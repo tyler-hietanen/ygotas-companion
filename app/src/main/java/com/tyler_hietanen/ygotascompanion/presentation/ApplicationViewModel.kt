@@ -8,6 +8,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.tyler_hietanen.ygotascompanion.navigation.Destination
+import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
 
 class ApplicationViewModel: ViewModel()
 {
@@ -15,6 +16,10 @@ class ApplicationViewModel: ViewModel()
      *      Properties
      **************************************************************************************************************************************/
     //region Properties
+
+    // ViewModel(s) instances, used to simplify access to these view models by other modules (mainly compose functions)
+    // Note: It is imperative that these are set, by the appropriate reference setters, before they're accessed by any other components.
+    lateinit var duelViewModel: DuelViewModel
 
     // The current destination of the application.
     // Note: This is meant to be an observable property for other ViewModels or View components, to allow them to reflect based upon the
@@ -35,20 +40,15 @@ class ApplicationViewModel: ViewModel()
     //region Methods
 
     /***************************************************************************************************************************************
-     *           Method:    applicationInitialization
-     *       Parameters:    None.
+     *           Method:    setDuelistViewModelReference
+     *       Parameters:    duelViewModel
+     *                          - (Duelist) ViewModel.
      *          Returns:    None.
-     *      Description:    Performs any necessary initialization, called upon the creation of the application.
-     *             Note:    This should only be called once per application run, to avoid any duplication of code calls.
+     *      Description:    Sets the reference to the Duelist View Model object.
      **************************************************************************************************************************************/
-    fun applicationInitialization()
+    fun setDuelistViewModelReference(duelViewModel: DuelViewModel)
     {
-        // Initializes other ViewModel(s).
-
-
-
-
-        // TODO.
+        this.duelViewModel = duelViewModel
     }
 
     /***************************************************************************************************************************************

@@ -1,6 +1,6 @@
 /*******************************************************************************************************************************************
- *           Source:    DuelScreenComposable.kt
- *      Description:    Draws the composable screen for the Duel Screen.
+ *           Source:    DuelScreen.kt
+ *      Description:    Contains content for the Duel Screen.
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.ygotascompanion.ui.screens
 
@@ -11,13 +11,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
 
-@Composable
-fun DuelScreenComposable(navController: NavHostController)
+object DuelScreen
 {
-    Box(modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center)
+    /***************************************************************************************************************************************
+     *      Composable Methods
+     **************************************************************************************************************************************/
+    //region Composable Methods
+
+    /***************************************************************************************************************************************
+     *           Method:    DrawScreen
+     *       Parameters:    navController
+     *                          - Nav host controller.
+     *          Returns:    None.
+     *      Description:    Composable function manages drawing the Welcome screen.
+     **************************************************************************************************************************************/
+    @Composable
+    fun DrawScreen(navController: NavHostController, duelViewModel: DuelViewModel)
     {
-        Text("Under Development")
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center)
+        {
+            Text("Duel Screen - Under Development")
+        }
     }
+
+    //endregion
 }
