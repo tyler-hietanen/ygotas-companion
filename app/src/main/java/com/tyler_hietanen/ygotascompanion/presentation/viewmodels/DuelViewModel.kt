@@ -10,8 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.tyler_hietanen.ygotascompanion.business.duel.Duelist
 
-// TODO Flash a yelling toast the first time that someone does a non-equal number of life points (Not divisible by 100).
-// TODO Flash a toast when someone loses ("Womp womp") (TODO play losing quote, if any?)
 class DuelViewModel: ViewModel()
 {
     /***************************************************************************************************************************************
@@ -41,20 +39,6 @@ class DuelViewModel: ViewModel()
     private val _runningNumber = mutableIntStateOf(0)
     val runningNumber: State<Int> = _runningNumber
 
-    // Current user notification message (Usually shown as a toast or snack bar).
-    private val _userMessage = mutableStateOf(String())
-    val userMessage: State<String> = _userMessage
-
-    //endregion
-
-    /***************************************************************************************************************************************
-     *      Fields
-     **************************************************************************************************************************************/
-    //region Fields
-
-    // Whether user has already been warned about an ugly life point number.
-    private var _hasWarnedUglyLifePoints = false;
-
     //endregion
 
     /***************************************************************************************************************************************
@@ -70,13 +54,27 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun initialize()
     {
+        // Set default names.
+        _duelist1.value.setDuelistName("Player 1")
+        _duelist2.value.setDuelistName("Player 2")
+
+        resetDuel()
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    resetDuel
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Resets the duel to default state.
+     **************************************************************************************************************************************/
+    fun resetDuel()
+    {
         // Resets both duelists to default state.
         _duelist1.value.resetPlayer(startingLifePoints)
         _duelist2.value.resetPlayer(startingLifePoints)
 
         // Reset other values.
         _runningNumber.intValue = 0
-        _userMessage.value = ""
     }
 
     //endregion

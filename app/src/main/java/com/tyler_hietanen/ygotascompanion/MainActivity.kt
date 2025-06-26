@@ -16,9 +16,12 @@ import com.tyler_hietanen.ygotascompanion.ui.layout.CompanionBottomNavigationBar
 import com.tyler_hietanen.ygotascompanion.ui.theme.CompanionMaterialTheme
 import androidx.activity.viewModels
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
+import com.tyler_hietanen.ygotascompanion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.ygotascompanion.navigation.Destination
 import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity()
 {
@@ -59,7 +62,7 @@ class MainActivity : ComponentActivity()
             duelViewModel.initialize()
         }
 
-        // Set references.
+        // Set reference(s).
         _applicationViewModel.setDuelistViewModelReference(duelViewModel)
 
         // Sets app content.
@@ -83,6 +86,13 @@ class MainActivity : ComponentActivity()
             // Starts drawing app.
             CompanionMaterialTheme {
                 MainActivityScreen(navController)
+            }
+
+            // Sets up auto nav, after a delay.
+            // TODO Remove.
+            LaunchedEffect(Unit) {
+                delay(150)
+                ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.DUEL, _applicationViewModel)
             }
         }
     }
