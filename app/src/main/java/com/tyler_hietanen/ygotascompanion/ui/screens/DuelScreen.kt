@@ -162,6 +162,7 @@ object DuelScreen
                         duelViewModel.simulateCoinFlip()
                     })
             }
+
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // Number button(s)
@@ -288,6 +289,8 @@ object DuelScreen
                     }
                 )
             }
+
+            HorizontalDivider(modifier = Modifier.padding(8.dp))
         }
     }
 
@@ -401,8 +404,8 @@ object DuelScreen
     {
         Card(
             modifier = Modifier
-                .clickable { /*TODO*/ }
-                .padding(8.dp),
+                .padding(8.dp)
+                .clickable { /*TODO*/ },
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             shape = MaterialTheme.shapes.medium
         ) {
