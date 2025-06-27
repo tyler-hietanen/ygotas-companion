@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.tyler_hietanen.ygotascompanion.business.duel.Duelist
+import com.tyler_hietanen.ygotascompanion.business.duel.Player
 
+// TODO: Figure out clean means to cause updates when changing duelist value.
 class DuelViewModel: ViewModel()
 {
     /***************************************************************************************************************************************
@@ -75,6 +77,77 @@ class DuelViewModel: ViewModel()
 
         // Reset other values.
         _runningNumber.intValue = 0
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    modifyPlayerLifePoints
+     *       Parameters:    player
+     *                          - Which player to adjust.
+     *                      doAdd
+     *                          - Whether it should be an addition (true) or subtraction (false).
+     *          Returns:    None.
+     *      Description:    Modifies a player's life points.
+     **************************************************************************************************************************************/
+    fun modifyPlayerLifePoints(player: Player, doAdd: Boolean)
+    {
+        // TODO Modify selected player's life points. Clear running count.
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    simulateDiceRoll
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Simulates a dice roll (1 - 6).
+     **************************************************************************************************************************************/
+    fun simulateDiceRoll()
+    {
+        // TODO Generate from 1 - 6. Show message to user.
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    simulateCoinFlip
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Simulates a coin flip (Heads - Tail).
+     **************************************************************************************************************************************/
+    fun simulateCoinFlip()
+    {
+        // TODO Generate from 1 - 2. Show message to user.
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    clearRunningLifePoints
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Clears the running life points count.
+     **************************************************************************************************************************************/
+    fun clearRunningLifePoints()
+    {
+        // TODO Clear running life points.
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    addNumberToRunningLifePoints
+     *       Parameters:    number
+     *                          - Number to be added to running point.
+     *          Returns:    None.
+     *      Description:    Adds number to running life point count at the end.
+     **************************************************************************************************************************************/
+    fun addNumberToRunningLifePoints(number:Int)
+    {
+        // TODO Adds number to life points. Multiply by 10 first.
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    multiplyRunningLifePoints
+     *       Parameters:    number
+     *                          - Number to be used for multiply factor.
+     *          Returns:    None.
+     *      Description:    Uses number for multiplication factor.
+     **************************************************************************************************************************************/
+    fun multiplyRunningLifePoints(factor: Int)
+    {
+        // TODO Multiplies running number by factor.
     }
 
     //endregion

@@ -101,7 +101,7 @@ object ApplicationNavigationHost
                         }
                         Destination.DUEL ->
                         {
-                            DuelScreen.DrawScreen(navController = controller, applicationViewModel.duelViewModel)
+                            DuelScreen.DrawScreen(applicationViewModel.duelViewModel)
                         }
                         Destination.HOUSERULES ->
                         {

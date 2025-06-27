@@ -10,20 +10,29 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import com.tyler_hietanen.ygotascompanion.R
+import com.tyler_hietanen.ygotascompanion.business.duel.Player
 import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.ygotascompanion.ui.theme.Typography
 
@@ -36,39 +45,345 @@ object DuelScreen
 
     /***************************************************************************************************************************************
      *           Method:    DrawScreen
-     *       Parameters:    navController
-     *                          - Nav host controller.
+     *       Parameters:    duelViewModel
+     *                          - View model for the duel.
      *          Returns:    None.
-     *      Description:    Composable function manages drawing the Welcome screen.
+     *      Description:    Composable function manages drawing the Duel screen.
      **************************************************************************************************************************************/
     @Composable
-    fun DrawScreen(navController: NavHostController, duelViewModel: DuelViewModel)
+    fun DrawScreen(duelViewModel: DuelViewModel)
     {
         // Duelist(s).
         val duelist1 by duelViewModel.duelist1
         val duelist2 by duelViewModel.duelist2
 
+        // Running life point counter.
+        val runningLifePoints by duelViewModel.runningNumber
+
+        // Scroll state.
+        val scrollState = rememberScrollState()
+
         // Actually draw.
-        Column {
+        Column (modifier = Modifier.verticalScroll(scrollState)) {
+            // Reset button.
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth(1f),
+                buttonText = "Reset Duel",
+                onClick = {
+                    duelViewModel.resetDuel()
+                })
+
+            // Player section.
+            PlayerSection(
+                playerOneName = duelist1.name,
+                playerOneLifePoints = duelist1.lifePoints,
+                playerTwoName = duelist2.name,
+                playerTwoLifePoints = duelist2.lifePoints)
+
+            HorizontalDivider(modifier = Modifier.padding(8.dp, 0.dp))
+
+            // Life Point Addition, Subtraction and Running section.
             Row (modifier = Modifier.fillMaxWidth()
             ){
-                Column (modifier = Modifier.weight(1f)){
-                    PlayerTitle(duelist1.name, modifier = Modifier.fillMaxWidth())
-                    LifePoints(duelist1.lifePoints, modifier = Modifier.fillMaxWidth())
+                Column (modifier = Modifier
+                    .weight(3.5f)
+                    .padding(4.dp)) {
+                    AddSubtractButton(
+                        isAdd = true,
+                        playerTarget = Player.PLAYER_ONE,
+                        onClick = { player ->
+                            duelViewModel.modifyPlayerLifePoints(
+                                player = player,
+                                doAdd = true)
+                        }
+                    )
+                    AddSubtractButton(
+                        isAdd = false,
+                        playerTarget = Player.PLAYER_ONE,
+                        onClick = { player ->
+                            duelViewModel.modifyPlayerLifePoints(
+                                player = player,
+                                doAdd = false)
+                        }
+                    )
                 }
-                Column (modifier = Modifier.weight(1f)){
-                    PlayerTitle(duelist2.name, modifier = Modifier.fillMaxWidth())
-                    LifePoints(duelist2.lifePoints, modifier = Modifier.fillMaxWidth())
+                LifePoints(
+                    lifePoints = runningLifePoints,
+                    modifier = Modifier
+                        .weight(3f), 36.sp)
+                Column (modifier = Modifier
+                    .weight(3.5f)
+                    .padding(4.dp)) {
+                    AddSubtractButton(
+                        isAdd = true,
+                        playerTarget = Player.PLAYER_TWO,
+                        onClick = { player ->
+                            duelViewModel.modifyPlayerLifePoints(
+                                player = player,
+                                doAdd = true)
+                        }
+                    )
+                    AddSubtractButton(
+                        isAdd = false,
+                        playerTarget = Player.PLAYER_TWO,
+                        onClick = { player ->
+                            duelViewModel.modifyPlayerLifePoints(
+                                player = player,
+                                doAdd = false)
+                        }
+                    )
                 }
             }
+
+            // Dice Roll, Coin Flip and Clear Section.
+            Row (modifier = Modifier.fillMaxWidth()
+            ){
+                IconButton(
+                    modifier = Modifier
+                        .weight(3.5f),
+                    resourceID = R.drawable.dice_outlined,
+                    onClick = {
+                        duelViewModel.simulateDiceRoll()
+                    })
+                TextButton(
+                    modifier = Modifier
+                        .weight(3f),
+                    buttonText = "CLR",
+                    minSize = 64.dp,
+                    onClick = {
+                        duelViewModel.clearRunningLifePoints()
+                    })
+                IconButton(
+                    modifier = Modifier
+                        .weight(3.5f),
+                    resourceID = R.drawable.chip_outlined,
+                    onClick = {
+                        duelViewModel.simulateCoinFlip()
+                    })
+            }
             HorizontalDivider(modifier = Modifier.padding(8.dp))
-            Button(modifier = Modifier
+
+            // Number button(s)
+            // 7-9
+            Row (modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(48.dp)
+                .padding(4.dp)
+            ){
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "7",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(7)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "8",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(8)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "9",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(9)
+                    }
+                )
+            }
+
+            // 4-6
+            Row (modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+            ){
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "4",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(4)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "5",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(5)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "6",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(6)
+                    }
+                )
+            }
+
+            // 1-3
+            Row (modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+            ){
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "1",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(1)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "2",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(2)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "3",
+                    onClick = {
+                        duelViewModel.addNumberToRunningLifePoints(3)
+                    }
+                )
+            }
+
+            // x10 - x1000
+            Row (modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+            ){
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "0",
+                    onClick = {
+                        duelViewModel.multiplyRunningLifePoints(10)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "00",
+                    onClick = {
+                        duelViewModel.multiplyRunningLifePoints(100)
+                    }
+                )
+                TextButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    buttonText = "000",
+                    onClick = {
+                        duelViewModel.multiplyRunningLifePoints(1000)
+                    }
+                )
+            }
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    TextButton
+     *       Parameters:    modifier
+     *                      onClick
+     *                          - Function called when button is clicked.
+     *          Returns:    None.
+     *      Description:    Draws a button with text.
+     **************************************************************************************************************************************/
+    @Composable
+    fun TextButton(modifier: Modifier, buttonText: String, minSize: Dp = 56.dp, onClick: () -> Unit)
+    {
+        Button(
+            modifier = modifier
+                .heightIn(minSize)
                 .padding(4.dp, 0.dp),
-                onClick = { duelViewModel.resetDuel()}, ) {
-                Text(text = "Reset Duel.",
-                    style = Typography.titleMedium)
+            onClick = onClick
+        ) {
+            Text(text = buttonText,
+                style = Typography.titleLarge)
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    IconButton
+     *       Parameters:    modifier
+     *                      resourceID
+     *                          - Drawable resource to use for icon.
+     *                      minSize
+     *                          - (Optional) minimum size.
+     *                      onClick
+     *                          - Function called when button is clicked.
+     *          Returns:    None.
+     *      Description:    Draws a button with text.
+     **************************************************************************************************************************************/
+    @Composable
+    fun IconButton(modifier: Modifier, resourceID: Int, minSize: Dp = 56.dp, onClick: () -> Unit)
+    {
+        Surface (
+            modifier = modifier
+                .heightIn(minSize)
+                .fillMaxWidth(1f)
+                .padding(2.dp),
+            shape = MaterialTheme.shapes.small
+        ){
+            Button(onClick = {
+                onClick()
+            }
+            ) {
+                Icon(
+                    painter = painterResource(resourceID),
+                    contentDescription = "",
+                    modifier = modifier.size(minSize - 8.dp))
+            }
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    PlayerSection
+     *       Parameters:    playerOneName
+     *                          - Name of player one.
+     *                      playerOneLifePoints
+     *                          - Life points of player one.
+     *                      playerTwoName
+     *                          - Name of player two.
+     *                      playerTwoLifePoints
+     *                          - Life points of player two.
+     *          Returns:    None.
+     *      Description:    Draws the player(s) section.
+     **************************************************************************************************************************************/
+    @Composable
+    fun PlayerSection(playerOneName: String, playerOneLifePoints: Int, playerTwoName: String, playerTwoLifePoints: Int)
+    {
+        Row (modifier = Modifier.fillMaxWidth()
+        ){
+            Column (modifier = Modifier.weight(1f)){
+                PlayerTitle(
+                    name = playerOneName,
+                    modifier = Modifier
+                        .fillMaxWidth())
+                LifePoints(lifePoints = playerOneLifePoints,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    fontSize = 56.sp)
+            }
+            Column (modifier = Modifier.weight(1f)){
+                PlayerTitle(
+                    name = playerTwoName,
+                    modifier = Modifier
+                        .fillMaxWidth())
+                LifePoints(lifePoints = playerTwoLifePoints,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    fontSize = 56.sp)
             }
         }
     }
@@ -93,7 +408,7 @@ object DuelScreen
         ) {
             Text(
                 text = name,
-                modifier.padding(8.dp),
+                modifier.padding(4.dp),
                 textAlign = TextAlign.Center,
                 style = Typography.titleLarge,
             )
@@ -109,15 +424,51 @@ object DuelScreen
      *      Description:    Draws a player's life points.
      **************************************************************************************************************************************/
     @Composable
-    fun LifePoints(lifePoints: Int, modifier: Modifier)
+    fun LifePoints(lifePoints: Int, modifier: Modifier, fontSize: TextUnit)
     {
         Text(
             text = lifePoints.toString(),
-            modifier.padding(8.dp),
+            modifier = modifier
+                .padding(2.dp),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             style = Typography.titleLarge,
-            fontSize = 40.sp
+            fontSize = fontSize
+        )
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    AddSubtractButton
+     *       Parameters:    isAdd
+     *                          - Whether the button is an addition (true) or not (false).
+     *                      player
+     *                          - Player count (1 or 2).
+     *                      onClick
+     *                          - Button click function.
+     *          Returns:    None.
+     *      Description:    Draws a player's life points.
+     **************************************************************************************************************************************/
+    @Composable
+    fun AddSubtractButton(isAdd: Boolean, playerTarget: Player, onClick: (player: Player) -> Unit)
+    {
+        // Determines the icon resource used.
+        val iconID = if (isAdd)
+        {
+            R.drawable.add_filled
+        }
+        else
+        {
+            R.drawable.remove_filled
+        }
+
+        // Actually draw.
+        IconButton(
+            modifier = Modifier,
+            resourceID = iconID,
+            minSize = 48.dp,
+            onClick = {
+                onClick(playerTarget)
+            }
         )
     }
 
