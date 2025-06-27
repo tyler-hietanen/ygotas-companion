@@ -58,7 +58,7 @@ object DuelScreen
         val duelist2 by duelViewModel.duelist2
 
         // Running life point counter.
-        val runningLifePoints by duelViewModel.runningNumber
+        val runningLifePoints by duelViewModel.runningLifePoints
 
         // Scroll state.
         val scrollState = rememberScrollState()
@@ -176,7 +176,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "7",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(7)
+                        duelViewModel.runningLifePointsCalculatorNumber(7)
                     }
                 )
                 TextButton(
@@ -184,7 +184,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "8",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(8)
+                        duelViewModel.runningLifePointsCalculatorNumber(8)
                     }
                 )
                 TextButton(
@@ -192,7 +192,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "9",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(9)
+                        duelViewModel.runningLifePointsCalculatorNumber(9)
                     }
                 )
             }
@@ -207,7 +207,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "4",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(4)
+                        duelViewModel.runningLifePointsCalculatorNumber(4)
                     }
                 )
                 TextButton(
@@ -215,7 +215,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "5",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(5)
+                        duelViewModel.runningLifePointsCalculatorNumber(5)
                     }
                 )
                 TextButton(
@@ -223,7 +223,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "6",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(6)
+                        duelViewModel.runningLifePointsCalculatorNumber(6)
                     }
                 )
             }
@@ -238,7 +238,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "1",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(1)
+                        duelViewModel.runningLifePointsCalculatorNumber(1)
                     }
                 )
                 TextButton(
@@ -246,7 +246,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "2",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(2)
+                        duelViewModel.runningLifePointsCalculatorNumber(2)
                     }
                 )
                 TextButton(
@@ -254,7 +254,7 @@ object DuelScreen
                         .weight(1f),
                     buttonText = "3",
                     onClick = {
-                        duelViewModel.addNumberToRunningLifePoints(3)
+                        duelViewModel.runningLifePointsCalculatorNumber(3)
                     }
                 )
             }

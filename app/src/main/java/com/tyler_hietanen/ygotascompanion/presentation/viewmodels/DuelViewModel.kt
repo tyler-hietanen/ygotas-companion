@@ -10,8 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.tyler_hietanen.ygotascompanion.business.duel.Duelist
 import com.tyler_hietanen.ygotascompanion.business.duel.Player
+import kotlin.random.Random
 
-// TODO: Figure out clean means to cause updates when changing duelist value.
 class DuelViewModel: ViewModel()
 {
     /***************************************************************************************************************************************
@@ -21,6 +21,9 @@ class DuelViewModel: ViewModel()
 
     // Default life points.
     private val startingLifePoints = 8000
+
+    // Maximum life points.
+    private val maximumLifePoints = 80000
 
     //endregion
 
@@ -37,9 +40,9 @@ class DuelViewModel: ViewModel()
     private val _duelist2 = mutableStateOf(Duelist())
     val duelist2: State<Duelist> = _duelist2
 
-    // Running number counter (used for life points, 0 - 20000).
-    private val _runningNumber = mutableIntStateOf(0)
-    val runningNumber: State<Int> = _runningNumber
+    // Running life points.
+    private val _runningLifePoints = mutableIntStateOf(0)
+    val runningLifePoints: State<Int> = _runningLifePoints
 
     //endregion
 
@@ -60,6 +63,7 @@ class DuelViewModel: ViewModel()
         _duelist1.value.setDuelistName("Player 1")
         _duelist2.value.setDuelistName("Player 2")
 
+        // Reset duel to default state.
         resetDuel()
     }
 
@@ -72,11 +76,17 @@ class DuelViewModel: ViewModel()
     fun resetDuel()
     {
         // Resets both duelists to default state.
-        _duelist1.value.resetPlayer(startingLifePoints)
-        _duelist2.value.resetPlayer(startingLifePoints)
+        val players = listOf(
+            Player.PLAYER_ONE, Player.PLAYER_TWO
+        )
+        players.forEach(){ player ->
+            val duelist = getDuelist(player).copy()
+            duelist.resetPlayer(startingLifePoints)
+            updateDuelist(player, duelist)
+        }
 
         // Reset other values.
-        _runningNumber.intValue = 0
+        clearRunningLifePoints()
     }
 
     /***************************************************************************************************************************************
@@ -90,7 +100,48 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun modifyPlayerLifePoints(player: Player, doAdd: Boolean)
     {
-        // TODO Modify selected player's life points. Clear running count.
+        // Gathers a copy of the appropriate duelist.
+        val duelist = getDuelist(player).copy()
+
+        // Copies current life points and creates a new life point value.
+        val runningLifePointCount = runningLifePoints.value
+
+        // Does the addition (or subtraction).
+        var newLifePointValue = if (doAdd)
+        {
+            (duelist.lifePoints + runningLifePointCount)
+        }
+        else
+        {
+            (duelist.lifePoints - runningLifePointCount)
+        }
+
+        // Checks for safety of the operation before committing it.
+        val didSafelyModify = if (doAdd)
+        {
+            (newLifePointValue <= maximumLifePoints)
+        }
+        else
+        {
+            // Cap life points to 0 if needed.
+            if (newLifePointValue < 0)
+            {
+                newLifePointValue = 0
+            }
+            // Force true, since it's safe.
+            true
+        }
+
+        if (didSafelyModify)
+        {
+            // Update player's life points.
+            duelist.lifePoints = newLifePointValue
+            updateDuelist(player, duelist)
+        }
+        // Otherwise, operation is ignored. Not a safe one.
+
+        // No matter what, clear points.
+        clearRunningLifePoints()
     }
 
     /***************************************************************************************************************************************
@@ -101,7 +152,11 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun simulateDiceRoll()
     {
-        // TODO Generate from 1 - 6. Show message to user.
+        // Generate random number from 1 to 6.
+        val diceRollValue = Random.nextInt(1, 6)
+
+        // Show message to user.
+        // TODO.
     }
 
     /***************************************************************************************************************************************
@@ -112,7 +167,11 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun simulateCoinFlip()
     {
-        // TODO Generate from 1 - 2. Show message to user.
+        // Generate random number from 1 to 2.
+        val coinFlipValue = Random.nextInt(1, 2)
+
+        // Show message to user.
+        // TODO.
     }
 
     /***************************************************************************************************************************************
@@ -123,19 +182,31 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun clearRunningLifePoints()
     {
-        // TODO Clear running life points.
+        updateRunningLifePoints(0)
     }
 
     /***************************************************************************************************************************************
-     *           Method:    addNumberToRunningLifePoints
+     *           Method:    runningLifePointsCalculatorNumber
      *       Parameters:    number
-     *                          - Number to be added to running point.
+     *                          - Calculator number clicked.
      *          Returns:    None.
      *      Description:    Adds number to running life point count at the end.
      **************************************************************************************************************************************/
-    fun addNumberToRunningLifePoints(number:Int)
+    fun runningLifePointsCalculatorNumber(number:Int)
     {
-        // TODO Adds number to life points. Multiply by 10 first.
+        // Copies running life points.
+        var runningLifePoints = _runningLifePoints.intValue
+
+        // Performs operation. Multiply value by 10, then add value.
+        runningLifePoints *= 10
+        runningLifePoints += number
+
+        // Check for safety.
+        if (runningLifePoints <= maximumLifePoints)
+        {
+            // Commit change.
+            updateRunningLifePoints(runningLifePoints)
+        }
     }
 
     /***************************************************************************************************************************************
@@ -147,7 +218,72 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun multiplyRunningLifePoints(factor: Int)
     {
-        // TODO Multiplies running number by factor.
+        // Copies running life points.
+        var runningLifePoints = _runningLifePoints.intValue
+
+        // Performs operation. Multiply value by factor.
+        runningLifePoints *= factor
+
+        // Check for safety.
+        if (runningLifePoints <= maximumLifePoints)
+        {
+            // Commit change.
+            updateRunningLifePoints(runningLifePoints)
+        }
+    }
+
+    //endregion
+
+    /***************************************************************************************************************************************
+     *      Private Methods
+     **************************************************************************************************************************************/
+    //region Private Methods
+
+    /***************************************************************************************************************************************
+     *           Method:    getDuelist
+     *       Parameters:    player
+     *                          - Player to retrieve duelist class.
+     *          Returns:    Duelist
+     *                          - Duelist class.
+     *      Description:    Retrieves duelist class for the associated player.
+     **************************************************************************************************************************************/
+    private fun getDuelist(player: Player): Duelist
+    {
+        return when (player)
+        {
+            Player.PLAYER_ONE -> _duelist1.value
+            Player.PLAYER_TWO -> _duelist2.value
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    updateDuelist
+     *       Parameters:    player
+     *                          - Player to update.
+     *                      newDuelist
+     *                          - New (or updated) duelist value.
+     *          Returns:    None.
+     *      Description:    Updates player's duelist value.
+     **************************************************************************************************************************************/
+    private fun updateDuelist(player: Player, newDuelist: Duelist)
+    {
+        when (player)
+        {
+            Player.PLAYER_ONE -> _duelist1.value = newDuelist
+            Player.PLAYER_TWO -> _duelist2.value = newDuelist
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    updateRunningLifePoints
+     *       Parameters:    runningPoints
+     *                          - Running life points value to update to.
+     *          Returns:    None.
+     *      Description:    Updates running life points.
+     **************************************************************************************************************************************/
+    private fun updateRunningLifePoints(runningPoints: Int)
+    {
+        _runningLifePoints.intValue = runningPoints
     }
 
     //endregion
