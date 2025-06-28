@@ -4,6 +4,7 @@
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.ygotascompanion.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,8 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +40,7 @@ import com.tyler_hietanen.ygotascompanion.R
 import com.tyler_hietanen.ygotascompanion.business.duel.Player
 import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.ygotascompanion.ui.theme.Typography
+import kotlinx.coroutines.flow.collectLatest
 
 object DuelScreen
 {
@@ -55,15 +59,19 @@ object DuelScreen
     @Composable
     fun DrawScreen(duelViewModel: DuelViewModel)
     {
-        // Duelist(s).
+        // Set up variables (and observation).
         val duelist1 by duelViewModel.duelist1
         val duelist2 by duelViewModel.duelist2
-
-        // Running life point counter.
         val runningLifePoints by duelViewModel.runningLifePoints
-
-        // Scroll state.
         val scrollState = rememberScrollState()
+        val context = LocalContext.current
+
+        // Will show a toast message if the custom message is changed.
+        LaunchedEffect(key1 = duelViewModel) {
+            duelViewModel.customMessages.collectLatest { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // Actually draw.
         Column (modifier = Modifier.verticalScroll(scrollState)) {
