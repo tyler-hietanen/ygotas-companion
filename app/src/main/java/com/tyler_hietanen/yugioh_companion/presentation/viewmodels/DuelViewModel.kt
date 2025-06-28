@@ -371,7 +371,6 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     private fun handleLoss(losingPlayerSlot: PlayerSlot, winningPlayerSlot: PlayerSlot)
     {
-        // TODO Revisit this function once win/loss tracking is added.
         // This player has lost. We should mock them. Before anything else, lock the duel (so they have to reset and to avoid any of these
         // other changes from happening).
         _isDuelEnabled.value = false
@@ -379,13 +378,9 @@ class DuelViewModel: ViewModel()
         // Send out a loss message.
         viewModelScope.launch {
             // Address losing player.
-            var duelist = getDuelist(losingPlayerSlot)
-            var message = "Womp, womp! Better luck next time, ${duelist.name}"
-            _customMessages.send(message)
-
-            // Address winning player.
-            duelist = getDuelist(winningPlayerSlot)
-            message = "Good job, ${duelist.name}"
+            val duelist = getDuelist(losingPlayerSlot)
+            val otherDuelist = getDuelist(winningPlayerSlot)
+            val message = "Womp, womp! Better luck next time, ${duelist.name}. Congrats ${otherDuelist.name}!"
             _customMessages.send(message)
         }
     }
@@ -421,13 +416,13 @@ class DuelViewModel: ViewModel()
                 {
                     // We need to shame the acting player.
                     val playerName = getDuelist(actingPlayerSlot).name
-                    playerShameMessage = "You added a strange amount of life points? For shame, $playerName..."
+                    playerShameMessage = "You recovered an ugly amount of life points. For shame, $playerName..."
                 }
                 else
                 {
                     // We need to shame the other player.
                     val otherPlayer = getOtherPlayer(actingPlayerSlot)
-                    playerShameMessage = "You did a stupid amount of damage. Dick move, ${getDuelist(otherPlayer).name}!"
+                    playerShameMessage = "You dealt an ugly amount of damage. Dick move, ${getDuelist(otherPlayer).name}!"
                 }
 
                 // Emit update (shame!).
