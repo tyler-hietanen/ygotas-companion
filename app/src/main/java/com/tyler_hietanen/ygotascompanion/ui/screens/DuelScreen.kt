@@ -4,6 +4,7 @@
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.ygotascompanion.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -309,7 +311,9 @@ object DuelScreen
             modifier = modifier
                 .heightIn(minSize)
                 .padding(4.dp, 0.dp),
-            onClick = onClick
+            onClick = onClick,
+            colors = ButtonDefaults.outlinedButtonColors(),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
         ) {
             Text(text = buttonText,
                 style = Typography.titleLarge)
@@ -338,9 +342,10 @@ object DuelScreen
                 .padding(2.dp),
             shape = MaterialTheme.shapes.small
         ){
-            Button(onClick = {
-                onClick()
-            }
+            Button(
+                onClick = { onClick()},
+                colors = ButtonDefaults.outlinedButtonColors(),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
             ) {
                 Icon(
                     painter = painterResource(resourceID),

@@ -90,12 +90,10 @@ class MainActivity : ComponentActivity()
 
             // Sets up auto nav, after a delay.
             // TODO Remove.
-            /*
             LaunchedEffect(Unit) {
                 delay(150)
                 ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.DUEL, _applicationViewModel)
             }
-            */
         }
     }
 
