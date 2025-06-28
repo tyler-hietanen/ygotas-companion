@@ -24,8 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
@@ -111,11 +113,14 @@ object WelcomeScreen
         // Actually draw.
         Column {
             Text(text = WELCOME_SCREEN_TITLE,
-                style = Typography.titleLarge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                textAlign = TextAlign.Center)
+                style = Typography.titleLarge,
+                fontSize = 30.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+                )
             HorizontalDivider(modifier = Modifier)
             Text(text = WELCOME_SCREEN_BODY,
                 style = Typography.bodyLarge,
