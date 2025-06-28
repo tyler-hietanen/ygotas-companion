@@ -69,7 +69,18 @@ object DuelScreen
         // Will show a toast message if the custom message is changed.
         LaunchedEffect(key1 = duelViewModel) {
             duelViewModel.customMessages.collectLatest { message ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                // Check for length of message. If length is large enough, use a longer message time.
+                val messageLength = if (message.length > 20)
+                {
+                    Toast.LENGTH_LONG
+                }
+                else
+                {
+                    Toast.LENGTH_SHORT
+                }
+
+                // Actually show.
+                Toast.makeText(context, message, messageLength).show()
             }
         }
 

@@ -55,6 +55,16 @@ class DuelViewModel: ViewModel()
     //endregion
 
     /***************************************************************************************************************************************
+     *      Fields
+     **************************************************************************************************************************************/
+    //region Fields
+
+    // Whether user has been shamed for adding a bad life points.
+    private var _didShameUser = false
+
+    //endregion
+
+    /***************************************************************************************************************************************
      *      Methods
      **************************************************************************************************************************************/
     //region Methods
@@ -95,6 +105,7 @@ class DuelViewModel: ViewModel()
 
         // Reset other values.
         clearRunningLifePoints()
+        _didShameUser = false
     }
 
     /***************************************************************************************************************************************
@@ -108,48 +119,57 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun modifyPlayerLifePoints(player: Player, doAdd: Boolean)
     {
-        // Gathers a copy of the appropriate duelist.
-        val duelist = getDuelist(player).copy()
+        // Ignore if no change.
+        if (runningLifePoints.value != 0)
+        {
+            // Gathers a copy of the appropriate duelist.
+            val duelist = getDuelist(player).copy()
 
-        // Copies current life points and creates a new life point value.
-        val runningLifePointCount = runningLifePoints.value
-
-        // Does the addition (or subtraction).
-        var newLifePointValue = if (doAdd)
-        {
-            (duelist.lifePoints + runningLifePointCount)
-        }
-        else
-        {
-            (duelist.lifePoints - runningLifePointCount)
-        }
-
-        // Checks for safety of the operation before committing it.
-        val didSafelyModify = if (doAdd)
-        {
-            (newLifePointValue <= maximumLifePoints)
-        }
-        else
-        {
-            // Cap life points to 0 if needed.
-            if (newLifePointValue < 0)
+            // Copies current life points and creates a new life point value.
+            val lifePointChange = if (doAdd)
             {
-                newLifePointValue = 0
+                runningLifePoints.value
             }
-            // Force true, since it's safe.
-            true
-        }
+            else
+            {
+                // Set as negative.
+                (runningLifePoints.value * -1)
+            }
 
-        if (didSafelyModify)
-        {
-            // Update player's life points.
-            duelist.lifePoints = newLifePointValue
-            updateDuelist(player, duelist)
-        }
-        // Otherwise, operation is ignored. Not a safe one.
+            // Does change to life points (But does not commit it).
+            var newLifePointValue = (duelist.lifePoints + lifePointChange)
 
-        // No matter what, clear points.
-        clearRunningLifePoints()
+            // Checks for safety of the change before committing it.
+            val didSafelyModify = if (newLifePointValue > 0)
+            {
+                // Positive. Must be less than or equal to maximum.
+                (newLifePointValue <= maximumLifePoints)
+            }
+            else
+            {
+                // Negative change. Ensure it does not go past 0.
+                if (newLifePointValue < 0)
+                {
+                    newLifePointValue = 0
+                }
+                // Force true, since it's safe.
+                true
+            }
+
+            if (didSafelyModify)
+            {
+                // Update player's life points.
+                duelist.lifePoints = newLifePointValue
+                updateDuelist(player, duelist)
+
+                // Check if user should be shamed for life points.
+                attemptUserShame(lifePointChange, player)
+            }
+            // Otherwise, operation is ignored. Not a safe one.
+
+            // No matter what, clear points.
+            clearRunningLifePoints()
+        }
     }
 
     /***************************************************************************************************************************************
@@ -211,7 +231,7 @@ class DuelViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Adds number to running life point count at the end.
      **************************************************************************************************************************************/
-    fun runningLifePointsCalculatorNumber(number:Int)
+    fun runningLifePointsCalculatorNumber(number: Int)
     {
         // Copies running life points.
         var runningLifePoints = _runningLifePoints.intValue
@@ -303,6 +323,59 @@ class DuelViewModel: ViewModel()
     private fun updateRunningLifePoints(runningPoints: Int)
     {
         _runningLifePoints.intValue = runningPoints
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    attemptUserShame
+     *       Parameters:    lifePointChange
+     *                          - The life point change (positive or negative)
+     *                      actingPlayer
+     *                          - The player to which the life point change is affecting.
+     *          Returns:    None.
+     *      Description:    Checks if it should shame user for dealing (or healing) a strange amount of life points.
+     **************************************************************************************************************************************/
+    private fun attemptUserShame(lifePointChange: Int, actingPlayer: Player)
+    {
+        // If app hasn't already shamed a user.
+        if (!_didShameUser)
+        {
+            // Check if we need to shame. We shame if the points added (or subtracted) are not evenly divisible by 100.
+            val doShame = ((lifePointChange % 100) != 0)
+            if (doShame)
+            {
+                // Make it so we don't shame again.
+                _didShameUser = true
+
+                // Do we shame the player being acted upon, or the other player? We shame the acting player if the operation is an addition,
+                // or we shame the other player if the operation is a subtraction.
+                val doShameActingPlayer = (lifePointChange > 0)
+
+                // Determine how we shame them.
+                val playerShameMessage: String
+                if (doShameActingPlayer)
+                {
+                    // We need to shame the acting player.
+                    val playerName = getDuelist(actingPlayer).name
+                    playerShameMessage = "You added a strange amount of life points? For shame, $playerName..."
+                }
+                else
+                {
+                    // We need to shame the other player.
+                    val otherPlayer = when (actingPlayer)
+                    {
+                        Player.PLAYER_ONE -> Player.PLAYER_TWO
+                        Player.PLAYER_TWO -> Player.PLAYER_ONE
+                    }
+                    playerShameMessage = "You did a stupid amount of damage. Dick move, ${getDuelist(otherPlayer).name}!"
+                }
+
+                // Emit update (shame!).
+                viewModelScope.launch {
+                    _customMessages.send(playerShameMessage)
+                }
+            }
+            // Otherwise, do nothing.
+        }
     }
 
     //endregion
