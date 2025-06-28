@@ -5,10 +5,13 @@
 package com.tyler_hietanen.yugioh_companion.ui.layout
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -16,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -84,4 +88,43 @@ object CompanionButtons
             }
         }
     }
+
+    /***************************************************************************************************************************************
+     *           Method:    IconTextButton
+     *       Parameters:    modifier
+     *                      resourceID
+     *                      buttonText
+     *                      minSize
+     *                      isEnabled
+     *                      onClick
+     *          Returns:    None.
+     *      Description:    Draws a button with an icon and a text. Icon is shown on left, text on right.
+     **************************************************************************************************************************************/
+    @Composable
+    fun IconTextButton(modifier: Modifier, resourceID: Int, buttonText: String, minSize: Dp = 56.dp, isEnabled: Boolean, onClick: () -> Unit)
+    {
+        Button(
+            modifier = modifier
+                .heightIn(minSize),
+            colors = ButtonDefaults.outlinedButtonColors(),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            onClick = onClick,
+            enabled = isEnabled
+        ) {
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(resourceID),
+                    contentDescription = "",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                Text (
+                    text = buttonText
+                )
+            }
+        }
+    }
 }
+

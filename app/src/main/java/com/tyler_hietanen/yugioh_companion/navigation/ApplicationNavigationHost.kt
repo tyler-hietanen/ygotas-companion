@@ -15,7 +15,7 @@ import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.ui.screens.DuelScreen
 import com.tyler_hietanen.yugioh_companion.ui.screens.HouseRulesScreenComposable
 import com.tyler_hietanen.yugioh_companion.ui.screens.QuotesScreenComposable
-import com.tyler_hietanen.yugioh_companion.ui.screens.SettingsScreenComposable
+import com.tyler_hietanen.yugioh_companion.ui.screens.SettingsScreen
 import com.tyler_hietanen.yugioh_companion.ui.screens.WelcomeScreen
 
 object ApplicationNavigationHost
@@ -101,7 +101,7 @@ object ApplicationNavigationHost
                         }
                         Destination.DUEL ->
                         {
-                            DuelScreen.DrawScreen(applicationViewModel.duelViewModel)
+                            DuelScreen.DrawScreen(applicationViewModel)
                         }
                         Destination.HOUSERULES ->
                         {
@@ -109,7 +109,7 @@ object ApplicationNavigationHost
                         }
                         Destination.SETTINGS ->
                         {
-                            SettingsScreenComposable(navController = controller)
+                            SettingsScreen.DrawScreen(applicationViewModel)
                         }
                     }
                 }

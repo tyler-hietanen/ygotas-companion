@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.yugioh_companion.R
 import com.tyler_hietanen.yugioh_companion.business.duel.PlayerSlot
+import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconButton
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.TextButton
@@ -44,14 +45,16 @@ object DuelScreen
 
     /***************************************************************************************************************************************
      *           Method:    DrawScreen
-     *       Parameters:    duelViewModel
-     *                          - View model for the duel.
+     *       Parameters:    applicationViewModel
      *          Returns:    None.
      *      Description:    Composable function manages drawing the Duel screen.
      **************************************************************************************************************************************/
     @Composable
-    fun DrawScreen(duelViewModel: DuelViewModel)
+    fun DrawScreen(applicationViewModel: ApplicationViewModel)
     {
+        // Copies out the view models that this module cares about.
+        val duelViewModel: DuelViewModel = applicationViewModel.duelViewModel
+
         // Set up variables (and observation).
         val duelist1 by duelViewModel.duelist1
         val duelist2 by duelViewModel.duelist2
@@ -497,7 +500,6 @@ object DuelScreen
                 }
             )
         }
-
     }
 
     //endregion

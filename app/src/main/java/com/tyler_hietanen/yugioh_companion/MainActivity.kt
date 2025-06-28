@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity()
             // TODO Remove.
             LaunchedEffect(Unit) {
                 delay(500)
-                ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.DUEL, _applicationViewModel)
+                ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.SETTINGS, _applicationViewModel)
             }
         }
     }
