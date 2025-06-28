@@ -23,11 +23,12 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     //region Constants
 
-    // Default life points.
-    private val startingLifePoints = 8000
-
-    // Maximum life points.
-    private val maximumLifePoints = 80000
+    private companion object
+    {
+        // Starting and maximum life points.
+        const val STARTING_LIFE_POINTS = 8000
+        const val MAXIMUM_LIFE_POINTS = 80000
+    }
 
     //endregion
 
@@ -99,7 +100,7 @@ class DuelViewModel: ViewModel()
         )
         players.forEach { player ->
             val duelist = getDuelist(player).copy()
-            duelist.resetPlayer(startingLifePoints)
+            duelist.resetPlayer(STARTING_LIFE_POINTS)
             updateDuelist(player, duelist)
         }
 
@@ -143,7 +144,7 @@ class DuelViewModel: ViewModel()
             val didSafelyModify = if (newLifePointValue > 0)
             {
                 // Positive. Must be less than or equal to maximum.
-                (newLifePointValue <= maximumLifePoints)
+                (newLifePointValue <= MAXIMUM_LIFE_POINTS)
             }
             else
             {
@@ -241,7 +242,7 @@ class DuelViewModel: ViewModel()
         runningLifePoints += number
 
         // Check for safety.
-        if (runningLifePoints <= maximumLifePoints)
+        if (runningLifePoints <= MAXIMUM_LIFE_POINTS)
         {
             // Commit change.
             updateRunningLifePoints(runningLifePoints)
@@ -264,7 +265,7 @@ class DuelViewModel: ViewModel()
         runningLifePoints *= factor
 
         // Check for safety.
-        if (runningLifePoints <= maximumLifePoints)
+        if (runningLifePoints <= MAXIMUM_LIFE_POINTS)
         {
             // Commit change.
             updateRunningLifePoints(runningLifePoints)
