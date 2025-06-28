@@ -27,13 +27,13 @@ object CompanionBottomNavigationBar
     //region Composable Methods
 
     /***************************************************************************************************************************************
-     *           Method:    Compose
+     *           Method:    BottomNavBar
      *       Parameters:    None.
      *          Returns:    None.
      *      Description:    Composable function manages drawing a Bottom Navigation Bar.
      **************************************************************************************************************************************/
     @Composable
-    fun Compose(controller: NavHostController, applicationViewModel: ApplicationViewModel)
+    fun BottomNavBar(controller: NavHostController, applicationViewModel: ApplicationViewModel)
     {
         // Gets current destination from VM.
         val currentDestination by applicationViewModel.currentDestination

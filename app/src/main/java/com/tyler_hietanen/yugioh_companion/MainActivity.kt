@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity()
             // Sets up auto nav, after a delay.
             // TODO Remove.
             LaunchedEffect(Unit) {
-                delay(150)
+                delay(500)
                 ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.DUEL, _applicationViewModel)
             }
         }
@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity()
     fun MainActivityScreen(navController: NavHostController)
     {
         // Actually draws the application view.
-        CompanionBottomNavigationBar.Compose(navController, _applicationViewModel)
+        CompanionBottomNavigationBar.BottomNavBar(navController, _applicationViewModel)
     }
 
     //endregion

@@ -5,49 +5,42 @@
 package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.yugioh_companion.R
 import com.tyler_hietanen.yugioh_companion.business.duel.PlayerSlot
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
+import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconButton
+import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.TextButton
 import com.tyler_hietanen.yugioh_companion.ui.theme.Typography
 import kotlinx.coroutines.flow.collectLatest
 
 object DuelScreen
 {
     /***************************************************************************************************************************************
-     *      Composable Methods
+     *      (Public) Composable Methods
      **************************************************************************************************************************************/
-    //region Composable Methods
+    //region (Public) Composable Methods
 
     /***************************************************************************************************************************************
      *           Method:    DrawScreen
@@ -108,295 +101,79 @@ object DuelScreen
             HorizontalDivider(modifier = Modifier.padding(8.dp, 0.dp))
 
             // Life Point Addition, Subtraction and Running section.
-            Row (modifier = Modifier.fillMaxWidth()
-            ){
-                Column (modifier = Modifier
-                    .weight(3.5f)
-                    .padding(4.dp)) {
-                    AddSubtractButton(
-                        isAdd = true,
-                        playerSlotTarget = PlayerSlot.PLAYER_ONE,
-                        doEnable = isLocked,
-                        onClick = { player ->
-                            duelViewModel.modifyPlayerLifePoints(
-                                playerSlot = player,
-                                doAdd = true)
-                        }
-                    )
-                    AddSubtractButton(
-                        isAdd = false,
-                        playerSlotTarget = PlayerSlot.PLAYER_ONE,
-                        doEnable = isLocked,
-                        onClick = { player ->
-                            duelViewModel.modifyPlayerLifePoints(
-                                playerSlot = player,
-                                doAdd = false)
-                        }
+            LifePointModificationSection(
+                isLocked = isLocked,
+                lifePoints = runningLifePoints,
+                onClick = { playerSlot, doAdd ->
+                    duelViewModel.modifyPlayerLifePoints(
+                        playerSlot = playerSlot,
+                        doAdd = doAdd
                     )
                 }
-                LifePoints(
-                    lifePoints = runningLifePoints,
-                    modifier = Modifier
-                        .weight(3f), 36.sp)
-                Column (modifier = Modifier
-                    .weight(3.5f)
-                    .padding(4.dp)) {
-                    AddSubtractButton(
-                        isAdd = true,
-                        playerSlotTarget = PlayerSlot.PLAYER_TWO,
-                        doEnable = isLocked,
-                        onClick = { player ->
-                            duelViewModel.modifyPlayerLifePoints(
-                                playerSlot = player,
-                                doAdd = true)
-                        }
-                    )
-                    AddSubtractButton(
-                        isAdd = false,
-                        playerSlotTarget = PlayerSlot.PLAYER_TWO,
-                        doEnable = isLocked,
-                        onClick = { player ->
-                            duelViewModel.modifyPlayerLifePoints(
-                                playerSlot = player,
-                                doAdd = false)
-                        }
-                    )
-                }
-            }
+            )
 
             // Dice Roll, Coin Flip and Clear Section.
-            Row (modifier = Modifier.fillMaxWidth()
-            ){
-                IconButton(
-                    modifier = Modifier
-                        .weight(3.5f),
-                    resourceID = R.drawable.dice_outlined,
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.simulateDiceRoll()
-                    })
-                TextButton(
-                    modifier = Modifier
-                        .weight(3f),
-                    buttonText = "CLR",
-                    minSize = 64.dp,
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.clearRunningLifePoints()
-                    })
-                IconButton(
-                    modifier = Modifier
-                        .weight(3.5f),
-                    resourceID = R.drawable.chip_outlined,
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.simulateCoinFlip()
-                    })
-            }
+            CoinDiceClearSection(
+                isLocked = isLocked,
+                onDiceRollClick = { duelViewModel.simulateDiceRoll() },
+                onClearClick = { duelViewModel.clearRunningLifePoints() },
+                onCoinFlipClick = { duelViewModel.simulateCoinFlip() },
+            )
 
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // Number button(s)
-            // 7-9
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-            ){
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "7",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(7)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "8",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(8)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "9",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(9)
-                    }
-                )
-            }
+            // 7-9.
+            CalculatorNumberRow(
+                isLocked = isLocked,
+                first = 7,
+                second = 8,
+                third = 9,
+                onNumberClick = { number ->
+                    duelViewModel.runningLifePointsCalculatorNumber(number)
+                },
+            )
 
-            // 4-6
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-            ){
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "4",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(4)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "5",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(5)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "6",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(6)
-                    }
-                )
-            }
+            // 4-6.
+            CalculatorNumberRow(
+                isLocked = isLocked,
+                first = 4,
+                second = 5,
+                third = 6,
+                onNumberClick = { number ->
+                    duelViewModel.runningLifePointsCalculatorNumber(number)
+                },
+            )
 
-            // 1-3
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-            ){
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "1",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(1)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "2",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(2)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "3",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.runningLifePointsCalculatorNumber(3)
-                    }
-                )
-            }
+            // 1-3.
+            CalculatorNumberRow(
+                isLocked = isLocked,
+                first = 1,
+                second = 2,
+                third = 3,
+                onNumberClick = { number ->
+                    duelViewModel.runningLifePointsCalculatorNumber(number)
+                },
+            )
 
-            // x10 - x1000
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
-            ){
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "0",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.multiplyRunningLifePoints(10)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "00",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.multiplyRunningLifePoints(100)
-                    }
-                )
-                TextButton(
-                    modifier = Modifier
-                        .weight(1f),
-                    buttonText = "000",
-                    isEnabled = isLocked,
-                    onClick = {
-                        duelViewModel.multiplyRunningLifePoints(1000)
-                    }
-                )
-            }
+            // x10 - x1000.
+            CalculatorMultiplicationRow(
+                isLocked = isLocked,
+                onMultiplyClick = { number ->
+                    duelViewModel.multiplyRunningLifePoints(number)
+                }
+            )
 
             HorizontalDivider(modifier = Modifier.padding(8.dp))
         }
     }
 
-    /***************************************************************************************************************************************
-     *           Method:    TextButton
-     *       Parameters:    modifier
-     *                      onClick
-     *                          - Function called when button is clicked.
-     *          Returns:    None.
-     *      Description:    Draws a button with text.
-     **************************************************************************************************************************************/
-    @Composable
-    fun TextButton(modifier: Modifier, buttonText: String, minSize: Dp = 56.dp, isEnabled: Boolean, onClick: () -> Unit)
-    {
-        Button(
-            modifier = modifier
-                .heightIn(minSize)
-                .padding(4.dp, 0.dp),
-            onClick = onClick,
-            colors = ButtonDefaults.outlinedButtonColors(),
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-            enabled = isEnabled
-        ) {
-            Text(text = buttonText,
-                style = Typography.titleLarge)
-        }
-    }
+    //endregion
 
     /***************************************************************************************************************************************
-     *           Method:    IconButton
-     *       Parameters:    modifier
-     *                      resourceID
-     *                          - Drawable resource to use for icon.
-     *                      minSize
-     *                          - (Optional) minimum size.
-     *                      onClick
-     *                          - Function called when button is clicked.
-     *          Returns:    None.
-     *      Description:    Draws a button with text.
+     *      (Private) Composable Methods
      **************************************************************************************************************************************/
-    @Composable
-    fun IconButton(modifier: Modifier, resourceID: Int, minSize: Dp = 56.dp, isEnabled: Boolean, onClick: () -> Unit)
-    {
-        Surface (
-            modifier = modifier
-                .heightIn(minSize)
-                .fillMaxWidth(1f)
-                .padding(2.dp),
-            shape = MaterialTheme.shapes.small
-        ){
-            Button(
-                onClick = { onClick()},
-                colors = ButtonDefaults.outlinedButtonColors(),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-                enabled = isEnabled
-            ) {
-                Icon(
-                    painter = painterResource(resourceID),
-                    contentDescription = "",
-                    modifier = modifier.size(minSize - 8.dp))
-            }
-        }
-    }
+    //region (Private) Composable Methods
 
     /***************************************************************************************************************************************
      *           Method:    PlayerSection
@@ -412,26 +189,26 @@ object DuelScreen
      *      Description:    Draws the player(s) section.
      **************************************************************************************************************************************/
     @Composable
-    fun PlayerSection(playerOneName: String, playerOneLifePoints: Int, playerTwoName: String, playerTwoLifePoints: Int)
+    private fun PlayerSection(playerOneName: String, playerOneLifePoints: Int, playerTwoName: String, playerTwoLifePoints: Int)
     {
         Row (modifier = Modifier.fillMaxWidth()
         ){
             Column (modifier = Modifier.weight(1f)){
-                PlayerTitle(
+                PlayerTitleText(
                     name = playerOneName,
                     modifier = Modifier
                         .fillMaxWidth())
-                LifePoints(lifePoints = playerOneLifePoints,
+                LifePointsText(lifePoints = playerOneLifePoints,
                     modifier = Modifier
                         .fillMaxWidth(),
                     fontSize = 56.sp)
             }
             Column (modifier = Modifier.weight(1f)){
-                PlayerTitle(
+                PlayerTitleText(
                     name = playerTwoName,
                     modifier = Modifier
                         .fillMaxWidth())
-                LifePoints(lifePoints = playerTwoLifePoints,
+                LifePointsText(lifePoints = playerTwoLifePoints,
                     modifier = Modifier
                         .fillMaxWidth(),
                     fontSize = 56.sp)
@@ -448,7 +225,7 @@ object DuelScreen
      *      Description:    Draws a player title.
      **************************************************************************************************************************************/
     @Composable
-    fun PlayerTitle(name: String, modifier: Modifier)
+    private fun PlayerTitleText(name: String, modifier: Modifier)
     {
         Card(
             modifier = Modifier
@@ -467,15 +244,17 @@ object DuelScreen
     }
 
     /***************************************************************************************************************************************
-     *           Method:    LifePoints
+     *           Method:    LifePointsText
      *       Parameters:    lifePoints
      *                          - Player's life points.
      *                      modifier
+     *                      fontSize
+     *                          - Desired font size.
      *          Returns:    None.
      *      Description:    Draws a player's life points.
      **************************************************************************************************************************************/
     @Composable
-    fun LifePoints(lifePoints: Int, modifier: Modifier, fontSize: TextUnit)
+    private fun LifePointsText(lifePoints: Int, modifier: Modifier, fontSize: TextUnit)
     {
         Text(
             text = lifePoints.toString(),
@@ -486,6 +265,66 @@ object DuelScreen
             style = Typography.titleLarge,
             fontSize = fontSize
         )
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    LifePointModificationSection
+     *       Parameters:    isLocked
+     *                      lifePoints
+     *                      onClick
+     *          Returns:    None.
+     *      Description:    Draws the life point modification section (Add,Minus buttons for both players, running life points).
+     **************************************************************************************************************************************/
+    @Composable
+    private fun LifePointModificationSection(isLocked: Boolean, lifePoints: Int, onClick: (playerSlot: PlayerSlot, doAdd: Boolean) -> Unit)
+    {
+        Row (modifier = Modifier.fillMaxWidth()
+        ){
+            Column (modifier = Modifier
+                .weight(3.5f)
+                .padding(4.dp)) {
+                AddSubtractButton(
+                    isAdd = true,
+                    playerSlotTarget = PlayerSlot.PLAYER_ONE,
+                    doEnable = isLocked,
+                    onClick = { playerSlot ->
+                        onClick(playerSlot, true)
+                    }
+                )
+                AddSubtractButton(
+                    isAdd = false,
+                    playerSlotTarget = PlayerSlot.PLAYER_ONE,
+                    doEnable = isLocked,
+                    onClick = { playerSlot ->
+                        onClick(playerSlot, false)
+                    }
+                )
+            }
+            LifePointsText(
+                lifePoints = lifePoints,
+                modifier = Modifier
+                    .weight(3f), 36.sp)
+            Column (modifier = Modifier
+                .weight(3.5f)
+                .padding(4.dp)) {
+                AddSubtractButton(
+                    isAdd = true,
+                    playerSlotTarget = PlayerSlot.PLAYER_TWO,
+                    doEnable = isLocked,
+                    onClick = { playerSlot ->
+                        onClick(playerSlot, true)
+                    }
+                )
+                AddSubtractButton(
+                    isAdd = false,
+                    playerSlotTarget = PlayerSlot.PLAYER_TWO,
+                    doEnable = isLocked,
+                    onClick = { playerSlot ->
+                        onClick(playerSlot, false)
+                    }
+                )
+            }
+        }
     }
 
     /***************************************************************************************************************************************
@@ -500,7 +339,7 @@ object DuelScreen
      *      Description:    Draws a player's life points.
      **************************************************************************************************************************************/
     @Composable
-    fun AddSubtractButton(isAdd: Boolean, playerSlotTarget: PlayerSlot, doEnable: Boolean, onClick: (playerSlot: PlayerSlot) -> Unit)
+    private fun AddSubtractButton(isAdd: Boolean, playerSlotTarget: PlayerSlot, doEnable: Boolean, onClick: (playerSlot: PlayerSlot) -> Unit)
     {
         // Determines the icon resource used.
         val iconID = if (isAdd)
@@ -522,6 +361,143 @@ object DuelScreen
                 onClick(playerSlotTarget)
             }
         )
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    CoinDiceClearSection
+     *       Parameters:    isLocked
+     *                      onDiceRollClick
+     *                      onClearClick
+     *                      onCoinFlipClick
+     *      Description:    Draws a player's life points.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun CoinDiceClearSection(isLocked: Boolean, onDiceRollClick: () -> Unit, onClearClick: () -> Unit, onCoinFlipClick: () -> Unit)
+    {
+        Row (modifier = Modifier.fillMaxWidth()
+        ){
+            IconButton(
+                modifier = Modifier
+                    .weight(3.5f),
+                resourceID = R.drawable.dice_outlined,
+                isEnabled = isLocked,
+                onClick = {
+                    onDiceRollClick()
+                }
+            )
+            TextButton(
+                modifier = Modifier
+                    .weight(3f),
+                buttonText = "CLR",
+                minSize = 64.dp,
+                isEnabled = isLocked,
+                onClick = {
+                    onClearClick()
+
+                }
+            )
+            IconButton(
+                modifier = Modifier
+                    .weight(3.5f),
+                resourceID = R.drawable.chip_outlined,
+                isEnabled = isLocked,
+                onClick = {
+                    onCoinFlipClick()
+                }
+            )
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    CalculatorNumberRow
+     *       Parameters:    isLocked
+     *                      first
+     *                      second
+     *                      third
+     *                      onNumberClick
+     *          Returns:    None.
+     *      Description:    Draws a row of calculator buttons.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun CalculatorNumberRow(isLocked: Boolean, first: Int, second: Int, third: Int, onNumberClick: (number: Int) -> Unit)
+    {
+        Row (modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+        ){
+            TextButton(
+                modifier = Modifier
+                    .weight(1f),
+                buttonText = first.toString(),
+                isEnabled = isLocked,
+                onClick = {
+                    onNumberClick(first)
+                }
+            )
+            TextButton(
+                modifier = Modifier
+                    .weight(1f),
+                buttonText = second.toString(),
+                isEnabled = isLocked,
+                onClick = {
+                    onNumberClick(second)
+                }
+            )
+            TextButton(
+                modifier = Modifier
+                    .weight(1f),
+                buttonText = third.toString(),
+                isEnabled = isLocked,
+                onClick = {
+                    onNumberClick(third)
+                }
+            )
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    CalculatorMultiplicationRow
+     *       Parameters:    isLocked
+     *                      onMultiplyClick
+     *          Returns:    None.
+     *      Description:    Draws a multiplication row (10, 100, 1000).
+     **************************************************************************************************************************************/
+    @Composable
+    private fun CalculatorMultiplicationRow(isLocked: Boolean, onMultiplyClick: (number: Int) -> Unit)
+    {
+        Row (modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+        ){
+            TextButton(
+                modifier = Modifier
+                    .weight(1f),
+                buttonText = "0",
+                isEnabled = isLocked,
+                onClick = {
+                    onMultiplyClick(10)
+                }
+            )
+            TextButton(
+                modifier = Modifier
+                    .weight(1f),
+                buttonText = "00",
+                isEnabled = isLocked,
+                onClick = {
+                    onMultiplyClick(100)
+                }
+            )
+            TextButton(
+                modifier = Modifier
+                    .weight(1f),
+                buttonText = "000",
+                isEnabled = isLocked,
+                onClick = {
+                    onMultiplyClick(1000)
+                }
+            )
+        }
+
     }
 
     //endregion
