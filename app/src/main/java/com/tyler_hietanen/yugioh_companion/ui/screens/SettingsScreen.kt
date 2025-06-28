@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +33,7 @@ import com.tyler_hietanen.yugioh_companion.R
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconTextButton
 import androidx.core.net.toUri
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 
 object SettingsScreen
 {
@@ -85,11 +87,12 @@ object SettingsScreen
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // Duel(s) configuration.
-            DuelSettings()
+            DuelSettings(applicationViewModel.duelViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // House Rule(s) configuration.
-            // TODO.
+            HouseRulesSettings()
+            HorizontalDivider(modifier = Modifier.padding(8.dp))
         }
     }
 
@@ -117,11 +120,11 @@ object SettingsScreen
             // Text to provide more information.
             Text(
                 modifier = Modifier.padding(16.dp),
-                text = "Want to contribute? Or need a refresher on how to use this application? Check out the project source code on Github!",
+                text = "Want to contribute? Or need a refresher on how to use this application? File formats?\n\nCheck out the project source code on Github!",
             )
 
             // Button to link to project.
-            IconTextButton(modifier = Modifier.fillMaxWidth(0.7f),
+            IconTextButton(modifier = Modifier.fillMaxWidth(0.9f),
                 resourceID = R.drawable.github_mark,
                 buttonText = "Project Source Code.",
                 isEnabled = true,
@@ -141,8 +144,12 @@ object SettingsScreen
      *      Description:    Draws the Settings that are related to dueling.
      **************************************************************************************************************************************/
     @Composable
-    private fun DuelSettings()
+    private fun DuelSettings(duelViewModel: DuelViewModel)
     {
+        // Gathers out variables this cares about.
+        val isSnarkEnabled by duelViewModel.isSnarkEnabled
+        val isMockEnabled by duelViewModel.isMockEnabled
+
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -161,22 +168,49 @@ object SettingsScreen
             // Snark about ugly life points.
             SettingsSwitch(
                 settingsText = "Allow duel snark (Berating for ugly life points)?",
-                isChecked = true,
+                isChecked = isSnarkEnabled,
                 onCheckedChange = { isChecked ->
-                    /* TODO */
+                    duelViewModel.changeSnarkSetting(isChecked)
                 },
                 modifier = Modifier,
-                enabled = false)
+                enabled = true)
 
             // Mocking for losses.
             SettingsSwitch(
                 settingsText = "Mock user on loss?",
-                isChecked = true,
+                isChecked = isMockEnabled,
                 onCheckedChange = { isChecked ->
-                    /* TODO */
+                    duelViewModel.changeMockSetting(isChecked)
                 },
                 modifier = Modifier,
-                enabled = false)
+                enabled = true)
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    HouseRulesSettings
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Draws the Settings that are related to house rules.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun HouseRulesSettings()
+    {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            // Starts displaying settings.
+            // Text so they know what they're modifying it for.
+            Text(text = "-- House Rule(s) Settings --",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic
+            )
         }
     }
 

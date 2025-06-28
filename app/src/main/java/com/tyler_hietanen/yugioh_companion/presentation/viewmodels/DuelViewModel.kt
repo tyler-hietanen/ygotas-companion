@@ -58,6 +58,14 @@ class DuelViewModel: ViewModel()
     private val _customMessages = Channel<String>()
     val customMessages = _customMessages.receiveAsFlow()
 
+    // Snark setting.
+    private val _isSnarkEnabled = mutableStateOf(true)
+    val isSnarkEnabled: State<Boolean> = _isSnarkEnabled
+
+    // Mocking setting.
+    private val _isMockEnabled = mutableStateOf(true)
+    val isMockEnabled: State<Boolean> = _isMockEnabled
+
     //endregion
 
     /***************************************************************************************************************************************
@@ -86,6 +94,11 @@ class DuelViewModel: ViewModel()
         // Set default names.
         _duelist1.value.setDuelistName("Player 1")
         _duelist2.value.setDuelistName("Player 2")
+
+        // Set settings to default value.
+        // TODO Load settings from storage, so they don't change on every app boot.
+        _isSnarkEnabled.value = true
+        _isMockEnabled.value = true
 
         // Reset duel to default state.
         resetDuel()
@@ -289,6 +302,38 @@ class DuelViewModel: ViewModel()
         }
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    changeSnarkSetting
+     *       Parameters:    isEnabled
+     *                          - Whether setting should be enabled (true) or not (false).
+     *          Returns:    None.
+     *      Description:    Modifies snark (ugly life points) setting.
+     **************************************************************************************************************************************/
+    fun changeSnarkSetting(isEnabled: Boolean)
+    {
+        // Only change if it's different than current setting.
+        if (_isSnarkEnabled.value != isEnabled)
+        {
+            _isSnarkEnabled.value = isEnabled
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    changeSnarkSetting
+     *       Parameters:    isEnabled
+     *                          - Whether setting should be enabled (true) or not (false).
+     *          Returns:    None.
+     *      Description:    Modifies mocking (on loss) setting.
+     **************************************************************************************************************************************/
+    fun changeMockSetting(isEnabled: Boolean)
+    {
+        // Only change if it's different than current setting.
+        if (_isMockEnabled.value != isEnabled)
+        {
+            _isMockEnabled.value = isEnabled
+        }
+    }
+
     //endregion
 
     /***************************************************************************************************************************************
@@ -375,13 +420,16 @@ class DuelViewModel: ViewModel()
         // other changes from happening).
         _isDuelEnabled.value = false
 
-        // Send out a loss message.
-        viewModelScope.launch {
-            // Address losing player.
-            val duelist = getDuelist(losingPlayerSlot)
-            val otherDuelist = getDuelist(winningPlayerSlot)
-            val message = "Womp, womp! Better luck next time, ${duelist.name}. Congrats ${otherDuelist.name}!"
-            _customMessages.send(message)
+        // Send out a loss message, if mocking is allowed.
+        if (_isMockEnabled.value)
+        {
+            viewModelScope.launch {
+                // Address losing player.
+                val duelist = getDuelist(losingPlayerSlot)
+                val otherDuelist = getDuelist(winningPlayerSlot)
+                val message = "Womp, womp! Better luck next time, ${duelist.name}. Congrats ${otherDuelist.name}!"
+                _customMessages.send(message)
+            }
         }
     }
 
@@ -396,8 +444,8 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     private fun attemptUserShame(lifePointChange: Int, actingPlayerSlot: PlayerSlot)
     {
-        // If app hasn't already shamed a user.
-        if (!_didShameUser)
+        // If app hasn't already shamed a user and it's allowing shaming.
+        if ((!_didShameUser) && _isSnarkEnabled.value)
         {
             // Check if we need to shame. We shame if the points added (or subtracted) are not evenly divisible by 100.
             val doShame = ((lifePointChange % 100) != 0)
