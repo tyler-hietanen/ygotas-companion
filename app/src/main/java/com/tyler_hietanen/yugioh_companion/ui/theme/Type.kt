@@ -2,7 +2,7 @@
  *           Source:    Type.kt
  *      Description:    Defines resources for text resources.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.theme
+package com.tyler_hietanen.yugioh_companion.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

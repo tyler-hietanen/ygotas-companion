@@ -2,7 +2,7 @@
  *           Source:    Duelist.kt
  *      Description:    Represents a single duelist and values associated with each.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.business.duel
+package com.tyler_hietanen.yugioh_companion.business.duel
 
 data class Duelist (
     // Player name.

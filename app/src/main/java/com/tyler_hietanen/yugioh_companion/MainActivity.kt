@@ -2,7 +2,7 @@
  *           Source:    MainActivity.kt
  *      Description:    Jetpack compose main activity. Acts as the sole main activity for the application.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion
+package com.tyler_hietanen.yugioh_companion
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,16 +11,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
-import com.tyler_hietanen.ygotascompanion.ui.layout.CompanionBottomNavigationBar
-import com.tyler_hietanen.ygotascompanion.ui.theme.CompanionMaterialTheme
+import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
+import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionBottomNavigationBar
+import com.tyler_hietanen.yugioh_companion.ui.theme.CompanionMaterialTheme
 import androidx.activity.viewModels
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
-import com.tyler_hietanen.ygotascompanion.navigation.ApplicationNavigationHost
-import com.tyler_hietanen.ygotascompanion.navigation.Destination
-import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
+import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
+import com.tyler_hietanen.yugioh_companion.navigation.Destination
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity()

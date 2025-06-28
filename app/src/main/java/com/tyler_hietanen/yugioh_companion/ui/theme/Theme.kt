@@ -2,7 +2,7 @@
  *           Source:    Theme.kt
  *      Description:    Theme definitions for the application.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.theme
+package com.tyler_hietanen.yugioh_companion.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

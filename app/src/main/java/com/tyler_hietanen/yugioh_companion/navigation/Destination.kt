@@ -2,9 +2,9 @@
  *           Source:    Destination.kt
  *      Description:    Defines a top-level navigation destination (or screen) for the application.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.navigation
+package com.tyler_hietanen.yugioh_companion.navigation
 
-import com.tyler_hietanen.ygotascompanion.R
+import com.tyler_hietanen.yugioh_companion.R
 
 enum class Destination
 (

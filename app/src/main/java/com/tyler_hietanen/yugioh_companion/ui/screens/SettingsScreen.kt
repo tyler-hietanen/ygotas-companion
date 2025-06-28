@@ -1,8 +1,8 @@
 /*******************************************************************************************************************************************
- *           Source:    HouseRulesScreenComposable.kt
- *      Description:    Draws the composable screen for the House Rules Screen.
+ *           Source:    SettingsScreenComposable.kt
+ *      Description:    Draws the composable screen for the Settings Screen.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.screens
+package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 
 @Composable
-fun HouseRulesScreenComposable(navController: NavHostController)
+fun SettingsScreenComposable(navController: NavHostController)
 {
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center)

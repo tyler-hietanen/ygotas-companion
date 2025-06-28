@@ -2,7 +2,7 @@
  *           Source:    CompanionBottomNavigationBar.kt
  *      Description:    Layout class for the bottom navigation bar. Contains UI binding behavior.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.layout
+package com.tyler_hietanen.yugioh_companion.ui.layout
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -15,9 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
-import com.tyler_hietanen.ygotascompanion.navigation.ApplicationNavigationHost
-import com.tyler_hietanen.ygotascompanion.navigation.Destination
-import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
+import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
+import com.tyler_hietanen.yugioh_companion.navigation.Destination
+import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 
 object CompanionBottomNavigationBar
 {

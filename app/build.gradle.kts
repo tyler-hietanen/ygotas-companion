@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tyler_hietanen.ygotascompanion"
+    namespace = "com.tyler_hietanen.yugioh_companion"
     compileSdk = 35
 
     defaultConfig {

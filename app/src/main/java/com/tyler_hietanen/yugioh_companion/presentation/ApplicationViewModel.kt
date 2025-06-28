@@ -2,13 +2,13 @@
  *           Source:    ApplicationViewModel.kt
  *      Description:    The ViewModel for the application, being used for a general state of the application.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.presentation
+package com.tyler_hietanen.yugioh_companion.presentation
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.tyler_hietanen.ygotascompanion.navigation.Destination
-import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
+import com.tyler_hietanen.yugioh_companion.navigation.Destination
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 
 class ApplicationViewModel: ViewModel()
 {

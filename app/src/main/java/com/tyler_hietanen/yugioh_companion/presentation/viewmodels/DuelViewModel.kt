@@ -2,15 +2,15 @@
  *           Source:    DuelViewModel.kt
  *      Description:    The ViewModel for the duel experience, tracking an active duel.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.presentation.viewmodels
+package com.tyler_hietanen.yugioh_companion.presentation.viewmodels
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tyler_hietanen.ygotascompanion.business.duel.Duelist
-import com.tyler_hietanen.ygotascompanion.business.duel.PlayerSlot
+import com.tyler_hietanen.yugioh_companion.business.duel.Duelist
+import com.tyler_hietanen.yugioh_companion.business.duel.PlayerSlot
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch

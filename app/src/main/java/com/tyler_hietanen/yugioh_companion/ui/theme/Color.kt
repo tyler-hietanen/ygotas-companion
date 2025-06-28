@@ -2,7 +2,7 @@
  *           Source:    Color.kt
  *      Description:    Color definitions for the application.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.theme
+package com.tyler_hietanen.yugioh_companion.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

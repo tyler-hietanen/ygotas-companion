@@ -2,7 +2,7 @@
  *           Source:    ApplicationNavigationHost.kt
  *      Description:    Guides the navigation used by the application. Does not determine rules, just lists the different destinations.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.navigation
+package com.tyler_hietanen.yugioh_companion.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,12 +11,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
-import com.tyler_hietanen.ygotascompanion.ui.screens.DuelScreen
-import com.tyler_hietanen.ygotascompanion.ui.screens.HouseRulesScreenComposable
-import com.tyler_hietanen.ygotascompanion.ui.screens.QuotesScreenComposable
-import com.tyler_hietanen.ygotascompanion.ui.screens.SettingsScreenComposable
-import com.tyler_hietanen.ygotascompanion.ui.screens.WelcomeScreen
+import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
+import com.tyler_hietanen.yugioh_companion.ui.screens.DuelScreen
+import com.tyler_hietanen.yugioh_companion.ui.screens.HouseRulesScreenComposable
+import com.tyler_hietanen.yugioh_companion.ui.screens.QuotesScreenComposable
+import com.tyler_hietanen.yugioh_companion.ui.screens.SettingsScreenComposable
+import com.tyler_hietanen.yugioh_companion.ui.screens.WelcomeScreen
 
 object ApplicationNavigationHost
 {

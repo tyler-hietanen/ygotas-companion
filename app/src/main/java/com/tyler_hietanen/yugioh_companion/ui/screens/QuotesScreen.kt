@@ -2,7 +2,7 @@
  *           Source:    QuotesScreenComposable.kt
  *      Description:    Draws the composable screen for the Quotes Screen.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.screens
+package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

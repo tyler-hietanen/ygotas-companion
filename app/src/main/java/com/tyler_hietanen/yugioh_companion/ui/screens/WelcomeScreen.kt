@@ -2,7 +2,7 @@
  *           Source:    WelcomeScreen.kt
  *      Description:    Contains content for the Welcome Screen.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.screens
+package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
@@ -27,10 +27,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.tyler_hietanen.ygotascompanion.navigation.ApplicationNavigationHost
-import com.tyler_hietanen.ygotascompanion.navigation.Destination
-import com.tyler_hietanen.ygotascompanion.presentation.ApplicationViewModel
-import com.tyler_hietanen.ygotascompanion.ui.theme.Typography
+import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
+import com.tyler_hietanen.yugioh_companion.navigation.Destination
+import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
+import com.tyler_hietanen.yugioh_companion.ui.theme.Typography
 
 object WelcomeScreen
 {
@@ -60,7 +60,7 @@ object WelcomeScreen
     //region Constants
 
     // Title text for the welcome screen.
-    private const val WELCOME_SCREEN_TITLE = "Welcome to the YGOTAS Companion Application!"
+    private const val WELCOME_SCREEN_TITLE = "Welcome to the Yu-Gi-Oh Companion!"
 
     // Body text for the welcome screen.
     private const val WELCOME_SCREEN_BODY = "To begin, select one of the following button(s) to jump to this app's content."

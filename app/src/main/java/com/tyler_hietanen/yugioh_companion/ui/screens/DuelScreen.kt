@@ -2,7 +2,7 @@
  *           Source:    DuelScreen.kt
  *      Description:    Contains content for the Duel Screen.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.ygotascompanion.ui.screens
+package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -36,10 +36,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tyler_hietanen.ygotascompanion.R
-import com.tyler_hietanen.ygotascompanion.business.duel.PlayerSlot
-import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
-import com.tyler_hietanen.ygotascompanion.ui.theme.Typography
+import com.tyler_hietanen.yugioh_companion.R
+import com.tyler_hietanen.yugioh_companion.business.duel.PlayerSlot
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
+import com.tyler_hietanen.yugioh_companion.ui.theme.Typography
 import kotlinx.coroutines.flow.collectLatest
 
 object DuelScreen
