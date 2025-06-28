@@ -8,6 +8,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.tyler_hietanen.ygotascompanion.business.duel.CoinFlip
+import com.tyler_hietanen.ygotascompanion.business.duel.DiceRoll
 import com.tyler_hietanen.ygotascompanion.business.duel.Duelist
 import com.tyler_hietanen.ygotascompanion.business.duel.Player
 import kotlin.random.Random
@@ -44,6 +46,14 @@ class DuelViewModel: ViewModel()
     private val _runningLifePoints = mutableIntStateOf(0)
     val runningLifePoints: State<Int> = _runningLifePoints
 
+    // Generated dice roll.
+    private val _diceRoll = mutableStateOf(DiceRoll.NONE)
+    val diceRoll: State<DiceRoll> = _diceRoll
+
+    // Generated coin flip.
+    private val _coinFlip = mutableStateOf(CoinFlip.NONE)
+    val coinFlip: State<CoinFlip> = _coinFlip
+
     //endregion
 
     /***************************************************************************************************************************************
@@ -79,7 +89,7 @@ class DuelViewModel: ViewModel()
         val players = listOf(
             Player.PLAYER_ONE, Player.PLAYER_TWO
         )
-        players.forEach(){ player ->
+        players.forEach { player ->
             val duelist = getDuelist(player).copy()
             duelist.resetPlayer(startingLifePoints)
             updateDuelist(player, duelist)
@@ -155,8 +165,21 @@ class DuelViewModel: ViewModel()
         // Generate random number from 1 to 6.
         val diceRollValue = Random.nextInt(1, 6)
 
-        // Show message to user.
-        // TODO.
+        // Convert number to dice roll.
+        val diceRoll = when (diceRollValue)
+        {
+            1 -> DiceRoll.ONE
+            2 -> DiceRoll.TWO
+            3 -> DiceRoll.THREE
+            4 -> DiceRoll.FOUR
+            5 -> DiceRoll.FIVE
+            6 -> DiceRoll.SIX
+
+            else -> DiceRoll.NONE
+        }
+
+        // Update.
+        _diceRoll.value = diceRoll
     }
 
     /***************************************************************************************************************************************
@@ -167,11 +190,20 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun simulateCoinFlip()
     {
-        // Generate random number from 1 to 2.
+        // Generate random number from 1 to 6.
         val coinFlipValue = Random.nextInt(1, 2)
 
-        // Show message to user.
-        // TODO.
+        // Convert number to coin flip.
+        val coinFlip = when (coinFlipValue)
+        {
+            1 -> CoinFlip.HEADS
+            2 -> CoinFlip.TAILS
+
+            else -> CoinFlip.NONE
+        }
+
+        // Update.
+        _coinFlip.value = coinFlip
     }
 
     /***************************************************************************************************************************************
