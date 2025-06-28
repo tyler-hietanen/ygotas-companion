@@ -10,9 +10,6 @@ data class Duelist (
 
     // Player life point count.
     var lifePoints: Int = 0,
-
-    // Player turn counter.
-    var turnCounter: Int = 0
 ){
     /***************************************************************************************************************************************
      *      Methods
@@ -28,8 +25,7 @@ data class Duelist (
      **************************************************************************************************************************************/
     fun resetPlayer(startingLifePoints: Int)
     {
-        lifePoints = startingLifePoints
-        resetTurnCounter()
+        modifyLifePoints(startingLifePoints)
     }
 
     /***************************************************************************************************************************************
@@ -41,50 +37,26 @@ data class Duelist (
      **************************************************************************************************************************************/
     fun setDuelistName(name: String)
     {
-        this.name = name
+        // Check for actual change.
+        if (this.name != name)
+        {
+            // Set name.
+            this.name = name
+        }
+        // Otherwise ignored.
     }
 
     /***************************************************************************************************************************************
      *           Method:    modifyLifePoints
-     *       Parameters:    lifePointChange
-     *                          - Life points to change.
+     *       Parameters:    lifePoints
+     *                          - Life points to set.
      *          Returns:    None.
-     *      Description:    Adds (or subtracts) life points from a duelist.
-     *             Note:    To add, use a positive parameter. To subtract, use a negative.
+     *      Description:    Sets the duelist's life points.
      **************************************************************************************************************************************/
-    fun modifyLifePoints(lifePointChange: Int)
+    fun modifyLifePoints(lifePoints: Int)
     {
-        // Safely modify.
-        if ((lifePointChange + lifePointChange) < 0)
-        {
-            lifePoints = 0
-        }
-        else
-        {
-            lifePoints += lifePointChange
-        }
-    }
-
-    /***************************************************************************************************************************************
-     *           Method:    resetTurnCounter
-     *       Parameters:    None.
-     *          Returns:    None.
-     *      Description:    Resets the turn counter.
-     **************************************************************************************************************************************/
-    fun resetTurnCounter()
-    {
-        turnCounter = 0
-    }
-
-    /***************************************************************************************************************************************
-     *           Method:    incrementTurnCounter
-     *       Parameters:    None.
-     *          Returns:    None.
-     *      Description:    Increments turn counter by 1.
-     **************************************************************************************************************************************/
-    fun incrementTurnCounter()
-    {
-        turnCounter++
+        // Set life points.
+        this.lifePoints = lifePoints
     }
 
     //endregion

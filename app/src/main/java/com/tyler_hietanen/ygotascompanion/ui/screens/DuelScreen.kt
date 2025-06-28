@@ -63,6 +63,7 @@ object DuelScreen
         val duelist1 by duelViewModel.duelist1
         val duelist2 by duelViewModel.duelist2
         val runningLifePoints by duelViewModel.runningLifePoints
+        val isLocked by duelViewModel.isDuelEnabled
         val scrollState = rememberScrollState()
         val context = LocalContext.current
 
@@ -86,14 +87,16 @@ object DuelScreen
 
         // Actually draw.
         Column (modifier = Modifier.verticalScroll(scrollState)) {
-            // Reset button.
+            // Reset button (always enabled).
             TextButton(
                 modifier = Modifier
                     .fillMaxWidth(1f),
                 buttonText = "Reset Duel",
+                isEnabled = true,
                 onClick = {
                     duelViewModel.resetDuel()
-                })
+                }
+            )
 
             // Player section.
             PlayerSection(
@@ -113,6 +116,7 @@ object DuelScreen
                     AddSubtractButton(
                         isAdd = true,
                         playerTarget = Player.PLAYER_ONE,
+                        doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
                                 player = player,
@@ -122,6 +126,7 @@ object DuelScreen
                     AddSubtractButton(
                         isAdd = false,
                         playerTarget = Player.PLAYER_ONE,
+                        doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
                                 player = player,
@@ -139,6 +144,7 @@ object DuelScreen
                     AddSubtractButton(
                         isAdd = true,
                         playerTarget = Player.PLAYER_TWO,
+                        doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
                                 player = player,
@@ -148,6 +154,7 @@ object DuelScreen
                     AddSubtractButton(
                         isAdd = false,
                         playerTarget = Player.PLAYER_TWO,
+                        doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
                                 player = player,
@@ -164,6 +171,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(3.5f),
                     resourceID = R.drawable.dice_outlined,
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.simulateDiceRoll()
                     })
@@ -172,6 +180,7 @@ object DuelScreen
                         .weight(3f),
                     buttonText = "CLR",
                     minSize = 64.dp,
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.clearRunningLifePoints()
                     })
@@ -179,6 +188,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(3.5f),
                     resourceID = R.drawable.chip_outlined,
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.simulateCoinFlip()
                     })
@@ -196,6 +206,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "7",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(7)
                     }
@@ -204,6 +215,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "8",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(8)
                     }
@@ -212,6 +224,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "9",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(9)
                     }
@@ -227,6 +240,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "4",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(4)
                     }
@@ -235,6 +249,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "5",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(5)
                     }
@@ -243,6 +258,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "6",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(6)
                     }
@@ -258,6 +274,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "1",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(1)
                     }
@@ -266,6 +283,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "2",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(2)
                     }
@@ -274,6 +292,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "3",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.runningLifePointsCalculatorNumber(3)
                     }
@@ -289,6 +308,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "0",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.multiplyRunningLifePoints(10)
                     }
@@ -297,6 +317,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "00",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.multiplyRunningLifePoints(100)
                     }
@@ -305,6 +326,7 @@ object DuelScreen
                     modifier = Modifier
                         .weight(1f),
                     buttonText = "000",
+                    isEnabled = isLocked,
                     onClick = {
                         duelViewModel.multiplyRunningLifePoints(1000)
                     }
@@ -324,7 +346,7 @@ object DuelScreen
      *      Description:    Draws a button with text.
      **************************************************************************************************************************************/
     @Composable
-    fun TextButton(modifier: Modifier, buttonText: String, minSize: Dp = 56.dp, onClick: () -> Unit)
+    fun TextButton(modifier: Modifier, buttonText: String, minSize: Dp = 56.dp, isEnabled: Boolean, onClick: () -> Unit)
     {
         Button(
             modifier = modifier
@@ -332,7 +354,8 @@ object DuelScreen
                 .padding(4.dp, 0.dp),
             onClick = onClick,
             colors = ButtonDefaults.outlinedButtonColors(),
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            enabled = isEnabled
         ) {
             Text(text = buttonText,
                 style = Typography.titleLarge)
@@ -352,7 +375,7 @@ object DuelScreen
      *      Description:    Draws a button with text.
      **************************************************************************************************************************************/
     @Composable
-    fun IconButton(modifier: Modifier, resourceID: Int, minSize: Dp = 56.dp, onClick: () -> Unit)
+    fun IconButton(modifier: Modifier, resourceID: Int, minSize: Dp = 56.dp, isEnabled: Boolean, onClick: () -> Unit)
     {
         Surface (
             modifier = modifier
@@ -364,7 +387,8 @@ object DuelScreen
             Button(
                 onClick = { onClick()},
                 colors = ButtonDefaults.outlinedButtonColors(),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+                enabled = isEnabled
             ) {
                 Icon(
                     painter = painterResource(resourceID),
@@ -476,7 +500,7 @@ object DuelScreen
      *      Description:    Draws a player's life points.
      **************************************************************************************************************************************/
     @Composable
-    fun AddSubtractButton(isAdd: Boolean, playerTarget: Player, onClick: (player: Player) -> Unit)
+    fun AddSubtractButton(isAdd: Boolean, playerTarget: Player, doEnable: Boolean, onClick: (player: Player) -> Unit)
     {
         // Determines the icon resource used.
         val iconID = if (isAdd)
@@ -493,6 +517,7 @@ object DuelScreen
             modifier = Modifier,
             resourceID = iconID,
             minSize = 48.dp,
+            isEnabled = doEnable,
             onClick = {
                 onClick(playerTarget)
             }

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
+// TODO Load various players from storage. If no players are in storage, then create default set.
 class DuelViewModel: ViewModel()
 {
     /***************************************************************************************************************************************
@@ -48,6 +49,10 @@ class DuelViewModel: ViewModel()
     // Running life points.
     private val _runningLifePoints = mutableIntStateOf(0)
     val runningLifePoints: State<Int> = _runningLifePoints
+
+    // Is duel enabled. Set to true when dueling is allowed.
+    private val _isDuelEnabled = mutableStateOf(true)
+    val isDuelEnabled: State<Boolean> = _isDuelEnabled
 
     // Shown user message (Used to show coin flips or dice rolls).
     private val _customMessages = Channel<String>()
@@ -107,6 +112,7 @@ class DuelViewModel: ViewModel()
         // Reset other values.
         clearRunningLifePoints()
         _didShameUser = false
+        _isDuelEnabled.value = true
     }
 
     /***************************************************************************************************************************************
@@ -120,9 +126,12 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun modifyPlayerLifePoints(player: Player, doAdd: Boolean)
     {
-        // Ignore if no change.
-        if (runningLifePoints.value != 0)
+        // Ignore if no change or if locked.
+        if ((runningLifePoints.value != 0) && _isDuelEnabled.value)
         {
+            // Did someone lose?
+            var isALoss = false
+
             // Gathers a copy of the appropriate duelist.
             val duelist = getDuelist(player).copy()
 
@@ -148,11 +157,11 @@ class DuelViewModel: ViewModel()
             }
             else
             {
-                // Negative change. Ensure it does not go past 0.
-                if (newLifePointValue < 0)
-                {
-                    newLifePointValue = 0
-                }
+                // Life points are equal to 0, or negative.
+                // Force to be zero and flag that user lost duel.
+                newLifePointValue = 0
+                isALoss = true
+
                 // Force true, since it's safe.
                 true
             }
@@ -160,11 +169,19 @@ class DuelViewModel: ViewModel()
             if (didSafelyModify)
             {
                 // Update player's life points.
-                duelist.lifePoints = newLifePointValue
+                duelist.modifyLifePoints(newLifePointValue)
                 updateDuelist(player, duelist)
 
-                // Check if user should be shamed for life points.
-                attemptUserShame(lifePointChange, player)
+                // Before attempting any shame, check for a loss.
+                if (isALoss)
+                {
+                    handleLoss(player, getOtherPlayer(player))
+                }
+                else
+                {
+                    // Check if user should be shamed for life points.
+                    attemptUserShame(lifePointChange, player)
+                }
             }
             // Otherwise, operation is ignored. Not a safe one.
 
@@ -297,6 +314,23 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
+     *           Method:    getOtherPlayer
+     *       Parameters:    player
+     *                          - The current player.
+     *          Returns:    Player
+     *                          - The other player.
+     *      Description:    Retrieves the player definition for the other player.
+     **************************************************************************************************************************************/
+    private fun getOtherPlayer(player: Player): Player
+    {
+        return when (player)
+        {
+            Player.PLAYER_ONE -> Player.PLAYER_TWO
+            Player.PLAYER_TWO -> Player.PLAYER_ONE
+        }
+    }
+
+    /***************************************************************************************************************************************
      *           Method:    updateDuelist
      *       Parameters:    player
      *                          - Player to update.
@@ -324,6 +358,36 @@ class DuelViewModel: ViewModel()
     private fun updateRunningLifePoints(runningPoints: Int)
     {
         _runningLifePoints.intValue = runningPoints
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    handleLoss
+     *       Parameters:    losingPlayer
+     *                          - Player who lost.
+     *                      winningPlayer
+     *                          - Player who won.
+     *          Returns:    None.
+     *      Description:    Address a duel loss. Locks until they reset and sends message(s).
+     **************************************************************************************************************************************/
+    private fun handleLoss(losingPlayer: Player, winningPlayer: Player)
+    {
+        // TODO Revisit this function once win/loss tracking is added.
+        // This player has lost. We should mock them. Before anything else, lock the duel (so they have to reset and to avoid any of these
+        // other changes from happening).
+        _isDuelEnabled.value = false
+
+        // Send out a loss message.
+        viewModelScope.launch {
+            // Address losing player.
+            var duelist = getDuelist(losingPlayer)
+            var message = "Womp, womp! Better luck next time, ${duelist.name}"
+            _customMessages.send(message)
+
+            // Address winning player.
+            duelist = getDuelist(winningPlayer)
+            message = "Good job, ${duelist.name}"
+            _customMessages.send(message)
+        }
     }
 
     /***************************************************************************************************************************************
@@ -362,11 +426,7 @@ class DuelViewModel: ViewModel()
                 else
                 {
                     // We need to shame the other player.
-                    val otherPlayer = when (actingPlayer)
-                    {
-                        Player.PLAYER_ONE -> Player.PLAYER_TWO
-                        Player.PLAYER_TWO -> Player.PLAYER_ONE
-                    }
+                    val otherPlayer = getOtherPlayer(actingPlayer)
                     playerShameMessage = "You did a stupid amount of damage. Dick move, ${getDuelist(otherPlayer).name}!"
                 }
 
