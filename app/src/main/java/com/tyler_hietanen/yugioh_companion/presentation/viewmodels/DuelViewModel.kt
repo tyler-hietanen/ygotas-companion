@@ -199,7 +199,7 @@ class DuelViewModel: ViewModel()
     fun simulateDiceRoll()
     {
         // Generate random number from 1 to 6.
-        val diceRollValue = Random.nextInt(1, 6)
+        val diceRollValue = Random.nextInt(1, (6 + 1))
 
         // Emit update.
         viewModelScope.launch {
@@ -216,7 +216,7 @@ class DuelViewModel: ViewModel()
     fun simulateCoinFlip()
     {
         // Generate random number from 1 to 6.
-        val coinFlipValue = if (Random.nextInt(1, 2) == 1)
+        val coinFlipValue = if (Random.nextInt(1, (2 + 1)) == 1)
         {
             "Heads"
         }
