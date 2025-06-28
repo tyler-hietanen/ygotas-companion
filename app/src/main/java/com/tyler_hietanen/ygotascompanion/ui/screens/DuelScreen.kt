@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.ygotascompanion.R
-import com.tyler_hietanen.ygotascompanion.business.duel.Player
+import com.tyler_hietanen.ygotascompanion.business.duel.PlayerSlot
 import com.tyler_hietanen.ygotascompanion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.ygotascompanion.ui.theme.Typography
 import kotlinx.coroutines.flow.collectLatest
@@ -115,21 +115,21 @@ object DuelScreen
                     .padding(4.dp)) {
                     AddSubtractButton(
                         isAdd = true,
-                        playerTarget = Player.PLAYER_ONE,
+                        playerSlotTarget = PlayerSlot.PLAYER_ONE,
                         doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
-                                player = player,
+                                playerSlot = player,
                                 doAdd = true)
                         }
                     )
                     AddSubtractButton(
                         isAdd = false,
-                        playerTarget = Player.PLAYER_ONE,
+                        playerSlotTarget = PlayerSlot.PLAYER_ONE,
                         doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
-                                player = player,
+                                playerSlot = player,
                                 doAdd = false)
                         }
                     )
@@ -143,21 +143,21 @@ object DuelScreen
                     .padding(4.dp)) {
                     AddSubtractButton(
                         isAdd = true,
-                        playerTarget = Player.PLAYER_TWO,
+                        playerSlotTarget = PlayerSlot.PLAYER_TWO,
                         doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
-                                player = player,
+                                playerSlot = player,
                                 doAdd = true)
                         }
                     )
                     AddSubtractButton(
                         isAdd = false,
-                        playerTarget = Player.PLAYER_TWO,
+                        playerSlotTarget = PlayerSlot.PLAYER_TWO,
                         doEnable = isLocked,
                         onClick = { player ->
                             duelViewModel.modifyPlayerLifePoints(
-                                player = player,
+                                playerSlot = player,
                                 doAdd = false)
                         }
                     )
@@ -500,7 +500,7 @@ object DuelScreen
      *      Description:    Draws a player's life points.
      **************************************************************************************************************************************/
     @Composable
-    fun AddSubtractButton(isAdd: Boolean, playerTarget: Player, doEnable: Boolean, onClick: (player: Player) -> Unit)
+    fun AddSubtractButton(isAdd: Boolean, playerSlotTarget: PlayerSlot, doEnable: Boolean, onClick: (playerSlot: PlayerSlot) -> Unit)
     {
         // Determines the icon resource used.
         val iconID = if (isAdd)
@@ -519,7 +519,7 @@ object DuelScreen
             minSize = 48.dp,
             isEnabled = doEnable,
             onClick = {
-                onClick(playerTarget)
+                onClick(playerSlotTarget)
             }
         )
     }

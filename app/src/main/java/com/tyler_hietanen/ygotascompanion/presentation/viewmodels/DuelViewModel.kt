@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tyler_hietanen.ygotascompanion.business.duel.Duelist
-import com.tyler_hietanen.ygotascompanion.business.duel.Player
+import com.tyler_hietanen.ygotascompanion.business.duel.PlayerSlot
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -38,11 +38,11 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     //region Properties
 
-    // Player 1.
+    // Player slot 1.
     private val _duelist1 = mutableStateOf(Duelist())
     val duelist1: State<Duelist> = _duelist1
 
-    // Player 2.
+    // Player slot 2.
     private val _duelist2 = mutableStateOf(Duelist())
     val duelist2: State<Duelist> = _duelist2
 
@@ -100,13 +100,13 @@ class DuelViewModel: ViewModel()
     fun resetDuel()
     {
         // Resets both duelists to default state.
-        val players = listOf(
-            Player.PLAYER_ONE, Player.PLAYER_TWO
+        val playerSlotList = listOf(
+            PlayerSlot.PLAYER_ONE, PlayerSlot.PLAYER_TWO
         )
-        players.forEach { player ->
-            val duelist = getDuelist(player).copy()
+        playerSlotList.forEach { slot ->
+            val duelist = getDuelist(slot).copy()
             duelist.resetPlayer(STARTING_LIFE_POINTS)
-            updateDuelist(player, duelist)
+            updateDuelist(slot, duelist)
         }
 
         // Reset other values.
@@ -117,14 +117,14 @@ class DuelViewModel: ViewModel()
 
     /***************************************************************************************************************************************
      *           Method:    modifyPlayerLifePoints
-     *       Parameters:    player
-     *                          - Which player to adjust.
+     *       Parameters:    playerSlot
+     *                          - Which player slot to adjust.
      *                      doAdd
      *                          - Whether it should be an addition (true) or subtraction (false).
      *          Returns:    None.
      *      Description:    Modifies a player's life points.
      **************************************************************************************************************************************/
-    fun modifyPlayerLifePoints(player: Player, doAdd: Boolean)
+    fun modifyPlayerLifePoints(playerSlot: PlayerSlot, doAdd: Boolean)
     {
         // Ignore if no change or if locked.
         if ((runningLifePoints.value != 0) && _isDuelEnabled.value)
@@ -133,7 +133,7 @@ class DuelViewModel: ViewModel()
             var isALoss = false
 
             // Gathers a copy of the appropriate duelist.
-            val duelist = getDuelist(player).copy()
+            val duelist = getDuelist(playerSlot).copy()
 
             // Copies current life points and creates a new life point value.
             val lifePointChange = if (doAdd)
@@ -170,17 +170,17 @@ class DuelViewModel: ViewModel()
             {
                 // Update player's life points.
                 duelist.modifyLifePoints(newLifePointValue)
-                updateDuelist(player, duelist)
+                updateDuelist(playerSlot, duelist)
 
                 // Before attempting any shame, check for a loss.
                 if (isALoss)
                 {
-                    handleLoss(player, getOtherPlayer(player))
+                    handleLoss(playerSlot, getOtherPlayer(playerSlot))
                 }
                 else
                 {
                     // Check if user should be shamed for life points.
-                    attemptUserShame(lifePointChange, player)
+                    attemptUserShame(lifePointChange, playerSlot)
                 }
             }
             // Otherwise, operation is ignored. Not a safe one.
@@ -298,53 +298,53 @@ class DuelViewModel: ViewModel()
 
     /***************************************************************************************************************************************
      *           Method:    getDuelist
-     *       Parameters:    player
-     *                          - Player to retrieve duelist class.
+     *       Parameters:    playerSlot
+     *                          - Player slot to retrieve duelist class.
      *          Returns:    Duelist
      *                          - Duelist class.
-     *      Description:    Retrieves duelist class for the associated player.
+     *      Description:    Retrieves duelist class for the associated player slot.
      **************************************************************************************************************************************/
-    private fun getDuelist(player: Player): Duelist
+    private fun getDuelist(playerSlot: PlayerSlot): Duelist
     {
-        return when (player)
+        return when (playerSlot)
         {
-            Player.PLAYER_ONE -> _duelist1.value
-            Player.PLAYER_TWO -> _duelist2.value
+            PlayerSlot.PLAYER_ONE -> _duelist1.value
+            PlayerSlot.PLAYER_TWO -> _duelist2.value
         }
     }
 
     /***************************************************************************************************************************************
      *           Method:    getOtherPlayer
-     *       Parameters:    player
-     *                          - The current player.
+     *       Parameters:    playerSlot
+     *                          - The current player slot.
      *          Returns:    Player
-     *                          - The other player.
+     *                          - The other player slot.
      *      Description:    Retrieves the player definition for the other player.
      **************************************************************************************************************************************/
-    private fun getOtherPlayer(player: Player): Player
+    private fun getOtherPlayer(playerSlot: PlayerSlot): PlayerSlot
     {
-        return when (player)
+        return when (playerSlot)
         {
-            Player.PLAYER_ONE -> Player.PLAYER_TWO
-            Player.PLAYER_TWO -> Player.PLAYER_ONE
+            PlayerSlot.PLAYER_ONE -> PlayerSlot.PLAYER_TWO
+            PlayerSlot.PLAYER_TWO -> PlayerSlot.PLAYER_ONE
         }
     }
 
     /***************************************************************************************************************************************
      *           Method:    updateDuelist
-     *       Parameters:    player
-     *                          - Player to update.
+     *       Parameters:    playerSlot
+     *                          - Player slot to update.
      *                      newDuelist
      *                          - New (or updated) duelist value.
      *          Returns:    None.
      *      Description:    Updates player's duelist value.
      **************************************************************************************************************************************/
-    private fun updateDuelist(player: Player, newDuelist: Duelist)
+    private fun updateDuelist(playerSlot: PlayerSlot, newDuelist: Duelist)
     {
-        when (player)
+        when (playerSlot)
         {
-            Player.PLAYER_ONE -> _duelist1.value = newDuelist
-            Player.PLAYER_TWO -> _duelist2.value = newDuelist
+            PlayerSlot.PLAYER_ONE -> _duelist1.value = newDuelist
+            PlayerSlot.PLAYER_TWO -> _duelist2.value = newDuelist
         }
     }
 
@@ -362,14 +362,14 @@ class DuelViewModel: ViewModel()
 
     /***************************************************************************************************************************************
      *           Method:    handleLoss
-     *       Parameters:    losingPlayer
+     *       Parameters:    losingPlayerSlot
      *                          - Player who lost.
-     *                      winningPlayer
+     *                      winningPlayerSlot
      *                          - Player who won.
      *          Returns:    None.
      *      Description:    Address a duel loss. Locks until they reset and sends message(s).
      **************************************************************************************************************************************/
-    private fun handleLoss(losingPlayer: Player, winningPlayer: Player)
+    private fun handleLoss(losingPlayerSlot: PlayerSlot, winningPlayerSlot: PlayerSlot)
     {
         // TODO Revisit this function once win/loss tracking is added.
         // This player has lost. We should mock them. Before anything else, lock the duel (so they have to reset and to avoid any of these
@@ -379,12 +379,12 @@ class DuelViewModel: ViewModel()
         // Send out a loss message.
         viewModelScope.launch {
             // Address losing player.
-            var duelist = getDuelist(losingPlayer)
+            var duelist = getDuelist(losingPlayerSlot)
             var message = "Womp, womp! Better luck next time, ${duelist.name}"
             _customMessages.send(message)
 
             // Address winning player.
-            duelist = getDuelist(winningPlayer)
+            duelist = getDuelist(winningPlayerSlot)
             message = "Good job, ${duelist.name}"
             _customMessages.send(message)
         }
@@ -399,7 +399,7 @@ class DuelViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Checks if it should shame user for dealing (or healing) a strange amount of life points.
      **************************************************************************************************************************************/
-    private fun attemptUserShame(lifePointChange: Int, actingPlayer: Player)
+    private fun attemptUserShame(lifePointChange: Int, actingPlayerSlot: PlayerSlot)
     {
         // If app hasn't already shamed a user.
         if (!_didShameUser)
@@ -420,13 +420,13 @@ class DuelViewModel: ViewModel()
                 if (doShameActingPlayer)
                 {
                     // We need to shame the acting player.
-                    val playerName = getDuelist(actingPlayer).name
+                    val playerName = getDuelist(actingPlayerSlot).name
                     playerShameMessage = "You added a strange amount of life points? For shame, $playerName..."
                 }
                 else
                 {
                     // We need to shame the other player.
-                    val otherPlayer = getOtherPlayer(actingPlayer)
+                    val otherPlayer = getOtherPlayer(actingPlayerSlot)
                     playerShameMessage = "You did a stupid amount of damage. Dick move, ${getDuelist(otherPlayer).name}!"
                 }
 

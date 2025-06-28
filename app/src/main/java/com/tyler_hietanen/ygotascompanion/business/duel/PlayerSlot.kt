@@ -1,10 +1,10 @@
 /*******************************************************************************************************************************************
- *           Source:    Player.kt
- *      Description:    Defines different players.
+ *           Source:    PlayerSlot.kt
+ *      Description:    Defines different player slots (used for dueling).
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.ygotascompanion.business.duel
 
-enum class Player
+enum class PlayerSlot
 {
     PLAYER_ONE,
     PLAYER_TWO
