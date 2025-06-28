@@ -8,16 +8,22 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,7 +32,6 @@ import com.tyler_hietanen.yugioh_companion.R
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconTextButton
 import androidx.core.net.toUri
-import com.tyler_hietanen.yugioh_companion.ui.theme.Typography
 
 object SettingsScreen
 {
@@ -69,7 +74,6 @@ object SettingsScreen
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                style = Typography.titleLarge,
                 fontSize = 24.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
@@ -79,6 +83,13 @@ object SettingsScreen
             // Github section (Text about project, link to project).
             GithubSection(context)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
+
+            // Duel(s) configuration.
+            DuelSettings()
+            HorizontalDivider(modifier = Modifier.padding(8.dp))
+
+            // House Rule(s) configuration.
+            // TODO.
         }
     }
 
@@ -105,7 +116,7 @@ object SettingsScreen
         ) {
             // Text to provide more information.
             Text(
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(16.dp),
                 text = "Want to contribute? Or need a refresher on how to use this application? Check out the project source code on Github!",
             )
 
@@ -119,6 +130,82 @@ object SettingsScreen
                     val intent = Intent(Intent.ACTION_VIEW, PROJECT_GITHUB_URL.toUri())
                     context.startActivity(intent)
                 }
+            )
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    DuelSettings
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Draws the Settings that are related to dueling.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun DuelSettings()
+    {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            // Starts displaying settings.
+            // Text so they know what they're modifying it for.
+            Text(text = "-- Duel Settings --",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic
+            )
+            // Snark about ugly life points.
+            SettingsSwitch(
+                settingsText = "Allow duel snark (Berating for ugly life points)?",
+                isChecked = true,
+                onCheckedChange = { isChecked ->
+                    /* TODO */
+                },
+                modifier = Modifier,
+                enabled = false)
+
+            // Mocking for losses.
+            SettingsSwitch(
+                settingsText = "Mock user on loss?",
+                isChecked = true,
+                onCheckedChange = { isChecked ->
+                    /* TODO */
+                },
+                modifier = Modifier,
+                enabled = false)
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    DuelSettings
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Draws the Settings that are related to dueling.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun SettingsSwitch(settingsText: String, isChecked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier, enabled: Boolean = true)
+    {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = settingsText,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Switch(
+                checked = isChecked,
+                onCheckedChange = onCheckedChange,
+                enabled = enabled
             )
         }
     }

@@ -116,7 +116,6 @@ object WelcomeScreen
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                style = Typography.titleLarge,
                 fontSize = 30.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
