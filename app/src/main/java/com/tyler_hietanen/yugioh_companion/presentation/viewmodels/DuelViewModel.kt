@@ -46,9 +46,9 @@ class DuelViewModel: ViewModel()
     private val _duelist2 = mutableStateOf(Duelist())
     val duelist2: State<Duelist> = _duelist2
 
-    // Running life points.
-    private val _runningLifePoints = mutableIntStateOf(0)
-    val runningLifePoints: State<Int> = _runningLifePoints
+    // Calculator number.
+    private val _calculatorNumber = mutableIntStateOf(0)
+    val calculatorNumber: State<Int> = _calculatorNumber
 
     // Is duel enabled. Set to true when dueling is allowed.
     private val _isDuelEnabled = mutableStateOf(true)
@@ -127,7 +127,7 @@ class DuelViewModel: ViewModel()
     fun modifyPlayerLifePoints(playerSlot: PlayerSlot, doAdd: Boolean)
     {
         // Ignore if no change or if locked.
-        if ((runningLifePoints.value != 0) && _isDuelEnabled.value)
+        if ((calculatorNumber.value != 0) && _isDuelEnabled.value)
         {
             // Did someone lose?
             var isALoss = false
@@ -138,12 +138,12 @@ class DuelViewModel: ViewModel()
             // Copies current life points and creates a new life point value.
             val lifePointChange = if (doAdd)
             {
-                runningLifePoints.value
+                calculatorNumber.value
             }
             else
             {
                 // Set as negative.
-                (runningLifePoints.value * -1)
+                (calculatorNumber.value * -1)
             }
 
             // Does change to life points (But does not commit it).
@@ -243,16 +243,16 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    runningLifePointsCalculatorNumber
+     *           Method:    pressedCalculatorNumber
      *       Parameters:    number
      *                          - Calculator number clicked.
      *          Returns:    None.
      *      Description:    Adds number to running life point count at the end.
      **************************************************************************************************************************************/
-    fun runningLifePointsCalculatorNumber(number: Int)
+    fun pressedCalculatorNumber(number: Int)
     {
         // Copies running life points.
-        var runningLifePoints = _runningLifePoints.intValue
+        var runningLifePoints = _calculatorNumber.intValue
 
         // Performs operation. Multiply value by 10, then add value.
         runningLifePoints *= 10
@@ -267,16 +267,16 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    multiplyRunningLifePoints
+     *           Method:    pressedCalculatorFactor
      *       Parameters:    number
      *                          - Number to be used for multiply factor.
      *          Returns:    None.
-     *      Description:    Uses number for multiplication factor.
+     *      Description:    Multiplies running calculator number by factor.
      **************************************************************************************************************************************/
-    fun multiplyRunningLifePoints(factor: Int)
+    fun pressedCalculatorFactor(factor: Int)
     {
         // Copies running life points.
-        var runningLifePoints = _runningLifePoints.intValue
+        var runningLifePoints = _calculatorNumber.intValue
 
         // Performs operation. Multiply value by factor.
         runningLifePoints *= factor
@@ -357,7 +357,7 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     private fun updateRunningLifePoints(runningPoints: Int)
     {
-        _runningLifePoints.intValue = runningPoints
+        _calculatorNumber.intValue = runningPoints
     }
 
     /***************************************************************************************************************************************

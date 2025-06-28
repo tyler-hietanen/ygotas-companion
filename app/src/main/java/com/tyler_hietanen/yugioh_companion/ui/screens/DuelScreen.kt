@@ -55,7 +55,7 @@ object DuelScreen
         // Set up variables (and observation).
         val duelist1 by duelViewModel.duelist1
         val duelist2 by duelViewModel.duelist2
-        val runningLifePoints by duelViewModel.runningLifePoints
+        val runningLifePoints by duelViewModel.calculatorNumber
         val isLocked by duelViewModel.isDuelEnabled
         val scrollState = rememberScrollState()
         val context = LocalContext.current
@@ -130,7 +130,7 @@ object DuelScreen
                 second = 8,
                 third = 9,
                 onNumberClick = { number ->
-                    duelViewModel.runningLifePointsCalculatorNumber(number)
+                    duelViewModel.pressedCalculatorNumber(number)
                 },
             )
 
@@ -141,7 +141,7 @@ object DuelScreen
                 second = 5,
                 third = 6,
                 onNumberClick = { number ->
-                    duelViewModel.runningLifePointsCalculatorNumber(number)
+                    duelViewModel.pressedCalculatorNumber(number)
                 },
             )
 
@@ -152,7 +152,7 @@ object DuelScreen
                 second = 2,
                 third = 3,
                 onNumberClick = { number ->
-                    duelViewModel.runningLifePointsCalculatorNumber(number)
+                    duelViewModel.pressedCalculatorNumber(number)
                 },
             )
 
@@ -160,7 +160,7 @@ object DuelScreen
             CalculatorMultiplicationRow(
                 isLocked = isLocked,
                 onMultiplyClick = { number ->
-                    duelViewModel.multiplyRunningLifePoints(number)
+                    duelViewModel.pressedCalculatorFactor(number)
                 }
             )
 
