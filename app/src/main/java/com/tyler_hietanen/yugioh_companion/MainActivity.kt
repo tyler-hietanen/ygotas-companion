@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity()
@@ -55,15 +56,18 @@ class MainActivity : ComponentActivity()
         // into the application view model. This allows nested compose functions access to view models.
         // Create view model(s).
         val duelViewModel: DuelViewModel by viewModels()
+        val houseRulesViewModel: HouseRulesViewModel by viewModels()
 
         // Only call initialization functions if saved state is null (indicating fresh app start, not recreation from config change)
         if (savedInstanceState == null)
         {
             duelViewModel.initialize()
+            houseRulesViewModel.initialize()
         }
 
         // Set reference(s).
         _applicationViewModel.setDuelistViewModelReference(duelViewModel)
+        _applicationViewModel.setHouseRulesViewModelReference(houseRulesViewModel)
 
         // Sets app content.
         setContent {

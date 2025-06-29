@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
 
 class ApplicationViewModel: ViewModel()
 {
@@ -20,6 +21,7 @@ class ApplicationViewModel: ViewModel()
     // ViewModel(s) instances, used to simplify access to these view models by other modules (mainly compose functions)
     // Note: It is imperative that these are set, by the appropriate reference setters, before they're accessed by any other components.
     lateinit var duelViewModel: DuelViewModel
+    lateinit var houseRulesViewModel: HouseRulesViewModel
 
     // The current destination of the application.
     // Note: This is meant to be an observable property for other ViewModels or View components, to allow them to reflect based upon the
@@ -49,6 +51,18 @@ class ApplicationViewModel: ViewModel()
     fun setDuelistViewModelReference(duelViewModel: DuelViewModel)
     {
         this.duelViewModel = duelViewModel
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    setHouseRulesViewModelReference
+     *       Parameters:    houseRulesViewModel
+     *                          - (House Rules) ViewModel.
+     *          Returns:    None.
+     *      Description:    Sets the reference to the House Rules View Model object.
+     **************************************************************************************************************************************/
+    fun setHouseRulesViewModelReference(houseRulesViewModel: HouseRulesViewModel)
+    {
+        this.houseRulesViewModel = houseRulesViewModel
     }
 
     /***************************************************************************************************************************************

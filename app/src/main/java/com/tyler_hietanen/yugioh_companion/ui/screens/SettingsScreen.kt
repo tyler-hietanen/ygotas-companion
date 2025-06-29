@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -27,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.yugioh_companion.R
@@ -34,6 +37,7 @@ import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconTextButton
 import androidx.core.net.toUri
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
 
 object SettingsScreen
 {
@@ -86,12 +90,12 @@ object SettingsScreen
             GithubSection(context)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
-            // Duel(s) configuration.
+            // Duel(s) configuration.s
             DuelSettings(applicationViewModel.duelViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // House Rule(s) configuration.
-            HouseRulesSettings()
+            HouseRulesSettings(applicationViewModel.houseRulesViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
         }
     }
@@ -172,8 +176,7 @@ object SettingsScreen
                 onCheckedChange = { isChecked ->
                     duelViewModel.changeSnarkSetting(isChecked)
                 },
-                modifier = Modifier,
-                enabled = true)
+                modifier = Modifier)
 
             // Mocking for losses.
             SettingsSwitch(
@@ -182,8 +185,7 @@ object SettingsScreen
                 onCheckedChange = { isChecked ->
                     duelViewModel.changeMockSetting(isChecked)
                 },
-                modifier = Modifier,
-                enabled = true)
+                modifier = Modifier)
         }
     }
 
@@ -194,8 +196,12 @@ object SettingsScreen
      *      Description:    Draws the Settings that are related to house rules.
      **************************************************************************************************************************************/
     @Composable
-    private fun HouseRulesSettings()
+    private fun HouseRulesSettings(houseRulesViewModel: HouseRulesViewModel)
     {
+        // Grab required information.
+        // TODO.
+
+        // Actually draw.
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -210,6 +216,16 @@ object SettingsScreen
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 fontStyle = FontStyle.Italic
+            )
+            // Allow importing of house rules.
+            IconTextButtonWithProgress(modifier = Modifier,
+                resourceID = R.drawable.add_filled,
+                buttonText = "Import new House Rules.",
+                isLoading = false /*TODO Replace.*/,
+                minSize = 40.dp,
+                onClick = {
+                    /* TODO */
+                }
             )
         }
     }
@@ -241,6 +257,42 @@ object SettingsScreen
                 onCheckedChange = onCheckedChange,
                 enabled = enabled
             )
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    IconTextButtonWithProgress
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Draws an IconTextButton with a circular progress indicator next to it.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun IconTextButtonWithProgress(modifier: Modifier, resourceID: Int, buttonText: String, isLoading: Boolean, minSize: Dp = 56.dp, onClick: () -> Unit, enabled: Boolean = true)
+    {
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconTextButton(
+                modifier = modifier,
+                resourceID = resourceID,
+                buttonText = buttonText,
+                isEnabled = (enabled && !isLoading),
+                minSize = minSize,
+                onClick = onClick
+            )
+            if (isLoading)
+            {
+                // Show the progress bar.
+                Spacer(modifier = Modifier.width(8.dp))
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    strokeWidth = 2.dp
+                )
+            }
         }
     }
 
