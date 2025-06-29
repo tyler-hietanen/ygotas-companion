@@ -101,16 +101,16 @@ class DuelViewModel: ViewModel()
         _isMockEnabled.value = true
 
         // Reset duel to default state.
-        resetDuel()
+        onResetDuel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    resetDuel
+     *           Method:    onResetDuel
      *       Parameters:    None.
      *          Returns:    None.
      *      Description:    Resets the duel to default state.
      **************************************************************************************************************************************/
-    fun resetDuel()
+    fun onResetDuel()
     {
         // Resets both duelists to default state.
         val playerSlotList = listOf(
@@ -123,13 +123,13 @@ class DuelViewModel: ViewModel()
         }
 
         // Reset other values.
-        clearRunningLifePoints()
+        onClearRunningLifePoints()
         _didShameUser = false
         _isDuelEnabled.value = true
     }
 
     /***************************************************************************************************************************************
-     *           Method:    modifyPlayerLifePoints
+     *           Method:    onModifyPlayerLifePoints
      *       Parameters:    playerSlot
      *                          - Which player slot to adjust.
      *                      doAdd
@@ -137,7 +137,7 @@ class DuelViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Modifies a player's life points.
      **************************************************************************************************************************************/
-    fun modifyPlayerLifePoints(playerSlot: PlayerSlot, doAdd: Boolean)
+    fun onModifyPlayerLifePoints(playerSlot: PlayerSlot, doAdd: Boolean)
     {
         // Ignore if no change or if locked.
         if ((calculatorNumber.value != 0) && _isDuelEnabled.value)
@@ -199,17 +199,17 @@ class DuelViewModel: ViewModel()
             // Otherwise, operation is ignored. Not a safe one.
 
             // No matter what, clear points.
-            clearRunningLifePoints()
+            onClearRunningLifePoints()
         }
     }
 
     /***************************************************************************************************************************************
-     *           Method:    simulateDiceRoll
+     *           Method:    onSimulateDiceRoll
      *       Parameters:    None.
      *          Returns:    None.
      *      Description:    Simulates a dice roll (1 - 6).
      **************************************************************************************************************************************/
-    fun simulateDiceRoll()
+    fun onSimulateDiceRoll()
     {
         // Generate random number from 1 to 6.
         val diceRollValue = Random.nextInt(1, (6 + 1))
@@ -221,12 +221,12 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    simulateCoinFlip
+     *           Method:    onSimulateCoinFlip
      *       Parameters:    None.
      *          Returns:    None.
      *      Description:    Simulates a coin flip (Heads - Tail).
      **************************************************************************************************************************************/
-    fun simulateCoinFlip()
+    fun onSimulateCoinFlip()
     {
         // Generate random number from 1 to 6.
         val coinFlipValue = if (Random.nextInt(1, (2 + 1)) == 1)
@@ -245,24 +245,24 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    clearRunningLifePoints
+     *           Method:    onClearRunningLifePoints
      *       Parameters:    None.
      *          Returns:    None.
      *      Description:    Clears the running life points count.
      **************************************************************************************************************************************/
-    fun clearRunningLifePoints()
+    fun onClearRunningLifePoints()
     {
         updateRunningLifePoints(0)
     }
 
     /***************************************************************************************************************************************
-     *           Method:    pressedCalculatorNumber
+     *           Method:    onCalculatorNumber
      *       Parameters:    number
      *                          - Calculator number clicked.
      *          Returns:    None.
      *      Description:    Adds number to running life point count at the end.
      **************************************************************************************************************************************/
-    fun pressedCalculatorNumber(number: Int)
+    fun onCalculatorNumber(number: Int)
     {
         // Copies running life points.
         var runningLifePoints = _calculatorNumber.intValue
@@ -280,13 +280,13 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    pressedCalculatorFactor
+     *           Method:    onCalculatorMultiplyFactor
      *       Parameters:    number
      *                          - Number to be used for multiply factor.
      *          Returns:    None.
      *      Description:    Multiplies running calculator number by factor.
      **************************************************************************************************************************************/
-    fun pressedCalculatorFactor(factor: Int)
+    fun onCalculatorMultiplyFactor(factor: Int)
     {
         // Copies running life points.
         var runningLifePoints = _calculatorNumber.intValue
@@ -303,13 +303,13 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    changeSnarkSetting
+     *           Method:    onChangeSnarkSetting
      *       Parameters:    isEnabled
      *                          - Whether setting should be enabled (true) or not (false).
      *          Returns:    None.
      *      Description:    Modifies snark (ugly life points) setting.
      **************************************************************************************************************************************/
-    fun changeSnarkSetting(isEnabled: Boolean)
+    fun onChangeSnarkSetting(isEnabled: Boolean)
     {
         // Only change if it's different than current setting.
         if (_isSnarkEnabled.value != isEnabled)
@@ -319,13 +319,13 @@ class DuelViewModel: ViewModel()
     }
 
     /***************************************************************************************************************************************
-     *           Method:    changeSnarkSetting
+     *           Method:    onChangeMockSetting
      *       Parameters:    isEnabled
      *                          - Whether setting should be enabled (true) or not (false).
      *          Returns:    None.
      *      Description:    Modifies mocking (on loss) setting.
      **************************************************************************************************************************************/
-    fun changeMockSetting(isEnabled: Boolean)
+    fun onChangeMockSetting(isEnabled: Boolean)
     {
         // Only change if it's different than current setting.
         if (_isMockEnabled.value != isEnabled)

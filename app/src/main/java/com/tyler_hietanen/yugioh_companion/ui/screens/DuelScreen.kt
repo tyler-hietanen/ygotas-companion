@@ -90,7 +90,7 @@ object DuelScreen
                 buttonText = "Reset Duel",
                 isEnabled = true,
                 onClick = {
-                    duelViewModel.resetDuel()
+                    duelViewModel.onResetDuel()
                 }
             )
 
@@ -108,7 +108,7 @@ object DuelScreen
                 isLocked = isLocked,
                 lifePoints = runningLifePoints,
                 onClick = { playerSlot, doAdd ->
-                    duelViewModel.modifyPlayerLifePoints(
+                    duelViewModel.onModifyPlayerLifePoints(
                         playerSlot = playerSlot,
                         doAdd = doAdd
                     )
@@ -118,9 +118,9 @@ object DuelScreen
             // Dice Roll, Coin Flip and Clear Section.
             CoinDiceClearSection(
                 isLocked = isLocked,
-                onDiceRollClick = { duelViewModel.simulateDiceRoll() },
-                onClearClick = { duelViewModel.clearRunningLifePoints() },
-                onCoinFlipClick = { duelViewModel.simulateCoinFlip() },
+                onDiceRollClick = { duelViewModel.onSimulateDiceRoll() },
+                onClearClick = { duelViewModel.onClearRunningLifePoints() },
+                onCoinFlipClick = { duelViewModel.onSimulateCoinFlip() },
             )
 
             HorizontalDivider(modifier = Modifier.padding(8.dp))
@@ -133,7 +133,7 @@ object DuelScreen
                 second = 8,
                 third = 9,
                 onNumberClick = { number ->
-                    duelViewModel.pressedCalculatorNumber(number)
+                    duelViewModel.onCalculatorNumber(number)
                 },
             )
 
@@ -144,7 +144,7 @@ object DuelScreen
                 second = 5,
                 third = 6,
                 onNumberClick = { number ->
-                    duelViewModel.pressedCalculatorNumber(number)
+                    duelViewModel.onCalculatorNumber(number)
                 },
             )
 
@@ -155,7 +155,7 @@ object DuelScreen
                 second = 2,
                 third = 3,
                 onNumberClick = { number ->
-                    duelViewModel.pressedCalculatorNumber(number)
+                    duelViewModel.onCalculatorNumber(number)
                 },
             )
 
@@ -163,7 +163,7 @@ object DuelScreen
             CalculatorMultiplicationRow(
                 isLocked = isLocked,
                 onMultiplyClick = { number ->
-                    duelViewModel.pressedCalculatorFactor(number)
+                    duelViewModel.onCalculatorMultiplyFactor(number)
                 }
             )
 

@@ -174,7 +174,7 @@ object SettingsScreen
                 settingsText = "Allow duel snark (Berating for ugly life points)?",
                 isChecked = isSnarkEnabled,
                 onCheckedChange = { isChecked ->
-                    duelViewModel.changeSnarkSetting(isChecked)
+                    duelViewModel.onChangeSnarkSetting(isChecked)
                 },
                 modifier = Modifier)
 
@@ -183,7 +183,7 @@ object SettingsScreen
                 settingsText = "Mock user on loss?",
                 isChecked = isMockEnabled,
                 onCheckedChange = { isChecked ->
-                    duelViewModel.changeMockSetting(isChecked)
+                    duelViewModel.onChangeMockSetting(isChecked)
                 },
                 modifier = Modifier)
         }
@@ -199,7 +199,7 @@ object SettingsScreen
     private fun HouseRulesSettings(houseRulesViewModel: HouseRulesViewModel)
     {
         // Grab required information.
-        // TODO.
+        val isImporting by houseRulesViewModel.isImportingHouseRules
 
         // Actually draw.
         Column(
@@ -221,10 +221,10 @@ object SettingsScreen
             IconTextButtonWithProgress(modifier = Modifier,
                 resourceID = R.drawable.add_filled,
                 buttonText = "Import new House Rules.",
-                isLoading = false /*TODO Replace.*/,
+                isLoading = isImporting,
                 minSize = 40.dp,
                 onClick = {
-                    /* TODO */
+                    houseRulesViewModel.onImportHouseRules()
                 }
             )
         }
