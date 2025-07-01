@@ -7,9 +7,13 @@ package com.tyler_hietanen.yugioh_companion.presentation
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 class ApplicationViewModel: ViewModel()
 {
@@ -33,6 +37,10 @@ class ApplicationViewModel: ViewModel()
     // Whether navigation is allowed by the application.
     private val _doEnableNavigation = mutableStateOf(true)
     val doEnableNavigation: State<Boolean> = _doEnableNavigation
+
+    // Custom message shown to user.
+    private val _customMessages = Channel<String>()
+    val customMessages = _customMessages.receiveAsFlow()
 
     //endregion
 
@@ -88,6 +96,20 @@ class ApplicationViewModel: ViewModel()
     fun setDoEnableNavigation(doEnable: Boolean)
     {
         _doEnableNavigation.value = doEnable
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    showUserMessage
+     *       Parameters:    message
+     *                          - Message to be shown.
+     *          Returns:    None.
+     *      Description:    Sets a custom user message to be shown.
+     **************************************************************************************************************************************/
+    fun showUserMessage(message: String)
+    {
+        viewModelScope.launch {
+            _customMessages.send(message)
+        }
     }
 
     //endregion

@@ -4,7 +4,6 @@
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.yugioh_companion.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,10 +17,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -34,7 +31,6 @@ import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconButton
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.TextButton
 import com.tyler_hietanen.yugioh_companion.ui.theme.Typography
-import kotlinx.coroutines.flow.collectLatest
 
 object DuelScreen
 {
@@ -61,25 +57,6 @@ object DuelScreen
         val runningLifePoints by duelViewModel.calculatorNumber
         val isLocked by duelViewModel.isDuelEnabled
         val scrollState = rememberScrollState()
-        val context = LocalContext.current
-
-        // Will show a toast message if the custom message is changed.
-        LaunchedEffect(key1 = duelViewModel) {
-            duelViewModel.customMessages.collectLatest { message ->
-                // Check for length of message. If length is large enough, use a longer message time.
-                val messageLength = if (message.length > 20)
-                {
-                    Toast.LENGTH_LONG
-                }
-                else
-                {
-                    Toast.LENGTH_SHORT
-                }
-
-                // Actually show.
-                Toast.makeText(context, message, messageLength).show()
-            }
-        }
 
         // Actually draw.
         Column (modifier = Modifier.verticalScroll(scrollState)) {

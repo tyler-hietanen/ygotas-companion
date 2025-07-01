@@ -11,8 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tyler_hietanen.yugioh_companion.business.duel.Duelist
 import com.tyler_hietanen.yugioh_companion.business.duel.PlayerSlot
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
+import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -54,10 +53,6 @@ class DuelViewModel: ViewModel()
     private val _isDuelEnabled = mutableStateOf(true)
     val isDuelEnabled: State<Boolean> = _isDuelEnabled
 
-    // Shown user message (Used to show coin flips or dice rolls).
-    private val _customMessages = Channel<String>()
-    val customMessages = _customMessages.receiveAsFlow()
-
     // Snark setting.
     private val _isSnarkEnabled = mutableStateOf(true)
     val isSnarkEnabled: State<Boolean> = _isSnarkEnabled
@@ -72,6 +67,9 @@ class DuelViewModel: ViewModel()
      *      Fields
      **************************************************************************************************************************************/
     //region Fields
+
+    // Stores reference to application view model for later usage.
+    private lateinit var _applicationViewModel: ApplicationViewModel
 
     // Whether user has been shamed for adding a bad life points.
     private var _didShameUser = false
@@ -89,8 +87,11 @@ class DuelViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Initializer function for this view model.
      **************************************************************************************************************************************/
-    fun initialize()
+    fun initialize(applicationViewModel: ApplicationViewModel)
     {
+        // Store reference to application view model.
+        _applicationViewModel = applicationViewModel
+
         // Set default names.
         _duelist1.value.setDuelistName("Player 1")
         _duelist2.value.setDuelistName("Player 2")
@@ -214,10 +215,8 @@ class DuelViewModel: ViewModel()
         // Generate random number from 1 to 6.
         val diceRollValue = Random.nextInt(1, (6 + 1))
 
-        // Emit update.
-        viewModelScope.launch {
-            _customMessages.send("Dice Roll: $diceRollValue")
-        }
+        // Show user message.
+        _applicationViewModel.showUserMessage("Dice Roll: $diceRollValue")
     }
 
     /***************************************************************************************************************************************
@@ -238,10 +237,8 @@ class DuelViewModel: ViewModel()
             "Tails"
         }
 
-        // Emit update.
-        viewModelScope.launch {
-            _customMessages.send("Coin Flip: $coinFlipValue")
-        }
+        // Show user message.
+        _applicationViewModel.showUserMessage("Coin Flip: $coinFlipValue")
     }
 
     /***************************************************************************************************************************************
@@ -428,7 +425,9 @@ class DuelViewModel: ViewModel()
                 val duelist = getDuelist(losingPlayerSlot)
                 val otherDuelist = getDuelist(winningPlayerSlot)
                 val message = "Womp, womp! Better luck next time, ${duelist.name}. Congrats ${otherDuelist.name}!"
-                _customMessages.send(message)
+
+                // Show user message.
+                _applicationViewModel.showUserMessage(message)
             }
         }
     }
@@ -473,10 +472,8 @@ class DuelViewModel: ViewModel()
                     playerShameMessage = "You dealt an ugly amount of damage. Dick move, ${getDuelist(otherPlayer).name}!"
                 }
 
-                // Emit update (shame!).
-                viewModelScope.launch {
-                    _customMessages.send(playerShameMessage)
-                }
+                // Show user message.
+                _applicationViewModel.showUserMessage(playerShameMessage)
             }
             // Otherwise, do nothing.
         }

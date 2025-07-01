@@ -6,6 +6,8 @@ package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -92,6 +94,8 @@ object SettingsScreen
             GithubSection(context)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
+            // TODO Quotes configuration.
+
             // Duel(s) configuration.s
             DuelSettings(applicationViewModel.duelViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
@@ -99,10 +103,6 @@ object SettingsScreen
             // House Rule(s) configuration.
             HouseRulesSettings(applicationViewModel.houseRulesViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
-
-
-
-
 
             // At the very end, show a wonder Kuriboh.
             Image(
@@ -211,10 +211,6 @@ object SettingsScreen
     @Composable
     private fun HouseRulesSettings(houseRulesViewModel: HouseRulesViewModel)
     {
-        // Grab required information.
-        val isImporting by houseRulesViewModel.isImportingHouseRules
-
-        // Actually draw.
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -231,16 +227,45 @@ object SettingsScreen
                 fontStyle = FontStyle.Italic
             )
             // Allow importing of house rules.
-            IconTextButtonWithProgress(modifier = Modifier,
-                resourceID = R.drawable.add_filled,
-                buttonText = "Import new House Rules.",
-                isLoading = isImporting,
-                minSize = 40.dp,
-                onClick = {
-                    houseRulesViewModel.onImportHouseRules()
-                }
-            )
+            LoadHouseRulesButton(houseRulesViewModel)
         }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    LoadHouseRulesButton
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Draws the load house rules button. Contains logic for picking a .md file, for house rules.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun LoadHouseRulesButton(houseRulesViewModel: HouseRulesViewModel)
+    {
+        // Variables.
+        val isImporting by houseRulesViewModel.isImportingHouseRules
+        val context = LocalContext.current
+
+        // Sets up logic for picking a markdown file (Hopefully this is house rules).
+        val pickMarkdownFileLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+            onResult = { fileUri ->
+                fileUri?.let {
+                    // If non-null, reports change to View Model with chosen file.
+                    houseRulesViewModel.onImportHouseRules(context, fileUri)
+                }
+            }
+        )
+
+        // Actually draws.
+        IconTextButtonWithProgress(modifier = Modifier,
+            resourceID = R.drawable.add_filled,
+            buttonText = "Import new House Rules.",
+            isLoading = isImporting,
+            minSize = 40.dp,
+            onClick = {
+                // Launch file picker.
+                pickMarkdownFileLauncher.launch("text/markdown")
+            }
+        )
     }
 
     /***************************************************************************************************************************************

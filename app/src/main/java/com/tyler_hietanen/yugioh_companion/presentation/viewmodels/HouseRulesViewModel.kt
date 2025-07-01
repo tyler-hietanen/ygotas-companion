@@ -4,19 +4,21 @@
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.yugioh_companion.presentation.viewmodels
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class HouseRulesViewModel: ViewModel()
 {
-    /***************************************************************************************************************************************
-     *      Constants
-     **************************************************************************************************************************************/
-    //region Constants
-
-    //endregion
-
     /***************************************************************************************************************************************
      *      Properties
      **************************************************************************************************************************************/
@@ -38,6 +40,9 @@ class HouseRulesViewModel: ViewModel()
      **************************************************************************************************************************************/
     //region Fields
 
+    // Stores reference to application view model for later usage.
+    private lateinit var _applicationViewModel: ApplicationViewModel
+
     //endregion
 
     /***************************************************************************************************************************************
@@ -51,8 +56,11 @@ class HouseRulesViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Initializer function for this view model.
      **************************************************************************************************************************************/
-    fun initialize()
+    fun initialize(applicationViewModel: ApplicationViewModel)
     {
+        // Store reference to application view model.
+        _applicationViewModel = applicationViewModel
+
         // Set values to default states.
         _isImportingHouseRules.value = false
     }
@@ -63,9 +71,33 @@ class HouseRulesViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Call to import new house rules.
      **************************************************************************************************************************************/
-    fun onImportHouseRules()
+    fun onImportHouseRules(context: Context, fileUri: Uri)
     {
-        // TODO. Either force import, or take result of import.
+        // Must be run from view model scope, since it requires context.
+        viewModelScope.launch {
+            // Obtain lock, letting user know it is busy (And preventing additional attempts, hopefully).
+            _isImportingHouseRules.value = true
+
+            // Grab the contents and check if it is not null (no issues occurred on read).
+            val rulesContent = readFileContentFromUri(context, fileUri)
+            if (rulesContent != null)
+            {
+                // TODO Save this to memory.
+                // Set the current content.
+                _houseRulesContent.value = rulesContent
+
+                // If it reaches the end, it was successful. Show user message.
+                _applicationViewModel.showUserMessage("Loaded house rules from selected file. Make sure to verify!")
+            }
+            else
+            {
+                // Failed to load or parse house rules.
+                _applicationViewModel.showUserMessage("Unable to load house rules. Something went wrong.")
+            }
+
+            // Success or failure, finished loading.
+            _isImportingHouseRules.value = false
+        }
     }
 
     //endregion
@@ -74,6 +106,41 @@ class HouseRulesViewModel: ViewModel()
      *      Private Methods
      **************************************************************************************************************************************/
     //region Private Methods
+
+    /***************************************************************************************************************************************
+     *           Method:    readFileContentFromUri
+     *       Parameters:    None.
+     *          Returns:    String?
+     *                          - Contents of read. Set to null if issue occurred.
+     *      Description:    Loads file content from a URI into a string. Works best with markdown files.
+     **************************************************************************************************************************************/
+    private suspend fun readFileContentFromUri(context: Context, uri: Uri): String?
+    {
+        return withContext(Dispatchers.IO)
+        {
+            try
+            {
+                // Setup string builder.
+                val stringBuilder = StringBuilder()
+
+                // Open input stream from selected file.
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                        var line: String?
+                        while (reader.readLine().also { line = it } != null)
+                        {
+                            stringBuilder.append(line).append('\n')
+                        }
+                    }
+                }
+                stringBuilder.toString()
+            }
+            catch (_: Exception)
+            {
+                null
+            }
+        }
+    }
 
     //endregion
 }

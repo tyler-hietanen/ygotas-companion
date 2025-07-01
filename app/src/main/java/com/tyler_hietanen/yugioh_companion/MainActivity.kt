@@ -5,6 +5,7 @@
 package com.tyler_hietanen.yugioh_companion
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,12 +18,14 @@ import com.tyler_hietanen.yugioh_companion.ui.theme.CompanionMaterialTheme
 import androidx.activity.viewModels
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : ComponentActivity()
 {
@@ -61,8 +64,8 @@ class MainActivity : ComponentActivity()
         // Only call initialization functions if saved state is null (indicating fresh app start, not recreation from config change)
         if (savedInstanceState == null)
         {
-            duelViewModel.initialize()
-            houseRulesViewModel.initialize()
+            duelViewModel.initialize(_applicationViewModel)
+            houseRulesViewModel.initialize(_applicationViewModel)
         }
 
         // Set reference(s).
@@ -71,6 +74,8 @@ class MainActivity : ComponentActivity()
 
         // Sets app content.
         setContent {
+            val context = LocalContext.current
+
             // Grabs instance of nav controller.
             val navController: NavHostController = rememberNavController()
 
@@ -87,6 +92,24 @@ class MainActivity : ComponentActivity()
                 }
             }
 
+            // Will show a toast message if the custom message is changed.
+            LaunchedEffect(key1 = _applicationViewModel) {
+                _applicationViewModel.customMessages.collectLatest { message ->
+                    // Check for length of message. If length is large enough, use a longer message time.
+                    val messageLength = if (message.length > 20)
+                    {
+                        Toast.LENGTH_LONG
+                    }
+                    else
+                    {
+                        Toast.LENGTH_SHORT
+                    }
+
+                    // Actually show.
+                    Toast.makeText(context, message, messageLength).show()
+                }
+            }
+
             // Starts drawing app.
             CompanionMaterialTheme {
                 MainActivityScreen(navController)
@@ -96,7 +119,7 @@ class MainActivity : ComponentActivity()
             // TODO Remove.
             LaunchedEffect(Unit) {
                 delay(500)
-                ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.HOUSERULES, _applicationViewModel)
+                ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.SETTINGS, _applicationViewModel)
             }
         }
     }
