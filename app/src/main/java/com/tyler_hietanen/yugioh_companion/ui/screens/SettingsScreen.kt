@@ -6,6 +6,7 @@ package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -97,6 +99,17 @@ object SettingsScreen
             // House Rule(s) configuration.
             HouseRulesSettings(applicationViewModel.houseRulesViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
+
+
+
+
+
+            // At the very end, show a wonder Kuriboh.
+            Image(
+                painter = painterResource(R.drawable.wonder_kuriboh),
+                contentDescription = "",
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 
