@@ -26,6 +26,11 @@ class HouseRulesViewModel: ViewModel()
     private val _isImportingHouseRules = mutableStateOf(false)
     val isImportingHouseRules: State<Boolean> = _isImportingHouseRules
 
+    // House Rules Content (Markdown format).
+    // Null indicates House Rules haven't been imported (or haven't been loaded yet).
+    private val _houseRulesContent = mutableStateOf<String?>(null)
+    val houseRulesContent: State<String?> = _houseRulesContent
+
     //endregion
 
     /***************************************************************************************************************************************

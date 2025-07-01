@@ -54,11 +54,14 @@ List of forbidden cards:
 - Pot of Greed
 - Lightning Vortex
 - Magic Cylinder
+- Marshmallon
 - Mirror Force
 - One Day of Peace
 - Red-Eyes Dark Dragoon
 - Ring of Destruction
 - Sakuretsu Armor
+- Scapegoat
+- Scrap-Iron Scarecrow
 - Snatch Steal
 - Swords of Revealing Light
 - Swordsman of Landstar (Too OP)
