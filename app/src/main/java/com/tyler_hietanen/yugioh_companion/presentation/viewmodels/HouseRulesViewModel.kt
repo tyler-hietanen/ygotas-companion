@@ -10,12 +10,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tyler_hietanen.yugioh_companion.business.houserules.HouseRulesFileHelper
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 class HouseRulesViewModel: ViewModel()
 {
@@ -56,10 +53,13 @@ class HouseRulesViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Initializer function for this view model.
      **************************************************************************************************************************************/
-    fun initialize(applicationViewModel: ApplicationViewModel)
+    fun initialize(applicationViewModel: ApplicationViewModel, context: Context)
     {
         // Store reference to application view model.
         _applicationViewModel = applicationViewModel
+
+        // Load house rules from storage (if they exist).
+        loadHouseRulesFromStorage(context)
 
         // Set values to default states.
         _isImportingHouseRules.value = false
@@ -73,25 +73,38 @@ class HouseRulesViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun onImportHouseRules(context: Context, fileUri: Uri)
     {
-        // Must be run from view model scope, since it requires context.
+        // Must be run from view model scope, since it runs with context.
         viewModelScope.launch {
+            // Whether it succeeded in importing house rules file.
+            var didImportHouseRules = false
+
             // Obtain lock, letting user know it is busy (And preventing additional attempts, hopefully).
             _isImportingHouseRules.value = true
 
             // Grab the contents and check if it is not null (no issues occurred on read).
-            val rulesContent = readFileContentFromUri(context, fileUri)
-            if (rulesContent != null)
+            val rulesContent = HouseRulesFileHelper.readHouseRulesContentFromUri(context, fileUri)
+            if ((rulesContent != null) && (rulesContent.isNotEmpty()))
             {
-                // TODO Save this to memory.
+                // Successfully loaded a file (That has content)! Save house rules to memory for later usage.
+                didImportHouseRules = HouseRulesFileHelper.saveHouseRulesToStorage(context, rulesContent)
+                if (!didImportHouseRules)
+                {
+                    // This means it was unable to save to memory (for whatever reason).
+                    _applicationViewModel.showUserMessage("Loaded house rules, but unable to save to memory.")
+                    didImportHouseRules = true
+                }
+
                 // Set the current content.
                 _houseRulesContent.value = rulesContent
+            }
 
-                // If it reaches the end, it was successful. Show user message.
-                _applicationViewModel.showUserMessage("Loaded house rules from selected file. Make sure to verify!")
+            // Show message based on success/failure.
+            if (didImportHouseRules)
+            {
+                _applicationViewModel.showUserMessage("Loaded house rules.")
             }
             else
             {
-                // Failed to load or parse house rules.
                 _applicationViewModel.showUserMessage("Unable to load house rules. Something went wrong.")
             }
 
@@ -107,38 +120,17 @@ class HouseRulesViewModel: ViewModel()
      **************************************************************************************************************************************/
     //region Private Methods
 
-    /***************************************************************************************************************************************
-     *           Method:    readFileContentFromUri
-     *       Parameters:    None.
-     *          Returns:    String?
-     *                          - Contents of read. Set to null if issue occurred.
-     *      Description:    Loads file content from a URI into a string. Works best with markdown files.
-     **************************************************************************************************************************************/
-    private suspend fun readFileContentFromUri(context: Context, uri: Uri): String?
+    private fun loadHouseRulesFromStorage(context: Context)
     {
-        return withContext(Dispatchers.IO)
-        {
-            try
-            {
-                // Setup string builder.
-                val stringBuilder = StringBuilder()
+        viewModelScope.launch {
+            // Flag as busy to prevent other actions.
+            _isImportingHouseRules.value = true
 
-                // Open input stream from selected file.
-                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                        var line: String?
-                        while (reader.readLine().also { line = it } != null)
-                        {
-                            stringBuilder.append(line).append('\n')
-                        }
-                    }
-                }
-                stringBuilder.toString()
-            }
-            catch (_: Exception)
-            {
-                null
-            }
+            // Grab content of existing house rules file. Will set as null if non-existent.
+            _houseRulesContent.value =  HouseRulesFileHelper.retrieveHouseRulesFromStorage(context)
+
+            // Flag as no longer busy.
+            _isImportingHouseRules.value = false
         }
     }
 
