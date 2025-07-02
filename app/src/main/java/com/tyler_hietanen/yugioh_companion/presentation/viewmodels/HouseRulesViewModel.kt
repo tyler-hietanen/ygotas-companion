@@ -101,7 +101,7 @@ class HouseRulesViewModel: ViewModel()
             // Show message based on success/failure.
             if (didImportHouseRules)
             {
-                _applicationViewModel.showUserMessage("Loaded house rules.")
+                _applicationViewModel.showUserMessage("Imported house rules.")
             }
             else
             {

@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -122,14 +123,6 @@ object HouseRulesScreen
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                "House Rules",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Show markdown content.
             MarkdownDisplay(markdownContent = content, context = LocalContext.current)
         }
@@ -155,10 +148,15 @@ object HouseRulesScreen
         }
         val scrollState = rememberScrollState()
 
+        // Copies text color (So Markdown isn't gray).
+        val textColor = MaterialTheme.colorScheme.onBackground
         AndroidView(
             factory = {
                 ctx -> TextView(ctx)
-                      },
+                    .apply {
+                        setTextColor(textColor.toArgb())
+                    }
+                  },
             update = { textView ->
                 textView.text = spanned
             },
