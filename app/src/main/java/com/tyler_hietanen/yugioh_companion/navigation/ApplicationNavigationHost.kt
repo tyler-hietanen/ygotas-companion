@@ -52,6 +52,9 @@ object ApplicationNavigationHost
                 popUpTo(controller.graph.findStartDestination().id) {
                     inclusive = true
                 }
+                popUpTo(destination.routeID) {
+                    inclusive = true
+                }
 
                 // Ensures this new destination is the only one on the stack.
                 launchSingleTop = true

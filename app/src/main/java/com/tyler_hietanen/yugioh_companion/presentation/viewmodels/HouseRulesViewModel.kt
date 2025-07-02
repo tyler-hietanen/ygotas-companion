@@ -120,6 +120,12 @@ class HouseRulesViewModel: ViewModel()
      **************************************************************************************************************************************/
     //region Private Methods
 
+    /***************************************************************************************************************************************
+     *           Method:    loadHouseRulesFromStorage
+     *       Parameters:    context
+     *          Returns:    None.
+     *      Description:    Loads house rules from storage.
+     **************************************************************************************************************************************/
     private fun loadHouseRulesFromStorage(context: Context)
     {
         viewModelScope.launch {
