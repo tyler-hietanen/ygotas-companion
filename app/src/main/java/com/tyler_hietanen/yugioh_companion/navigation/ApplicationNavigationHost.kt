@@ -48,10 +48,13 @@ object ApplicationNavigationHost
 
             // Actually navigate.
             controller.navigate(destination.routeID) {
-                // Pop up to the start destination of the graph to remove all other destinations.
-                popUpTo(controller.graph.findStartDestination().id) {
-                    inclusive = true
+                // If destination is not the Welcome destination (home), then make sure it's popped.
+                if (destination != Destination.WELCOME)
+                {
+                    controller.popBackStack(Destination.WELCOME.routeID, true)
                 }
+
+                // Pop all other destinations up to the current one.
                 popUpTo(destination.routeID) {
                     inclusive = true
                 }
