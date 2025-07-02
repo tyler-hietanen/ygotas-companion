@@ -7,6 +7,8 @@ package com.tyler_hietanen.yugioh_companion.ui.screens
 import android.content.Context
 import android.text.Spanned
 import android.widget.TextView
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,11 +31,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.tyler_hietanen.yugioh_companion.R
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
+import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons
 import io.noties.markwon.Markwon
 
 object HouseRulesScreen
@@ -59,7 +62,7 @@ object HouseRulesScreen
         // Depending upon the value of the content, determines what is shown.
         if (houseRulesContent == null)
         {
-            EmptyHouseRulesScreen()
+            EmptyHouseRulesScreen(houseRulesViewModel)
         }
         else
         {
@@ -81,14 +84,31 @@ object HouseRulesScreen
      *      Description:    Draws an empty screen (if no house rules are loaded).
      **************************************************************************************************************************************/
     @Composable
-    private fun EmptyHouseRulesScreen()
+    private fun EmptyHouseRulesScreen(houseRulesViewModel: HouseRulesViewModel)
     {
+        // Variables.
+        val isImporting by houseRulesViewModel.isImportingHouseRules
+        val context = LocalContext.current
+
+        // Sets up logic for picking a markdown file (Hopefully this is house rules).
+        val pickMarkdownFileLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+            onResult = { fileUri ->
+                fileUri?.let {
+                    // If non-null, reports change to View Model with chosen file.
+                    houseRulesViewModel.onImportHouseRules(context, fileUri)
+                }
+            }
+        )
+
+        // Actually draws.
         Column (
             modifier = Modifier
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
+
             Image(
                 painter = painterResource(R.drawable.sad_kuriboh),
                 contentDescription = "",
@@ -97,13 +117,26 @@ object HouseRulesScreen
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "No House Rules have been loaded. That makes Kuriboh sad...",
-                textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "You don't want to make Kuriboh sad do you? Why don't you import house rules from the Settings screen?",
-                textAlign = TextAlign.Center
+                text = "Kuriboh doesn't like unmanaged Yu-Gi-Oh (He's terrified of the Yu-Gi-Oh meta).",
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "You don't want to make Kuriboh sad, do you? Why don't you import some house rules?",
+            )
+            CompanionButtons.IconTextButtonWithProgress(
+                modifier = Modifier,
+                resourceID = R.drawable.add_filled,
+                buttonText = "Import new House Rules.",
+                isLoading = isImporting,
+                minSize = 40.dp,
+                onClick = {
+                    // Launch file picker.
+                    pickMarkdownFileLauncher.launch("text/markdown")
+                }
             )
         }
     }

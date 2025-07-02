@@ -5,6 +5,7 @@
 package com.tyler_hietanen.yugioh_companion.ui.layout
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -122,6 +124,42 @@ object CompanionButtons
                 Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
                 Text (
                     text = buttonText
+                )
+            }
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    IconTextButtonWithProgress
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Draws an IconTextButton with a circular progress indicator next to it.
+     **************************************************************************************************************************************/
+    @Composable
+    fun IconTextButtonWithProgress(modifier: Modifier, resourceID: Int, buttonText: String, isLoading: Boolean, minSize: Dp = 56.dp, onClick: () -> Unit, enabled: Boolean = true)
+    {
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconTextButton(
+                modifier = modifier,
+                resourceID = resourceID,
+                buttonText = buttonText,
+                isEnabled = (enabled && !isLoading),
+                minSize = minSize,
+                onClick = onClick
+            )
+            if (isLoading)
+            {
+                // Show the progress bar.
+                Spacer(modifier = Modifier.width(8.dp))
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    strokeWidth = 2.dp
                 )
             }
         }
