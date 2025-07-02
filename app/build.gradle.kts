@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.tyler_hietanen.yugioh_companion"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.tyler_hietanen.ygotascompanion"
+        applicationId = "com.tyler_hietanen.yugioh_companion"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
