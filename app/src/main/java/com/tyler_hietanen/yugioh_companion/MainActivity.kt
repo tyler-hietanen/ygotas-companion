@@ -55,27 +55,28 @@ class MainActivity : ComponentActivity()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Note: It is incredibly vital that this call happens before anything else and that any copied references to view models are copied
+        // into the application view model. This allows nested compose functions access to view models.
+        // Note: Do not place this in the setContent section, as that causes constant calls to the initialize functions (resetting things).
+        // Create view model(s).
+        val duelViewModel: DuelViewModel by viewModels()
+        val houseRulesViewModel: HouseRulesViewModel by viewModels()
+
+        // Only call initialization functions if saved state is null (indicating fresh app start, not recreation from config change)
+        if (savedInstanceState == null)
+        {
+            duelViewModel.initialize(_applicationViewModel)
+            houseRulesViewModel.initialize(_applicationViewModel, application.applicationContext)
+        }
+
+        // Set reference(s).
+        _applicationViewModel.setDuelistViewModelReference(duelViewModel)
+        _applicationViewModel.setHouseRulesViewModelReference(houseRulesViewModel)
+
         // Sets app content.
         setContent {
             // Source context.
             val context = LocalContext.current
-
-            // Note: It is incredibly vital that this call happens before anything else and that any copied references to view models are copied
-            // into the application view model. This allows nested compose functions access to view models.
-            // Create view model(s).
-            val duelViewModel: DuelViewModel by viewModels()
-            val houseRulesViewModel: HouseRulesViewModel by viewModels()
-
-            // Only call initialization functions if saved state is null (indicating fresh app start, not recreation from config change)
-            if (savedInstanceState == null)
-            {
-                duelViewModel.initialize(_applicationViewModel)
-                houseRulesViewModel.initialize(_applicationViewModel, context)
-            }
-
-            // Set reference(s).
-            _applicationViewModel.setDuelistViewModelReference(duelViewModel)
-            _applicationViewModel.setHouseRulesViewModelReference(houseRulesViewModel)
 
             // Grabs instance of nav controller.
             val navController: NavHostController = rememberNavController()
