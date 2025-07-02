@@ -20,6 +20,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.tyler_hietanen.yugioh_companion.business.settings.AppSettingsRepository
 import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
@@ -55,6 +56,9 @@ class MainActivity : ComponentActivity()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Note: Loads settings (Should be first, or issues can occur).
+        val settingsRepository = AppSettingsRepository(application.applicationContext)
+
         // Note: It is incredibly vital that this call happens before anything else and that any copied references to view models are copied
         // into the application view model. This allows nested compose functions access to view models.
         // Note: Do not place this in the setContent section, as that causes constant calls to the initialize functions (resetting things).
@@ -65,7 +69,7 @@ class MainActivity : ComponentActivity()
         // Only call initialization functions if saved state is null (indicating fresh app start, not recreation from config change)
         if (savedInstanceState == null)
         {
-            duelViewModel.initialize(_applicationViewModel)
+            duelViewModel.initialize(_applicationViewModel, settingsRepository)
             houseRulesViewModel.initialize(_applicationViewModel, application.applicationContext)
         }
 

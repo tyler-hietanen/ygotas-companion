@@ -6,7 +6,7 @@ package com.tyler_hietanen.yugioh_companion.business.houserules
 
 import android.content.Context
 import android.net.Uri
-import com.tyler_hietanen.yugioh_companion.business.settings.general.AppStorageConstants
+import com.tyler_hietanen.yugioh_companion.business.settings.AppStorageConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader

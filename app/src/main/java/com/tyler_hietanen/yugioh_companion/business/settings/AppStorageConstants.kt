@@ -2,7 +2,7 @@
  *           Source:    AppStorageConstants.kt
  *      Description:    Contains constants (directories and file names) for files stored by this application.
  ******************************************************************************************************************************************/
-package com.tyler_hietanen.yugioh_companion.business.settings.general
+package com.tyler_hietanen.yugioh_companion.business.settings
 
 object AppStorageConstants
 {

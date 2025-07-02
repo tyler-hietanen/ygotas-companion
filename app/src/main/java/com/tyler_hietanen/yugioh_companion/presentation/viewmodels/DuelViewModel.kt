@@ -11,12 +11,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tyler_hietanen.yugioh_companion.business.duel.Duelist
 import com.tyler_hietanen.yugioh_companion.business.duel.PlayerSlot
+import com.tyler_hietanen.yugioh_companion.business.settings.AppSettingsRepository
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-// TODO Load various players from storage. If no players are in storage, then create default set.
-class DuelViewModel: ViewModel()
+class DuelViewModel(): ViewModel()
 {
     /***************************************************************************************************************************************
      *      Constants
@@ -68,8 +68,10 @@ class DuelViewModel: ViewModel()
      **************************************************************************************************************************************/
     //region Fields
 
-    // Stores reference to application view model for later usage.
+    // Stores reference to various app components.
     private lateinit var _applicationViewModel: ApplicationViewModel
+    private lateinit var _settingsRepository: AppSettingsRepository
+
 
     // Whether user has been shamed for adding a bad life points.
     private var _didShameUser = false
@@ -87,19 +89,25 @@ class DuelViewModel: ViewModel()
      *          Returns:    None.
      *      Description:    Initializer function for this view model.
      **************************************************************************************************************************************/
-    fun initialize(applicationViewModel: ApplicationViewModel)
+    fun initialize(applicationViewModel: ApplicationViewModel, settingsRepository: AppSettingsRepository)
     {
-        // Store reference to application view model.
+        // Store reference to components.
         _applicationViewModel = applicationViewModel
+        _settingsRepository = settingsRepository
 
         // Set default names.
         _duelist1.value.setDuelistName("Player 1")
         _duelist2.value.setDuelistName("Player 2")
 
-        // Set settings to default value.
-        // TODO Load settings from storage, so they don't change on every app boot.
-        _isSnarkEnabled.value = true
-        _isMockEnabled.value = true
+        // Uses View Model Scope, as the loading may take time.
+        viewModelScope.launch {
+            // Configure settings to drive changes.
+            _settingsRepository.appSettingsFlow.collect { currentSettings ->
+                // Set settings to default value (from settings).
+                _isSnarkEnabled.value = currentSettings.isSnarkEnabled
+                _isMockEnabled.value = currentSettings.isMockingEnabled
+            }
+        }
 
         // Reset duel to default state.
         onResetDuel()
@@ -311,7 +319,11 @@ class DuelViewModel: ViewModel()
         // Only change if it's different than current setting.
         if (_isSnarkEnabled.value != isEnabled)
         {
-            _isSnarkEnabled.value = isEnabled
+            viewModelScope.launch {
+                // Grab the current settings.
+                val settings = _settingsRepository.getCurrentAppSettings().copy(isSnarkEnabled = isEnabled)
+                _settingsRepository.saveAppSettings(settings)
+            }
         }
     }
 
@@ -327,7 +339,11 @@ class DuelViewModel: ViewModel()
         // Only change if it's different than current setting.
         if (_isMockEnabled.value != isEnabled)
         {
-            _isMockEnabled.value = isEnabled
+            viewModelScope.launch {
+                // Grab the current settings.
+                val settings = _settingsRepository.getCurrentAppSettings().copy(isMockingEnabled = isEnabled)
+                _settingsRepository.saveAppSettings(settings)
+            }
         }
     }
 
