@@ -56,6 +56,9 @@ class MainActivity : ComponentActivity()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Whether this was due to a new launch (null) or just a recreation (rotation, config change).
+        val isNewLaunch = (savedInstanceState == null)
+
         // Note: Loads settings (Should be first, or issues can occur).
         val settingsRepository = AppSettingsRepository(application.applicationContext)
 
@@ -66,8 +69,8 @@ class MainActivity : ComponentActivity()
         val duelViewModel: DuelViewModel by viewModels()
         val houseRulesViewModel: HouseRulesViewModel by viewModels()
 
-        // Only call initialization functions if saved state is null (indicating fresh app start, not recreation from config change)
-        if (savedInstanceState == null)
+        // Only call initialization functions for a new launch.
+        if (isNewLaunch)
         {
             duelViewModel.initialize(_applicationViewModel, settingsRepository)
             houseRulesViewModel.initialize(_applicationViewModel, application.applicationContext)
@@ -121,11 +124,13 @@ class MainActivity : ComponentActivity()
                 MainActivityScreen(navController)
             }
 
-            // Sets up auto nav, after a delay.
-            // TODO Remove.
-            LaunchedEffect(Unit) {
-                delay(500)
-                ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.SETTINGS, _applicationViewModel)
+            // Only auto-navigates to destination if it's a new launch.
+            if (isNewLaunch)
+            {
+                LaunchedEffect(Unit) {
+                    delay(500)
+                    ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.SETTINGS, _applicationViewModel)
+                }
             }
         }
     }
