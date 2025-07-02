@@ -108,13 +108,16 @@ object HouseRulesScreen
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
-
+            // Sad Kuriboh icon.
             Image(
                 painter = painterResource(R.drawable.sad_kuriboh),
                 contentDescription = "",
                 modifier = Modifier.size(240.dp)
             )
+
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Text block.
             Text(
                 text = "No House Rules have been loaded. That makes Kuriboh sad...",
                 fontWeight = FontWeight.Bold
@@ -127,6 +130,8 @@ object HouseRulesScreen
             Text(
                 text = "You don't want to make Kuriboh sad, do you? Why don't you import some house rules?",
             )
+
+            // Import house rules button.
             CompanionButtons.IconTextButtonWithProgress(
                 modifier = Modifier,
                 resourceID = R.drawable.add_filled,

@@ -47,11 +47,16 @@ object CompanionButtons
                 .padding(4.dp, 0.dp),
             onClick = onClick,
             colors = ButtonDefaults.outlinedButtonColors(),
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            border = BorderStroke(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary
+            ),
             enabled = isEnabled
         ) {
-            Text(text = buttonText,
-                style = Typography.titleLarge)
+            Text(
+                text = buttonText,
+                style = Typography.titleLarge
+            )
         }
     }
 
@@ -76,17 +81,22 @@ object CompanionButtons
                 .fillMaxWidth(1f)
                 .padding(2.dp),
             shape = MaterialTheme.shapes.small
-        ){
+        ) {
             Button(
                 onClick = { onClick()},
                 colors = ButtonDefaults.outlinedButtonColors(),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+                border = BorderStroke(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
+                ),
                 enabled = isEnabled
             ) {
                 Icon(
                     painter = painterResource(resourceID),
                     contentDescription = "",
-                    modifier = modifier.size(minSize - 8.dp))
+                    modifier = modifier
+                        .size(minSize - 8.dp)
+                )
             }
         }
     }
@@ -109,7 +119,10 @@ object CompanionButtons
             modifier = modifier
                 .heightIn(minSize),
             colors = ButtonDefaults.outlinedButtonColors(),
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            border = BorderStroke(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary
+            ),
             onClick = onClick,
             enabled = isEnabled
         ) {
@@ -119,7 +132,8 @@ object CompanionButtons
                 Icon(
                     painter = painterResource(resourceID),
                     contentDescription = "",
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                    modifier = Modifier
+                        .size(ButtonDefaults.IconSize)
                 )
                 Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
                 Text (

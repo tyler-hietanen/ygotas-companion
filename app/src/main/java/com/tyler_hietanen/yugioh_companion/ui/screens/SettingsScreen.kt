@@ -78,7 +78,8 @@ object SettingsScreen
                 .fillMaxWidth()
         ) {
             // Show large settings text - this page.
-            Text(text = "Settings",
+            Text(
+                text = "Settings",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -95,16 +96,16 @@ object SettingsScreen
             // TODO Quotes configuration.
 
             // Duel(s) configuration.s
-            DuelSettings(applicationViewModel.duelViewModel)
+            DuelSettings(duelViewModel =  applicationViewModel.duelViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // House Rule(s) configuration.
-            HouseRulesSettings(applicationViewModel.houseRulesViewModel)
+            HouseRulesSettings(houseRulesViewModel = applicationViewModel.houseRulesViewModel)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // At the very end, show a wonder Kuriboh.
             Image(
-                painter = painterResource(R.drawable.wonder_kuriboh),
+                painter = painterResource(id = R.drawable.wonder_kuriboh),
                 contentDescription = "",
                 modifier = Modifier.fillMaxWidth()
             )
@@ -127,8 +128,9 @@ object SettingsScreen
     @Composable
     private fun GithubSection(context: Context)
     {
-        Column (modifier = Modifier
-            .fillMaxWidth(),
+        Column (
+            modifier = Modifier
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -139,7 +141,9 @@ object SettingsScreen
             )
 
             // Button to link to project.
-            IconTextButton(modifier = Modifier.fillMaxWidth(0.9f),
+            IconTextButton(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f),
                 resourceID = R.drawable.github_mark,
                 buttonText = "Project Source Code.",
                 isEnabled = true,
@@ -169,9 +173,8 @@ object SettingsScreen
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-            // Starts displaying settings.
-            // Text so they know what they're modifying it for.
-            Text(text = "-- Duel Settings --",
+            Text(
+                text = "-- Duel Settings --",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -213,9 +216,8 @@ object SettingsScreen
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-            // Starts displaying settings.
-            // Text so they know what they're modifying it for.
-            Text(text = "-- House Rule(s) Settings --",
+            Text(
+                text = "-- House Rule(s) Settings --",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -279,16 +281,22 @@ object SettingsScreen
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp),
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 4.dp
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = settingsText,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f),
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(
+                modifier = Modifier
+                    .width(16.dp))
             Switch(
                 checked = isChecked,
                 onCheckedChange = onCheckedChange,

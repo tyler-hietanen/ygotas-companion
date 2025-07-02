@@ -73,7 +73,10 @@ object CompanionBottomNavigationBar
                                     else {
                                         item.unselectedIcon
                                     }
-                                    Icon(painter = painterResource(resourceID!!), contentDescription = item.title)
+                                    Icon(
+                                        painter = painterResource(resourceID!!),
+                                        contentDescription = item.title
+                                    )
                                 }
                             )
                         }

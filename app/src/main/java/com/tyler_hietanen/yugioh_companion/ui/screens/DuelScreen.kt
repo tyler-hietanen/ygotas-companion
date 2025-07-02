@@ -59,7 +59,10 @@ object DuelScreen
         val scrollState = rememberScrollState()
 
         // Actually draw.
-        Column (modifier = Modifier.verticalScroll(scrollState)) {
+        Column (
+            modifier = Modifier
+                .verticalScroll(scrollState)
+        ) {
             // Reset button (always enabled).
             TextButton(
                 modifier = Modifier
@@ -76,7 +79,8 @@ object DuelScreen
                 playerOneName = duelist1.name,
                 playerOneLifePoints = duelist1.lifePoints,
                 playerTwoName = duelist2.name,
-                playerTwoLifePoints = duelist2.lifePoints)
+                playerTwoLifePoints = duelist2.lifePoints
+            )
 
             HorizontalDivider(modifier = Modifier.padding(8.dp, 0.dp))
 
@@ -171,27 +175,41 @@ object DuelScreen
     @Composable
     private fun PlayerSection(playerOneName: String, playerOneLifePoints: Int, playerTwoName: String, playerTwoLifePoints: Int)
     {
-        Row (modifier = Modifier.fillMaxWidth()
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
         ){
-            Column (modifier = Modifier.weight(1f)){
+            Column (
+                modifier = Modifier
+                    .weight(1f)
+            ){
                 PlayerTitleText(
                     name = playerOneName,
                     modifier = Modifier
-                        .fillMaxWidth())
-                LifePointsText(lifePoints = playerOneLifePoints,
+                        .fillMaxWidth()
+                )
+                LifePointsText(
+                    lifePoints = playerOneLifePoints,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    fontSize = 56.sp)
+                    fontSize = 56.sp
+                )
             }
-            Column (modifier = Modifier.weight(1f)){
+            Column (
+                modifier = Modifier
+                    .weight(1f)
+            ){
                 PlayerTitleText(
                     name = playerTwoName,
                     modifier = Modifier
-                        .fillMaxWidth())
-                LifePointsText(lifePoints = playerTwoLifePoints,
+                        .fillMaxWidth()
+                )
+                LifePointsText(
+                    lifePoints = playerTwoLifePoints,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    fontSize = 56.sp)
+                    fontSize = 56.sp
+                )
             }
         }
     }
@@ -216,7 +234,8 @@ object DuelScreen
         ) {
             Text(
                 text = name,
-                modifier.padding(4.dp),
+                modifier = modifier
+                    .padding(4.dp),
                 textAlign = TextAlign.Center,
                 style = Typography.titleLarge,
             )
@@ -258,11 +277,15 @@ object DuelScreen
     @Composable
     private fun LifePointModificationSection(isLocked: Boolean, lifePoints: Int, onClick: (playerSlot: PlayerSlot, doAdd: Boolean) -> Unit)
     {
-        Row (modifier = Modifier.fillMaxWidth()
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
         ){
-            Column (modifier = Modifier
-                .weight(3.5f)
-                .padding(4.dp)) {
+            Column (
+                modifier = Modifier
+                    .weight(3.5f)
+                    .padding(4.dp)
+            ) {
                 AddSubtractButton(
                     isAdd = true,
                     playerSlotTarget = PlayerSlot.PLAYER_ONE,
@@ -283,10 +306,14 @@ object DuelScreen
             LifePointsText(
                 lifePoints = lifePoints,
                 modifier = Modifier
-                    .weight(3f), 36.sp)
-            Column (modifier = Modifier
-                .weight(3.5f)
-                .padding(4.dp)) {
+                    .weight(3f),
+                fontSize = 36.sp
+            )
+            Column (
+                modifier = Modifier
+                    .weight(3.5f)
+                    .padding(4.dp)
+            ) {
                 AddSubtractButton(
                     isAdd = true,
                     playerSlotTarget = PlayerSlot.PLAYER_TWO,
@@ -354,7 +381,9 @@ object DuelScreen
     @Composable
     private fun CoinDiceClearSection(isLocked: Boolean, onDiceRollClick: () -> Unit, onClearClick: () -> Unit, onCoinFlipClick: () -> Unit)
     {
-        Row (modifier = Modifier.fillMaxWidth()
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
         ){
             IconButton(
                 modifier = Modifier
@@ -373,7 +402,6 @@ object DuelScreen
                 isEnabled = isLocked,
                 onClick = {
                     onClearClick()
-
                 }
             )
             IconButton(
@@ -401,9 +429,10 @@ object DuelScreen
     @Composable
     private fun CalculatorNumberRow(isLocked: Boolean, first: Int, second: Int, third: Int, onNumberClick: (number: Int) -> Unit)
     {
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
         ){
             TextButton(
                 modifier = Modifier
@@ -445,9 +474,10 @@ object DuelScreen
     @Composable
     private fun CalculatorMultiplicationRow(isLocked: Boolean, onMultiplyClick: (number: Int) -> Unit)
     {
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
         ){
             TextButton(
                 modifier = Modifier

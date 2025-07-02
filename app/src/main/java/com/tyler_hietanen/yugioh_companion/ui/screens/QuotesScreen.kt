@@ -18,6 +18,6 @@ fun QuotesScreenComposable(navController: NavHostController)
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center)
     {
-        Text("Under Development")
+        Text("Under (Active) Development")
     }
 }

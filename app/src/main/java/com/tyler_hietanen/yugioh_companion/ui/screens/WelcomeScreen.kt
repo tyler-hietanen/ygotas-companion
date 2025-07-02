@@ -112,20 +112,23 @@ object WelcomeScreen
 
         // Actually draw.
         Column {
-            Text(text = WELCOME_SCREEN_TITLE,
+            Text(
+                text = WELCOME_SCREEN_TITLE,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
                 fontSize = 30.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
-                )
+            )
             HorizontalDivider(modifier = Modifier)
-            Text(text = WELCOME_SCREEN_BODY,
+            Text(
+                text = WELCOME_SCREEN_BODY,
                 style = Typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp))
+                    .padding(8.dp)
+            )
             Column (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -134,11 +137,17 @@ object WelcomeScreen
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row (modifier = Modifier) {
-                    Column (modifier = Modifier.weight(1f)){
+                    Column (
+                        modifier = Modifier
+                            .weight(1f)
+                    ){
                         NavCardComposable(navCardItems[0])
                         NavCardComposable(navCardItems[2])
                     }
-                    Column (modifier = Modifier.weight(1f)){
+                    Column (
+                        modifier = Modifier
+                            .weight(1f)
+                    ){
                         NavCardComposable(navCardItems[1])
                         NavCardComposable(navCardItems[3])
                     }
