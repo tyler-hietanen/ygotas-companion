@@ -10,7 +10,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.tyler_hietanen.yugioh_companion.business.quotes.Quote
+import com.tyler_hietanen.yugioh_companion.business.quotes.QuotesFileHelper
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
+import kotlinx.coroutines.launch
 
 class QuotesViewModel: ViewModel()
 {
@@ -24,8 +28,8 @@ class QuotesViewModel: ViewModel()
     val isImportingQuotes: State<Boolean> = _isImportingQuotes
 
     // Exposes a list of (eventually) quotes to be observed. If this is an empty list, then there are no quotes loaded into the application.
-    private val _quotes = mutableStateListOf<String>()
-    val quotes: List<String> = _quotes
+    private val _quotes = mutableStateListOf<Quote>()
+    val quotes: List<Quote> = _quotes
 
     //endregion
 
@@ -70,6 +74,55 @@ class QuotesViewModel: ViewModel()
      **************************************************************************************************************************************/
     fun onImportQuotes(context: Context, fileUri: Uri)
     {
+        // Must be run from view model scope, since it runs with context.
+        viewModelScope.launch {
+            // Stores information associated with the quotes.
+            var numberFilesFound: Int = 0
+            var numberQuotesFound: Int = 0
+            var numberQuotesSkipped: Int = 0
+            var numberQuotesLoaded: Int = 0
+
+            // Flags that the system is busy loading quote(s).
+            _isImportingQuotes.value = true
+
+            // Start by first extracting all the files from within the zipped folder (if any were found).
+            val didExtractQuotes = QuotesFileHelper.extractZippedFileContentToTemp(context, fileUri)
+            if (didExtractQuotes)
+            {
+                // TODO.
+
+
+            }
+            else
+            {
+                // Unable to extract files.
+                _applicationViewModel.showUserMessage("Unable to extract files from zipped file. Are you sure there's files there?")
+            }
+
+            // Success or failure, finished.
+            _isImportingQuotes.value = false
+
+            /*
+
+
+            // Grab the contents and check if it is not null (no issues occurred on read).
+            val rulesContent = HouseRulesFileHelper.readHouseRulesContentFromUri(context, fileUri)
+            if ((rulesContent != null) && (rulesContent.isNotEmpty()))
+            {
+                // Successfully loaded a file (That has content)! Save house rules to memory for later usage.
+                didImportHouseRules = HouseRulesFileHelper.saveHouseRulesToStorage(context, rulesContent)
+                if (!didImportHouseRules)
+                {
+                    // This means it was unable to save to memory (for whatever reason).
+                    _applicationViewModel.showUserMessage("Loaded house rules, but unable to save to memory.")
+                    didImportHouseRules = true
+                }
+
+                // Set the current content.
+                _houseRulesContent.value = rulesContent
+            }
+            */
+        }
         // TODO.
     }
 

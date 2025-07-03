@@ -18,6 +18,8 @@ Quotes can be imported from the **Quotes** or **Settings** pages.
 
 This application has been tested to use **.wav** files, and no other file formats.
 
+Quotes should be imported as a zipped folder, with only files at the root level. The app may reject the contents if the zipped file contains any nested folders.
+
 Every audio file that is imported as part of this must have custom metadata as part of the file - as this is used by the application to help identify the sound quotes and various information associated with them. Not including any metadata may cause the app to reject the files.
 It is recommended to use a free program like Mp3Tag (https://www.mp3tag.de/en/) to modify a sound file's metadata.
 
