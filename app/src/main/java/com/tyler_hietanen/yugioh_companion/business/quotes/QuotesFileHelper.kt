@@ -16,6 +16,16 @@ import java.util.zip.ZipInputStream
 object QuotesFileHelper
 {
     /***************************************************************************************************************************************
+     *      Constants
+     **************************************************************************************************************************************/
+    //region Constants
+
+    // Audio file format.
+    private const val AUDIO_FILE_FORMAT_EXTENSION = "wav"
+
+    //endregion
+
+    /***************************************************************************************************************************************
      *      Public Methods
      **************************************************************************************************************************************/
     //region Public Methods
@@ -88,6 +98,67 @@ object QuotesFileHelper
         }
 
         return didExtractAFile
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    getTempFileCount
+     *       Parameters:    content
+     *          Returns:    Int
+     *                          - Number of files within the temp folder.
+     *      Description:    Counts the number of files within the temp folder.
+     *             Note:    Should be called only after extracting from a zipped folder.
+     **************************************************************************************************************************************/
+    fun getTempFileCount(context: Context): Int
+    {
+        // Setup return.
+        var fileCount: Int? = 0
+
+        // Get file and attempt to source count.
+        val tempDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
+        if (tempDirectory.exists())
+        {
+            // Set file count to the list of files (if it can be sourced).
+            fileCount = tempDirectory.listFiles()?.count()
+        }
+
+        return fileCount ?: 0
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    trimForAudioFiles
+     *       Parameters:    content
+     *          Returns:    Int
+     *                          - Number of (audio) files within the temp folder.
+     *      Description:    Trims the temp folder, deleting any non-audio files. Returns a count of files remaining.
+     *             Note:    Should be called only after extracting from a zipped folder.
+     **************************************************************************************************************************************/
+    fun trimForAudioFiles(context: Context): Int
+    {
+        // Setup return.
+        var audioFileCount: Int = 0
+
+        // Get source directory and start souring.
+        val tempDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
+        if (tempDirectory.exists())
+        {
+            // Get a list of files.
+            val fileList = tempDirectory.listFiles()
+            fileList?.forEach { file ->
+                // Check extension.
+                if (file.extension == AUDIO_FILE_FORMAT_EXTENSION)
+                {
+                    // Matching extension. Keep this file.
+                    audioFileCount++
+                }
+                else
+                {
+                    // Doesn't match extension. Delete this file.
+                    file.delete()
+                }
+            }
+        }
+
+        return audioFileCount
     }
 
     //endregion

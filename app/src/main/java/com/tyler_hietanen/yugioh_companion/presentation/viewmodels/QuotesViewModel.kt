@@ -79,8 +79,6 @@ class QuotesViewModel: ViewModel()
             // Stores information associated with the quotes.
             var numberFilesFound: Int = 0
             var numberQuotesFound: Int = 0
-            var numberQuotesSkipped: Int = 0
-            var numberQuotesLoaded: Int = 0
 
             // Flags that the system is busy loading quote(s).
             _isImportingQuotes.value = true
@@ -89,6 +87,13 @@ class QuotesViewModel: ViewModel()
             val didExtractQuotes = QuotesFileHelper.extractZippedFileContentToTemp(context, fileUri)
             if (didExtractQuotes)
             {
+                // At least a single quote was imported. Start by capturing the (total) number of files.
+                numberFilesFound = QuotesFileHelper.getTempFileCount(context)
+
+                // Trim non-audio files (get number of audio files).
+                numberQuotesFound = QuotesFileHelper.trimForAudioFiles(context)
+
+
                 // TODO.
 
 
