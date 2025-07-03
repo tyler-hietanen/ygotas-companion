@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.QuotesViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ class ApplicationViewModel: ViewModel()
     // Note: It is imperative that these are set, by the appropriate reference setters, before they're accessed by any other components.
     lateinit var duelViewModel: DuelViewModel
     lateinit var houseRulesViewModel: HouseRulesViewModel
+    lateinit var quotesViewModel: QuotesViewModel
 
     // The current destination of the application.
     // Note: This is meant to be an observable property for other ViewModels or View components, to allow them to reflect based upon the
@@ -71,6 +73,18 @@ class ApplicationViewModel: ViewModel()
     fun setHouseRulesViewModelReference(houseRulesViewModel: HouseRulesViewModel)
     {
         this.houseRulesViewModel = houseRulesViewModel
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    setQuotesViewModelReference
+     *       Parameters:    quotesViewModel
+     *                          - (Quotes) ViewModel.
+     *          Returns:    None.
+     *      Description:    Sets the reference to the Quotes View Model object.
+     **************************************************************************************************************************************/
+    fun setQuotesViewModelReference(quotesViewModel: QuotesViewModel)
+    {
+        this.quotesViewModel = quotesViewModel
     }
 
     /***************************************************************************************************************************************

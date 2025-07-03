@@ -110,7 +110,7 @@ object HouseRulesScreen
         ){
             // Sad Kuriboh icon.
             Image(
-                painter = painterResource(R.drawable.sad_kuriboh),
+                painter = painterResource(R.drawable.angry_kuriboh),
                 contentDescription = "",
                 modifier = Modifier.size(240.dp)
             )
@@ -119,16 +119,16 @@ object HouseRulesScreen
 
             // Text block.
             Text(
-                text = "No House Rules have been loaded. That makes Kuriboh sad...",
+                text = "No House Rules have been loaded. That pisses Kuriboh off!",
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Kuriboh doesn't like unmanaged Yu-Gi-Oh (He's terrified of the Yu-Gi-Oh meta).",
+                text = "Kuriboh hates modern Yu-Gi-Oh (Especially hand traps - fuck hand traps).",
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "You don't want to make Kuriboh sad, do you? Why don't you import some house rules?",
+                text = "You don't want to make Kuriboh angry, do you? Why don't you import some house rules?",
             )
 
             // Import house rules button.

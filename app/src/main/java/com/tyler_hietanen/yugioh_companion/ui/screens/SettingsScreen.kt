@@ -1,6 +1,6 @@
 /*******************************************************************************************************************************************
  *           Source:    SettingsScreen.kt
- *      Description:    Contains content for the Duel Screen.
+ *      Description:    Contains content for the Settings Screen.
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.yugioh_companion.ui.screens
 

@@ -25,6 +25,7 @@ import com.tyler_hietanen.yugioh_companion.navigation.ApplicationNavigationHost
 import com.tyler_hietanen.yugioh_companion.navigation.Destination
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.HouseRulesViewModel
+import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.QuotesViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -68,17 +69,20 @@ class MainActivity : ComponentActivity()
         // Create view model(s).
         val duelViewModel: DuelViewModel by viewModels()
         val houseRulesViewModel: HouseRulesViewModel by viewModels()
+        val quotesViewModel: QuotesViewModel by viewModels ()
 
         // Only call initialization functions for a new launch.
         if (isNewLaunch)
         {
             duelViewModel.initialize(_applicationViewModel, settingsRepository)
             houseRulesViewModel.initialize(_applicationViewModel, application.applicationContext)
+            quotesViewModel.initialize(_applicationViewModel, application.applicationContext)
         }
 
         // Set reference(s).
         _applicationViewModel.setDuelistViewModelReference(duelViewModel)
         _applicationViewModel.setHouseRulesViewModelReference(houseRulesViewModel)
+        _applicationViewModel.setQuotesViewModelReference(quotesViewModel)
 
         // Sets app content.
         setContent {
@@ -129,7 +133,7 @@ class MainActivity : ComponentActivity()
             {
                 LaunchedEffect(Unit) {
                     delay(500)
-                    ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.SETTINGS, _applicationViewModel)
+                    ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.QUOTES, _applicationViewModel)
                 }
             }
         }

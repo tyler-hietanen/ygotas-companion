@@ -13,7 +13,7 @@ import androidx.navigation.compose.composable
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.ui.screens.DuelScreen
 import com.tyler_hietanen.yugioh_companion.ui.screens.HouseRulesScreen
-import com.tyler_hietanen.yugioh_companion.ui.screens.QuotesScreenComposable
+import com.tyler_hietanen.yugioh_companion.ui.screens.QuotesScreen
 import com.tyler_hietanen.yugioh_companion.ui.screens.SettingsScreen
 import com.tyler_hietanen.yugioh_companion.ui.screens.WelcomeScreen
 
@@ -102,7 +102,7 @@ object ApplicationNavigationHost
                         }
                         Destination.QUOTES ->
                         {
-                            QuotesScreenComposable(navController = controller)
+                            QuotesScreen.DrawScreen(applicationViewModel)
                         }
                         Destination.DUEL ->
                         {
