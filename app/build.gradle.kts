@@ -50,7 +50,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.datastore)
     implementation(libs.markwon.core)
-    implementation(libs.j.audio.tagger)
+    implementation(libs.jaudiotagger)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

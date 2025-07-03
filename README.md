@@ -61,3 +61,9 @@ Note: Full credit to the Kuriboh icons goes to Maxiuchiha22 on DeviantArt
 - https://www.deviantart.com/maxiuchiha22/art/Kuriboh-render-4-Monster-Strike-855820171
 - https://www.deviantart.com/maxiuchiha22/art/Kuriboh-render-3-Monster-Strike-855820164
 - https://www.deviantart.com/maxiuchiha22/art/Kuriboh-render-Puzzle-and-Dragons-851290383
+
+**Utilized third-party libraries:**
+- (JAudioTagger): https://www.jthink.net/jaudiotagger/
+  - Used for importing of custom tag metadata from audio files.
+- (Markwon): https://github.com/noties/Markwon
+  - Used for displaying markdown text.
