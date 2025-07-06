@@ -119,7 +119,7 @@ object QuotesScreen
             CompanionButtons.IconTextButtonWithProgress(
                 modifier = Modifier,
                 resourceID = R.drawable.add_filled,
-                buttonText = "Import Quotes.",
+                buttonText = "Import new quote package.",
                 isLoading = isImporting,
                 minSize = 40.dp,
                 onClick = {

@@ -60,6 +60,7 @@ class QuotesViewModel: ViewModel()
         _applicationViewModel = applicationViewModel
 
         // Load quotes from storage (if they exist).
+        //QuotesFileHelper.requestFileConsolidation(false, context)
         // TODO.
 
         // Set values to default states.
@@ -76,34 +77,31 @@ class QuotesViewModel: ViewModel()
     {
         // Must be run from view model scope, since it runs with context.
         viewModelScope.launch {
-            // Stores information associated with the quotes.
-            var numberFilesFound: Int = 0
-            var numberQuotesFound: Int = 0
-
             // Flags that the system is busy loading quote(s).
             _isImportingQuotes.value = true
 
             // Start by first extracting all the files from within the zipped folder (if any were found).
-            val didExtractQuotes = QuotesFileHelper.extractZippedFileContentToTemp(context, fileUri)
+            var didExtractQuotes = QuotesFileHelper.extractAudioFilesFromZippedFolder(context, fileUri)
             if (didExtractQuotes)
             {
-                // At least a single quote was imported. Start by capturing the (total) number of files.
-                numberFilesFound = QuotesFileHelper.getTempFileCount(context)
+                // Requests a consolidation of files.
+                // Note: This may take considerable time.
+                val newQuoteList: List<Quote> = QuotesFileHelper.requestQuoteConsolidation(true, context)
 
-                // Trim non-audio files (get number of audio files).
-                numberQuotesFound = QuotesFileHelper.trimForAudioFiles(context)
-
-                // Request a new list of quotes from the directory (Doesn't yet copy them to the permanent folder).
-                val extractedQuotes = QuotesFileHelper.extractQuotes(context)
-
-                // Go through every internal quote (if any exist) and look for matches. Throw out any matches in the temp list. Then
-                // manually go through every remaining quote to copy to permanent folder and add to permanent list.
-                // TODO Do this in FileHelper instead.
+                // Check for success at import.
+                didExtractQuotes = newQuoteList.isNotEmpty()
+                if (didExtractQuotes)
+                {
+                    _quoteList.clear()
+                    _quoteList.addAll(newQuoteList)
+                }
             }
-            else
+
+            // Check for failure.
+            if (!didExtractQuotes)
             {
                 // Unable to extract files.
-                _applicationViewModel.showUserMessage("Unable to extract files from zipped file. Are you sure there's files there?")
+                _applicationViewModel.showUserMessage("Unable to import new quotes. Are you sure valid files were selected?")
             }
 
             // Success or failure, finished.

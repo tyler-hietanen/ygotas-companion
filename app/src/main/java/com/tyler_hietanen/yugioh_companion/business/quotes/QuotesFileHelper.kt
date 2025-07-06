@@ -9,6 +9,7 @@ import android.net.Uri
 import com.tyler_hietanen.yugioh_companion.business.settings.AppStorageConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okio.IOException
 import org.jaudiotagger.audio.AudioFile
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.Tag
@@ -16,6 +17,8 @@ import org.jaudiotagger.tag.id3.AbstractID3v2Frame
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTXXX
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.zip.ZipInputStream
 
 object QuotesFileHelper
@@ -48,14 +51,16 @@ object QuotesFileHelper
     //region Public Methods
 
     /***************************************************************************************************************************************
-     *           Method:    extractZippedFileContentToTemp
+     *           Method:    extractAudioFilesFromZippedFolder
      *       Parameters:    content
      *                      fileUri
      *          Returns:    Boolean
      *                          - Whether at least one file was copied (true) or not (false).
-     *      Description:    Extracts the contents of a folder (root-level files) to the temp folder.
+     *      Description:    Extracts the contents of a folder (root-level files) to a temporary folder in the app space.
+     *             Note:    requestFileConsolidation() should be called once this is complete (and valid), in order to actually import a
+     *                      list of quotes.
      **************************************************************************************************************************************/
-    suspend fun extractZippedFileContentToTemp(context: Context, fileUri: Uri): Boolean
+    suspend fun extractAudioFilesFromZippedFolder(context: Context, fileUri: Uri): Boolean
     {
         var didExtractAFile = false
         withContext(Dispatchers.IO)
@@ -118,103 +123,31 @@ object QuotesFileHelper
     }
 
     /***************************************************************************************************************************************
-     *           Method:    getTempFileCount
-     *       Parameters:    content
-     *          Returns:    Int
-     *                          - Number of files within the temp folder.
-     *      Description:    Counts the number of files within the temp folder.
-     *             Note:    Should be called only after extracting from a zipped folder.
-     **************************************************************************************************************************************/
-    fun getTempFileCount(context: Context): Int
-    {
-        // Setup return.
-        var fileCount: Int? = 0
-
-        // Get file and attempt to source count.
-        val tempDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
-        if (tempDirectory.exists())
-        {
-            // Set file count to the list of files (if it can be sourced).
-            fileCount = tempDirectory.listFiles()?.count()
-        }
-
-        return fileCount ?: 0
-    }
-
-    // TODO Room for improvement. I think the trim, extract and move methods can maybe be combined into one. To avoid repeated looping?
-
-    /***************************************************************************************************************************************
-     *           Method:    trimForAudioFiles
-     *       Parameters:    content
-     *          Returns:    Int
-     *                          - Number of (audio) files within the temp folder.
-     *      Description:    Trims the temp folder, deleting any non-audio files. Returns a count of files remaining.
-     *             Note:    Should be called only after extracting from a zipped folder.
-     **************************************************************************************************************************************/
-    fun trimForAudioFiles(context: Context): Int
-    {
-        // Setup return.
-        var audioFileCount: Int = 0
-
-        // Get source directory and start souring.
-        val tempDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
-        if (tempDirectory.exists())
-        {
-            // Get a list of files.
-            val fileList = tempDirectory.listFiles()
-            fileList?.forEach { file ->
-                // Check extension.
-                if (file.extension == AUDIO_FILE_FORMAT_EXTENSION)
-                {
-                    // Matching extension. Keep this file.
-                    audioFileCount++
-                }
-                else
-                {
-                    // Doesn't match extension. Delete this file.
-                    file.delete()
-                }
-            }
-        }
-
-        return audioFileCount
-    }
-
-    /***************************************************************************************************************************************
-     *           Method:    extractQuotes
-     *       Parameters:    content
+     *           Method:    requestQuoteConsolidation
+     *       Parameters:    doImportNew
+     *                          - Whether a new package should be used.
+     *                      context
      *          Returns:    List<Quote>
-     *                          - List of extracted quotes (may be empty).
-     *      Description:    Generates a list of quotes based on the files from the temp folder.
-     *             Note:    Should be called only after extracting from a zipped folder. Does not actually remove files from folder.
+     *                          - List of quotes that have been imported.
+     *      Description:    Requests a list of quotes for the application.
+     *             Note:    Calling this with a doImportNew of true will delete all files internally, once some have been imported, and set
+     *                      the new list with the files imported from the package.
+     *                      Should only be called with true if files have already been extracted.
      **************************************************************************************************************************************/
-    fun extractQuotes(context: Context): List<Quote>
+    fun requestQuoteConsolidation(doImportNew: Boolean, context: Context): List<Quote>
     {
-        // Create new list of quotes to contain extracted ones.
-        val extractedQuotes = mutableListOf<Quote>()
-
-        // Get temp directory.
-        val tempDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
-        if (tempDirectory.exists())
+        // Determines how to handle.
+        return if (doImportNew)
         {
-            // Able to access directory. Start by iterating through every available file within the directory (Assumes it was cleaned first).
-            val fileList = tempDirectory.listFiles()
-            fileList?.forEach { file ->
-                // Attempt to get a quote from said file.
-                val quote = generateQuote(file)
-                if (quote != null)
-                {
-                    // This is a valid quote. Add to list.
-                    extractedQuotes.add(quote)
-                }
-            }
+            // Needs to consolidate the import directory.
+            consolidateImportPackage(context)
         }
-        // Else not needed. Will return empty list of quotes.
-
-        return extractedQuotes.toList()
+        else
+        {
+            // No need to import new files. Just returns a list of quotes that match the currently-saved quotes.
+            consolidateInternalDirectory(context)
+        }
     }
-
-    // TODO Replace extract quotes with reconcileQuotes (Optional directory, to indicate where to source from. Otherwise, defaults to quotes).
 
     //endregion
 
@@ -248,6 +181,177 @@ object QuotesFileHelper
         {
             fileOrFolder.delete()
         }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    copyAllFiles
+     *       Parameters:    sourceDirectory
+     *                      targetDirectory
+     *          Returns:    None.
+     *      Description:    Copies all files from source directory to target directory.
+     *             Note:    Does not copy nested directories.
+     **************************************************************************************************************************************/
+    private fun copyAllFiles(sourceDirectory: File, targetDirectory: File)
+    {
+        // Create target directory (if it doesn't already exist).
+        if (!targetDirectory.exists())
+        {
+            targetDirectory.mkdirs()
+        }
+
+        // Validate.
+        var isSafe = true
+        isSafe = isSafe && sourceDirectory.isDirectory
+        isSafe = isSafe && sourceDirectory.exists()
+        isSafe = isSafe && targetDirectory.isDirectory
+        isSafe = isSafe && targetDirectory.exists()
+        if (!isSafe)
+        {
+            throw IOException("Cannot copy files. Directory(s) do no exist.")
+        }
+
+        // Assumes safety. Start by getting a list of files to copy (Only copies files, not directories).
+        val filesToCopy = sourceDirectory.listFiles { file -> file.isFile}
+        filesToCopy?.forEach { file ->
+            val targetCopyFile = File(targetDirectory, file.name)
+            try
+            {
+                Files.copy(file.toPath(), targetCopyFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+            catch (_: IOException)
+            {
+                throw IOException("Unable to copy a file. Something went wrong.")
+            }
+        }
+        // Else not considered. No files to copy, already good to go.
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    consolidateImportDirectory
+     *       Parameters:    context
+     *          Returns:    List<Quote>
+     *                          - New consolidated list of quotes. Set as empty list if no files were imported, otherwise set as the new
+     *                          source of truth when it comes to a list of quotes.
+     *      Description:    Manages importing new quotes (if they exist) and consolidating them with the quotes stored within the app.
+     **************************************************************************************************************************************/
+    private fun consolidateImportPackage(context: Context): List<Quote>
+    {
+        // List of quotes, to be returned. Setup as empty list to start.
+        var newQuoteList: List<Quote> = mutableListOf()
+
+        // Start by trimming non-audio files.
+        if (trimForAudioFiles(context) > 0)
+        {
+            // Extracting from temporary directory. Get file for it.
+            val directory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
+
+            // Source new list of quotes and check for contents.
+            val quoteList = extractQuotes(directory)
+            if (quoteList.isNotEmpty())
+            {
+                // There's new quotes. Go ahead and delete all saved quotes (in quotes folder).
+                val file = File(context.filesDir, AppStorageConstants.QUOTES_DIRECTORY)
+                deleteFilesRecursively(file, false)
+
+                // Now copy all from temporary folder.
+                val sourceDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
+                val targetDirectory = File(context.filesDir, AppStorageConstants.QUOTES_DIRECTORY)
+                copyAllFiles(sourceDirectory, targetDirectory)
+
+                // If it got this far, set return list.
+                newQuoteList = quoteList.toList()
+            }
+        }
+        // Else not considered. Returns empty list by default.
+
+        return newQuoteList
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    consolidateInternalDirectory
+     *       Parameters:    context
+     *          Returns:    List<Quote>
+     *                          - List of quotes loaded from the quotes directory.
+     *      Description:    Creates a list of quotes from already-imported audio files.
+     **************************************************************************************************************************************/
+    private fun consolidateInternalDirectory(context: Context): List<Quote>
+    {
+        // TODO.
+        return emptyList()
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    trimForAudioFiles
+     *       Parameters:    context
+     *          Returns:    Int
+     *                          - Number of (audio) files within the temp folder.
+     *      Description:    Trims the temp folder, deleting any non-audio files. Returns a count of files remaining.
+     *             Note:    Should be called only after extracting from a zipped folder.
+     **************************************************************************************************************************************/
+    private fun trimForAudioFiles(context: Context): Int
+    {
+        // Setup return.
+        var audioFileCount: Int = 0
+
+        // Get source directory and start souring.
+        val tempDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
+        if (tempDirectory.exists())
+        {
+            // Get a list of files.
+            val fileList = tempDirectory.listFiles()
+            fileList?.forEach { file ->
+                // Check extension.
+                if (file.extension == AUDIO_FILE_FORMAT_EXTENSION)
+                {
+                    // Matching extension. Keep this file.
+                    audioFileCount++
+                }
+                else
+                {
+                    // Doesn't match extension. Delete this file.
+                    file.delete()
+                }
+            }
+        }
+
+        return audioFileCount
+    }
+
+
+    /***************************************************************************************************************************************
+     *           Method:    extractQuotes
+     *       Parameters:    content
+     *          Returns:    List<Quote>
+     *                          - List of extracted quotes (may be empty).
+     *      Description:    Generates a list of quotes based on the files from the temp folder.
+     *             Note:    Should be called only after extracting from a zipped folder. Does not actually remove files from folder.
+     **************************************************************************************************************************************/
+    private fun extractQuotes(directory: File): List<Quote>
+    {
+        // Create new list of quotes to contain extracted ones.
+        val extractedQuotes = mutableListOf<Quote>()
+        if (directory.exists())
+        {
+            // Able to access directory. Start by iterating through every available file within the directory (Assumes it was cleaned first).
+            val fileList = directory.listFiles()
+            fileList?.forEach { file ->
+                // Attempt to get a quote from said file.
+                val quote = generateQuote(file)
+                if (quote != null)
+                {
+                    // This is a valid quote. Add to list.
+                    extractedQuotes.add(quote)
+                }
+                else
+                {
+                    // Not a valid quote. Delete it.
+                    file.delete()
+                }
+            }
+        }
+        // Else not needed. Will return empty list of quotes.
+
+        return extractedQuotes.toList()
     }
 
     /***************************************************************************************************************************************
