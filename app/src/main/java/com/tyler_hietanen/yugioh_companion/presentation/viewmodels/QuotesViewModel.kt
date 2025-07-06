@@ -99,6 +99,9 @@ class QuotesViewModel: ViewModel()
                 {
                     _quoteList.clear()
                     _quoteList.addAll(newQuoteList)
+
+                    // Let user know.
+                    _applicationViewModel.showUserMessage("New import package accepted and merged. Enjoy!")
                 }
             }
 
