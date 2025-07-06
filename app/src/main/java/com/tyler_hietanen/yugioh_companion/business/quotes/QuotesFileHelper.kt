@@ -276,8 +276,11 @@ object QuotesFileHelper
      **************************************************************************************************************************************/
     private fun consolidateInternalDirectory(context: Context): List<Quote>
     {
-        // TODO.
-        return emptyList()
+        // Check internal directory.
+        val internalDirectory = File(context.filesDir, AppStorageConstants.QUOTES_DIRECTORY)
+
+        // Return list of extracted quotes.
+        return extractQuotes(internalDirectory)
     }
 
     /***************************************************************************************************************************************

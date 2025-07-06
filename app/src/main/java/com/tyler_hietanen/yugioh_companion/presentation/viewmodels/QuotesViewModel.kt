@@ -60,8 +60,13 @@ class QuotesViewModel: ViewModel()
         _applicationViewModel = applicationViewModel
 
         // Load quotes from storage (if they exist).
-        //QuotesFileHelper.requestFileConsolidation(false, context)
-        // TODO.
+        val loadedQuoteList: List<Quote> = QuotesFileHelper.requestQuoteConsolidation(false, context)
+        if (loadedQuoteList.isNotEmpty())
+        {
+            // Copy over internally.
+            _quoteList.clear()
+            _quoteList.addAll(loadedQuoteList)
+        }
 
         // Set values to default states.
         _isImportingQuotes.value = false
