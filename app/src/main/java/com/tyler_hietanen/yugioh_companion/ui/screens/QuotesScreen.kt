@@ -45,7 +45,7 @@ object QuotesScreen
     {
         // Sources view model(s).
         val quotesViewModel = applicationViewModel.quotesViewModel
-        val listOfQuotes = quotesViewModel.quotes
+        val listOfQuotes = quotesViewModel.quoteList
 
         // Depending on whether quotes are loaded, display different screens.
         if (listOfQuotes.isEmpty())

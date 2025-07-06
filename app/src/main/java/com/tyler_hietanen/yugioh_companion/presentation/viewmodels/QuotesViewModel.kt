@@ -28,8 +28,8 @@ class QuotesViewModel: ViewModel()
     val isImportingQuotes: State<Boolean> = _isImportingQuotes
 
     // Exposes a list of (eventually) quotes to be observed. If this is an empty list, then there are no quotes loaded into the application.
-    private val _quotes = mutableStateListOf<Quote>()
-    val quotes: List<Quote> = _quotes
+    private val _quoteList = mutableStateListOf<Quote>()
+    val quoteList: List<Quote> = _quoteList
 
     //endregion
 
@@ -93,10 +93,12 @@ class QuotesViewModel: ViewModel()
                 // Trim non-audio files (get number of audio files).
                 numberQuotesFound = QuotesFileHelper.trimForAudioFiles(context)
 
+                // Request a new list of quotes from the directory (Doesn't yet copy them to the permanent folder).
+                val extractedQuotes = QuotesFileHelper.extractQuotes(context)
 
-                // TODO.
-
-
+                // Go through every internal quote (if any exist) and look for matches. Throw out any matches in the temp list. Then
+                // manually go through every remaining quote to copy to permanent folder and add to permanent list.
+                // TODO Do this in FileHelper instead.
             }
             else
             {
@@ -106,37 +108,8 @@ class QuotesViewModel: ViewModel()
 
             // Success or failure, finished.
             _isImportingQuotes.value = false
-
-            /*
-
-
-            // Grab the contents and check if it is not null (no issues occurred on read).
-            val rulesContent = HouseRulesFileHelper.readHouseRulesContentFromUri(context, fileUri)
-            if ((rulesContent != null) && (rulesContent.isNotEmpty()))
-            {
-                // Successfully loaded a file (That has content)! Save house rules to memory for later usage.
-                didImportHouseRules = HouseRulesFileHelper.saveHouseRulesToStorage(context, rulesContent)
-                if (!didImportHouseRules)
-                {
-                    // This means it was unable to save to memory (for whatever reason).
-                    _applicationViewModel.showUserMessage("Loaded house rules, but unable to save to memory.")
-                    didImportHouseRules = true
-                }
-
-                // Set the current content.
-                _houseRulesContent.value = rulesContent
-            }
-            */
         }
-        // TODO.
     }
-
-    //endregion
-
-    /***************************************************************************************************************************************
-     *      Private Methods
-     **************************************************************************************************************************************/
-    //region Private Methods
 
     //endregion
 }

@@ -11,6 +11,9 @@ data class Quote(
     // Source.
     var quoteSource: String? = null,
 
+    // Episode number (if relevant).
+    var quoteEpisodeNumber: String? = null,
+
     // Quote text.
     var quoteText: String? = null,
 

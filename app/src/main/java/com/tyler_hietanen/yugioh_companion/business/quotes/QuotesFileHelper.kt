@@ -9,6 +9,11 @@ import android.net.Uri
 import com.tyler_hietanen.yugioh_companion.business.settings.AppStorageConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jaudiotagger.audio.AudioFile
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.Tag
+import org.jaudiotagger.tag.id3.AbstractID3v2Frame
+import org.jaudiotagger.tag.id3.framebody.FrameBodyTXXX
 import java.io.File
 import java.io.FileOutputStream
 import java.util.zip.ZipInputStream
@@ -22,6 +27,18 @@ object QuotesFileHelper
 
     // Audio file format.
     private const val AUDIO_FILE_FORMAT_EXTENSION = "wav"
+
+    // Tag field name (Used for custom type).
+    private const val AUDIO_FILE_TAG_FIELD_NAME = "TXXX"
+
+    // Custom quote tags.
+    private const val TAG_NAME_EPISODE_NUMBER = "EPISODE_NUMBER"
+    private const val TAG_NAME_EPISODE_TITLE = "EPISODE_TITLE"
+    private const val TAG_NAME_QUOTE_TEXT = "QUOTE_TEXT"
+    private const val TAG_NAME_TAGS = "TAGS"
+
+    // Tag delimiter.
+    private const val TAGS_DELIMITER = ','
 
     //endregion
 
@@ -124,6 +141,8 @@ object QuotesFileHelper
         return fileCount ?: 0
     }
 
+    // TODO Room for improvement. I think the trim, extract and move methods can maybe be combined into one. To avoid repeated looping?
+
     /***************************************************************************************************************************************
      *           Method:    trimForAudioFiles
      *       Parameters:    content
@@ -161,6 +180,42 @@ object QuotesFileHelper
         return audioFileCount
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    extractQuotes
+     *       Parameters:    content
+     *          Returns:    List<Quote>
+     *                          - List of extracted quotes (may be empty).
+     *      Description:    Generates a list of quotes based on the files from the temp folder.
+     *             Note:    Should be called only after extracting from a zipped folder. Does not actually remove files from folder.
+     **************************************************************************************************************************************/
+    fun extractQuotes(context: Context): List<Quote>
+    {
+        // Create new list of quotes to contain extracted ones.
+        val extractedQuotes = mutableListOf<Quote>()
+
+        // Get temp directory.
+        val tempDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
+        if (tempDirectory.exists())
+        {
+            // Able to access directory. Start by iterating through every available file within the directory (Assumes it was cleaned first).
+            val fileList = tempDirectory.listFiles()
+            fileList?.forEach { file ->
+                // Attempt to get a quote from said file.
+                val quote = generateQuote(file)
+                if (quote != null)
+                {
+                    // This is a valid quote. Add to list.
+                    extractedQuotes.add(quote)
+                }
+            }
+        }
+        // Else not needed. Will return empty list of quotes.
+
+        return extractedQuotes.toList()
+    }
+
+    // TODO Replace extract quotes with reconcileQuotes (Optional directory, to indicate where to source from. Otherwise, defaults to quotes).
+
     //endregion
 
     /***************************************************************************************************************************************
@@ -193,6 +248,95 @@ object QuotesFileHelper
         {
             fileOrFolder.delete()
         }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    generateQuote
+     *       Parameters:    file
+     *          Returns:    Quote?
+     *                          - Generated quote (if it exists).
+     *      Description:    Reads a potential file to check if it contains metadata. Generates an appropriate quote object.
+     **************************************************************************************************************************************/
+    private fun generateQuote(file: File): Quote?
+    {
+        // Setup return quote. Set to null, for now.
+        var returnQuote: Quote? = null
+
+        // Setup working variables.
+        val metaDataTagsList = mutableListOf<AudioFileMetadataField>()
+
+        // Make sure that the file actually exists.
+        if (file.exists())
+        {
+            // Read the file, and check to see if there are any tags.
+            val audioFile: AudioFile = AudioFileIO.read(file)
+            val tag: Tag? = audioFile.tag
+            if (tag != null)
+            {
+                // Start iterating through all frames in the tag, attempting to find custom identifiers for meta data (TXXX).
+                val frameIterator: Iterator<*> = tag.fields
+                while (frameIterator.hasNext())
+                {
+                    val frame = frameIterator.next()
+
+                    // Verify frame is a ID3v2 frame.
+                    if ((frame is AbstractID3v2Frame) && (frame.identifier == AUDIO_FILE_TAG_FIELD_NAME))
+                    {
+                        // Get the body of the frame.
+                        val frameBody = frame.body
+                        if (frameBody is FrameBodyTXXX)
+                        {
+                            // Create new meta data object with new information, and add to list.
+                            metaDataTagsList.add(
+                                AudioFileMetadataField(
+                                    description = frameBody.description,
+                                    value = frameBody.text
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check to see if there was metadata found (not empty). If there is, then it's likely a quote. Start building it.
+        if (metaDataTagsList.isNotEmpty())
+        {
+            returnQuote = Quote(quoteFileName = file.name)
+
+            // Loop through every bit of meta-data, assigning appropriately.
+            for (metadataField in metaDataTagsList)
+            {
+                when (metadataField.description)
+                {
+                    // Episode number, title and text can just be copied over directly.
+                    TAG_NAME_EPISODE_NUMBER -> returnQuote.quoteSource = metadataField.value
+                    TAG_NAME_EPISODE_TITLE -> returnQuote.quoteEpisodeNumber = metadataField.value
+                    TAG_NAME_QUOTE_TEXT -> returnQuote.quoteText = metadataField.value
+
+                    // Tags is a bit more complex.
+                    TAG_NAME_TAGS ->
+                    {
+                        // Create a cleaned up list of tags from the value, split based off of delimiter and removing extra spaces.
+                        val tagsList: List<String> = metadataField.value.split(TAGS_DELIMITER)
+                            .map { it.trim() }
+                            .filter { it.isNotEmpty() }
+
+                        if (tagsList.isNotEmpty())
+                        {
+                            returnQuote.tags = tagsList.toList()
+                        }
+                    }
+
+                    else ->
+                    {
+                        // Unknown tag type. Ignored entirely.
+                    }
+                }
+            }
+        }
+
+        return returnQuote
     }
 
     //endregion

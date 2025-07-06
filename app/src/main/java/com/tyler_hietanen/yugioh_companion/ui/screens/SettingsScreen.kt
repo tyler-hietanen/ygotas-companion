@@ -94,6 +94,7 @@ object SettingsScreen
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // TODO Quotes configuration.
+            //      TODO: Delete all stored quotes. Confirms before allowing.
 
             // Duel(s) configuration.s
             DuelSettings(duelViewModel =  applicationViewModel.duelViewModel)
