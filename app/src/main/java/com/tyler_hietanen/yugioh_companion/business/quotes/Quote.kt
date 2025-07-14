@@ -5,6 +5,9 @@
 package com.tyler_hietanen.yugioh_companion.business.quotes
 
 data class Quote(
+    // (Unique) Quote ID. Used for easier accessing by other modules, referencing which one was 'selected'.
+    var quoteID: Int = 0,
+
     // Quote File name.
     var quoteFileName: String,
 

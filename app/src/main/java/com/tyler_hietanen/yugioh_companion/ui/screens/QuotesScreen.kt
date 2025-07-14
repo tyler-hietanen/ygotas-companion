@@ -7,17 +7,31 @@ package com.tyler_hietanen.yugioh_companion.ui.screens
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +59,7 @@ object QuotesScreen
     {
         // Sources view model(s).
         val quotesViewModel = applicationViewModel.quotesViewModel
-        val listOfQuotes = quotesViewModel.quoteList
+        val listOfQuotes = quotesViewModel.filteredQuoteList
 
         // Depending on whether quotes are loaded, display different screens.
         if (listOfQuotes.isEmpty())
@@ -54,7 +68,7 @@ object QuotesScreen
         }
         else
         {
-            DrawQuotesScreen()
+            DrawQuotesScreen(quotesViewModel)
         }
     }
 
@@ -90,12 +104,12 @@ object QuotesScreen
         )
 
         // Actually draw.
-        Column (
+        Column(
             modifier = Modifier
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-        ){
+        ) {
             // Sad Kuriboh icon.
             Image(
                 painter = painterResource(R.drawable.sad_kuriboh),
@@ -137,16 +151,88 @@ object QuotesScreen
      *      Description:    Draws quotes screen (if quotes are loaded).
      **************************************************************************************************************************************/
     @Composable
-    private fun DrawQuotesScreen()
+    private fun DrawQuotesScreen(quotesViewModel: QuotesViewModel)
     {
-        // TODO.
-        // Interaction with quotes (Search, sort by tags).
+        // Tracked variables.
+        val listOfQuotes = quotesViewModel.filteredQuoteList
 
-        // Actual quotes content
-        // Remember scroll state.
+        // Actually draw.
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+                .fillMaxHeight(),
+        ) {
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.1f)
+            ) {
+                // Search bar.
+                QuotesSearchBar(quotesViewModel)
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
 
-        // Column of Quote items, listed by contents of ViewModel.
+            }
+        }
     }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun QuotesSearchBar(quotesViewModel: QuotesViewModel)
+    {
+        var searchQuery by remember { mutableStateOf("") }
+
+        SearchBar(
+            modifier = Modifier
+                .fillMaxWidth(),
+            query = searchQuery,
+            onQueryChange = { query ->
+                searchQuery = query
+            },
+            onSearch = { query ->
+                quotesViewModel.onSearchQueryChanged(query)
+            },
+            active = false,
+            onActiveChange = {
+                // TODO.
+            },
+            placeholder = {
+                Text(
+                    text = "Search quotes by name, tag..."
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = ""
+                )
+            }
+        ) {
+
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //endregion
 }

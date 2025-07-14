@@ -337,12 +337,15 @@ object QuotesFileHelper
         {
             // Able to access directory. Start by iterating through every available file within the directory (Assumes it was cleaned first).
             val fileList = directory.listFiles()
+            var uniqueQuoteNumber = 0
             fileList?.forEach { file ->
                 // Attempt to get a quote from said file.
                 val quote = generateQuote(file)
                 if (quote != null)
                 {
-                    // This is a valid quote. Add to list.
+                    // This is a valid quote. Add quote ID and add to building list.
+                    quote.quoteID = uniqueQuoteNumber
+                    uniqueQuoteNumber++
                     extractedQuotes.add(quote)
                 }
                 else

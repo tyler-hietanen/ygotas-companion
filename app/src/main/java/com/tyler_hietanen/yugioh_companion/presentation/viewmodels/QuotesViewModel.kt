@@ -27,9 +27,15 @@ class QuotesViewModel: ViewModel()
     private val _isImportingQuotes = mutableStateOf(false)
     val isImportingQuotes: State<Boolean> = _isImportingQuotes
 
-    // Exposes a list of (eventually) quotes to be observed. If this is an empty list, then there are no quotes loaded into the application.
-    private val _quoteList = mutableStateListOf<Quote>()
-    val quoteList: List<Quote> = _quoteList
+    // Exposes a list of (filtered) quotes to be observed. If this is an empty list, then there are no quotes loaded into the application.
+    private val _filteredQuoteList = mutableStateListOf<Quote>()
+    val filteredQuoteList: List<Quote> = _filteredQuoteList
+
+    // Current search query (Basic text).
+    // While this should be the source of truth, to be displayed in search menu, it is only updated when the View calls the
+    // onSearchQueryChanged method.
+    private val _searchQuery = mutableStateOf("")
+    val searchQuery: State<String> = _searchQuery
 
     //endregion
 
@@ -40,6 +46,9 @@ class QuotesViewModel: ViewModel()
 
     // Stores reference to application view model for later usage.
     private lateinit var _applicationViewModel: ApplicationViewModel
+
+    // Stores the latest (full, not filtered) list of quotes.
+    private var _listOfQuotes: MutableList<Quote> = mutableListOf()
 
     //endregion
 
@@ -63,13 +72,18 @@ class QuotesViewModel: ViewModel()
         val loadedQuoteList: List<Quote> = QuotesFileHelper.requestQuoteConsolidation(false, context)
         if (loadedQuoteList.isNotEmpty())
         {
-            // Copy over internally.
-            _quoteList.clear()
-            _quoteList.addAll(loadedQuoteList)
+            // Copy over internal values to source of truth.
+            _listOfQuotes.clear()
+            _listOfQuotes.addAll(loadedQuoteList)
+
+            // Also copy to view source.
+            _filteredQuoteList.clear()
+            _filteredQuoteList.addAll(loadedQuoteList)
         }
 
         // Set values to default states.
         _isImportingQuotes.value = false
+        _searchQuery.value = ""
     }
 
     /***************************************************************************************************************************************
@@ -97,8 +111,13 @@ class QuotesViewModel: ViewModel()
                 didExtractQuotes = newQuoteList.isNotEmpty()
                 if (didExtractQuotes)
                 {
-                    _quoteList.clear()
-                    _quoteList.addAll(newQuoteList)
+                    // Copy over internal values to source of truth.
+                    _listOfQuotes.clear()
+                    _listOfQuotes.addAll(newQuoteList)
+
+                    // Also copy to view source.
+                    _filteredQuoteList.clear()
+                    _filteredQuoteList.addAll(newQuoteList)
 
                     // Let user know.
                     _applicationViewModel.showUserMessage("New import package accepted and merged. Enjoy!")
@@ -112,9 +131,15 @@ class QuotesViewModel: ViewModel()
                 _applicationViewModel.showUserMessage("Unable to import new quotes. Are you sure valid files were selected?")
             }
 
-            // Success or failure, finished.
+            // Success or failure, finished. Reset variables.
             _isImportingQuotes.value = false
+            _searchQuery.value = ""
         }
+    }
+
+    fun onSearchQueryChanged(query: String)
+    {
+
     }
 
     //endregion
