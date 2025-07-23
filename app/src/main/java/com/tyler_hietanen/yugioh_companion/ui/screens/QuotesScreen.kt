@@ -131,7 +131,7 @@ object QuotesScreen
                 text = "You don't want to make Kuriboh sad, do you? Why don't you import some quotes?",
             )
 
-            // Import house rules button.
+            // Import quotes button.
             CompanionButtons.IconTextButtonWithProgress(
                 modifier = Modifier,
                 resourceID = R.drawable.add_filled,

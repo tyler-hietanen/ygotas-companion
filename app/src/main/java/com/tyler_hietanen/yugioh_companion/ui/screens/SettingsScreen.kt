@@ -93,8 +93,9 @@ object SettingsScreen
             GithubSection(context)
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
-            // TODO Quotes configuration.
-            //      TODO: Delete all stored quotes. Confirms before allowing.
+            // Quotes configuration.
+            QuotesSection(applicationViewModel)
+            HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // Duel(s) configuration.s
             DuelSettings(duelViewModel =  applicationViewModel.duelViewModel)
@@ -152,6 +153,60 @@ object SettingsScreen
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, PROJECT_GITHUB_URL.toUri())
                     context.startActivity(intent)
+                }
+            )
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    QuotesSection
+     *       Parameters:    applicationViewModel
+     *          Returns:    None.
+     *      Description:    Draws the Quotes section of settings.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun QuotesSection(applicationViewModel: ApplicationViewModel)
+    {
+        // Variables.
+        val quotesViewModel = applicationViewModel.quotesViewModel
+        val isImporting by quotesViewModel.isImportingQuotes
+        val context = LocalContext.current
+
+        // Sets up logic for picking a zipped file (Hopefully this contains quotes).
+        val pickQuotesFileLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+            onResult = { fileUri ->
+                fileUri?.let {
+                    // If non-null, reports change to View Model with chosen file.
+                    quotesViewModel.onImportQuotes(context, fileUri)
+                }
+            }
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            Text(
+                text = "-- Quote Settings --",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic
+            )
+            // Import quotes button.
+            CompanionButtons.IconTextButtonWithProgress(
+                modifier = Modifier,
+                resourceID = R.drawable.add_filled,
+                buttonText = "Import new quote package.",
+                isLoading = isImporting,
+                minSize = 40.dp,
+                onClick = {
+                    // Launch file picker.
+                    pickQuotesFileLauncher.launch("application/zip")
                 }
             )
         }
