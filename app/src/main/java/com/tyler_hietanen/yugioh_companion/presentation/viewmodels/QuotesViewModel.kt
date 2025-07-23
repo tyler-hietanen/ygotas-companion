@@ -136,57 +136,70 @@ class QuotesViewModel: ViewModel()
         }
     }
 
-    fun onPlayStopQuote(quote: Quote, context: Context)
+    /***************************************************************************************************************************************
+     *           Method:    onPlayQuote
+     *       Parameters:    quote
+     *                      context
+     *          Returns:    None.
+     *      Description:    Plays the selected quote. Stops a currently-playing one if there is one.
+     **************************************************************************************************************************************/
+    fun onPlayQuote(quote: Quote, context: Context)
     {
-        // Check if there is an active quote being played right now (Non-null resource).
+        // Check on current quote.
+        val quoteCopy = _activeQuote?.copy()
         if (_activeQuote != null)
         {
-            // There's an active quote. Free up resources (Which also resets it).
+            // There's an active quote, or this is the same quote. Stops it by freeing resources.
             resetMediaPlayer()
         }
 
-        // Source the file path for the quote.
-        val filePath = QuotesFileHelper.getQuoteAbsolutePath(quote, context)
-        if (filePath != null)
+        // Only continue playing if the quote selected is different than the current quote.
+        if (quoteCopy?.quoteID != quote.quoteID)
         {
-            // Valid path. Set quote.
-            _activeQuote = quote
-
-            // Flag that this quote is playing.
-            for (n in _filteredQuoteList.indices)
+            // Source the file path for the quote.
+            val filePath = QuotesFileHelper.getQuoteAbsolutePath(quote, context)
+            if (filePath != null)
             {
-                if (_filteredQuoteList[n].quoteID == quote.quoteID)
+                // Valid path. Set quote.
+                _activeQuote = quote
+
+                // Flag that this quote is playing.
+                for (n in _filteredQuoteList.indices)
                 {
-                    _filteredQuoteList[n].isPlaying = true
-                    break
+                    val currentQuote = _filteredQuoteList[n]
+                    if (currentQuote.quoteID == quote.quoteID)
+                    {
+                        _filteredQuoteList[n] = currentQuote.copy(isPlaying = true)
+                        break
+                    }
                 }
-            }
 
-            // Let's try to play it.
-            _mediaPlayer = MediaPlayer().apply {
-                try {
-                    setDataSource(filePath)
-                    prepareAsync()
+                // Let's try to play it.
+                _mediaPlayer = MediaPlayer().apply {
+                    try {
+                        setDataSource(filePath)
+                        prepareAsync()
 
-                    setOnPreparedListener { mediaPlayer ->
-                        try {
-                            mediaPlayer.start()
-                        } catch (e: IllegalStateException) {
+                        setOnPreparedListener { mediaPlayer ->
+                            try {
+                                mediaPlayer.start()
+                            } catch (e: IllegalStateException) {
+                                resetMediaPlayer()
+                            }
+                        }
+
+                        setOnCompletionListener {
                             resetMediaPlayer()
                         }
-                    }
 
-                    setOnCompletionListener {
+                        setOnErrorListener { _, what, extra ->
+                            resetMediaPlayer()
+                            true
+                        }
+                    } catch (e: Exception)
+                    {
                         resetMediaPlayer()
                     }
-
-                    setOnErrorListener { _, what, extra ->
-                        resetMediaPlayer()
-                        true
-                    }
-                } catch (e: Exception)
-                {
-                    resetMediaPlayer()
                 }
             }
         }
@@ -199,6 +212,12 @@ class QuotesViewModel: ViewModel()
      **************************************************************************************************************************************/
     //region Private Methods
 
+    /***************************************************************************************************************************************
+     *           Method:    resetMediaPlayer
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Resets media player resources. Will also stop a currently-playing one.
+     **************************************************************************************************************************************/
     private fun resetMediaPlayer()
     {
         // Attempt to stop playing.
@@ -210,9 +229,10 @@ class QuotesViewModel: ViewModel()
             // Attempt to reset the quote, if it can be found.
             for (n in _filteredQuoteList.indices)
             {
-                if (_filteredQuoteList[n].quoteID == _activeQuote?.quoteID)
+                val currentQuote = _filteredQuoteList[n]
+                if (currentQuote.quoteID == _activeQuote?.quoteID)
                 {
-                    _filteredQuoteList[n].isPlaying = false
+                    _filteredQuoteList[n] = currentQuote.copy(isPlaying = false)
                     break
                 }
             }

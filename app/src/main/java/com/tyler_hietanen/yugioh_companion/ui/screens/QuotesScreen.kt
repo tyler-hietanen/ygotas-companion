@@ -6,6 +6,7 @@ package com.tyler_hietanen.yugioh_companion.ui.screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -180,6 +182,13 @@ object QuotesScreen
         }
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    DrawQuoteList
+     *       Parameters:    quoteList
+     *                      quotesViewModel
+     *          Returns:    None.
+     *      Description:    Draws full quote list.
+     **************************************************************************************************************************************/
     @Composable
     private fun DrawQuoteList(quoteList: List<Quote>, quotesViewModel: QuotesViewModel)
     {
@@ -198,6 +207,13 @@ object QuotesScreen
         }
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    QuoteItem
+     *       Parameters:    quote
+     *                      quotesViewModel
+     *          Returns:    None.
+     *      Description:    Draws full quote.
+     **************************************************************************************************************************************/
     @Composable
     private fun QuoteItem(quote: Quote, quotesViewModel: QuotesViewModel)
     {
@@ -208,9 +224,19 @@ object QuotesScreen
                 .padding(vertical = 4.dp)
                 .heightIn(48.dp)
                 .fillMaxWidth()
-                .clickable { quotesViewModel.onPlayStopQuote(quote, context) },
+                .clickable { quotesViewModel.onPlayQuote(quote, context) },
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            shape = MaterialTheme.shapes.medium
+            shape = MaterialTheme.shapes.medium,
+
+            // Sets a border, if currently playing.
+            border = if (quote.isPlaying)
+            {
+                BorderStroke(4.dp, Color.LightGray)
+            }
+            else
+            {
+                null
+            }
         ){
             Row {
                 // Play/Pause Button.
@@ -219,14 +245,25 @@ object QuotesScreen
                 // Quote File Name (TODO Replace with Title).
                 Text(
                     text = quote.quoteFileName,
-                    fontSize = 18.sp)
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(4.dp))
             }
         }
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    QuotePlayIcon
+     *       Parameters:    quote
+     *          Returns:    None.
+     *      Description:    Draws a quote icon, based on whether it's currently playing or not.
+     **************************************************************************************************************************************/
     @Composable
     private fun QuotePlayIcon(quote: Quote)
     {
+        if (quote.quoteID == 0)
+        {
+            val breakFlag = true
+        }
         // Determines icon button resource, based upon the current state.
         // (Is Playing).
         val iconID = if (quote.isPlaying)
