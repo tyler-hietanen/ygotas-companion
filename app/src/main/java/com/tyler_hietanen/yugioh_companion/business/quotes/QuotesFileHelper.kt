@@ -436,11 +436,7 @@ object QuotesFileHelper
                     }
                 }
             }
-        }
 
-        // Check to see if there was metadata found (not empty). If there is, then it's likely a quote. Start building it.
-        if (metaDataTagsList.isNotEmpty())
-        {
             // Create quote instance.
             returnQuote = Quote(quoteFileName = file.name)
 
