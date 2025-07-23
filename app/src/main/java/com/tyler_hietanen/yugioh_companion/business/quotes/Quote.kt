@@ -1,6 +1,6 @@
 /*******************************************************************************************************************************************
  *           Source:    Quote.kt
- *      Description:    Represents a single quote and information associated.
+ *      Description:    Represents a single quote and information associated. Used for both data and view visibility.
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.yugioh_companion.business.quotes
 
@@ -21,32 +21,14 @@ data class Quote(
     var quoteText: String? = null,
 
     // Tags.
-    var tags: List<String> = emptyList()
-) {
-    /***************************************************************************************************************************************
-     *      Methods
-     **************************************************************************************************************************************/
-    //region Methods
+    var tags: List<String> = emptyList(),
 
-    /***************************************************************************************************************************************
-     *           Method:    addTag
-     *       Parameters:    tag
-     *          Returns:    None.
-     *      Description:    Adds a tag to the list of tags for this quote (if it doesn't already exist).
-     **************************************************************************************************************************************/
-    fun addTag(tag: String)
-    {
-        // Only add if not already present.
-        if (!tags.contains(tag))
-        {
-            // Extract current list of tags and add to it.
-            val newList = tags.toMutableList()
-            newList.add(tag)
+    // Whether this item is expanded (true) or not (false).
+    var isExpanded: Boolean = false,
 
-            // Set value.
-            tags = newList
-        }
-    }
+    // Whether this item is playing (true) or paused (false).
+    var isPlaying: Boolean = false,
 
-    //endregion
-}
+    // Quote sound file duration.
+    var duration: Int = 0
+)

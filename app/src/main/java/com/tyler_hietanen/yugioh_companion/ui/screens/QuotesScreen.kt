@@ -7,36 +7,36 @@ package com.tyler_hietanen.yugioh_companion.ui.screens
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SearchBar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.yugioh_companion.R
+import com.tyler_hietanen.yugioh_companion.business.quotes.Quote
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.QuotesViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons
@@ -166,73 +166,90 @@ object QuotesScreen
             Row (
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.1f)
-            ) {
-                // Search bar.
-                QuotesSearchBar(quotesViewModel)
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
                     .fillMaxHeight()
             ) {
+                // Play random quote button.
+                // TODO.
 
+                // List of filter options (Filter by tags).
+                // TODO.
+
+                // List of discovered quotes.
+                DrawQuoteList(listOfQuotes, quotesViewModel)
             }
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun QuotesSearchBar(quotesViewModel: QuotesViewModel)
+    private fun DrawQuoteList(quoteList: List<Quote>, quotesViewModel: QuotesViewModel)
     {
-        var searchQuery by remember { mutableStateOf("") }
-
-        SearchBar(
+        LazyColumn (
             modifier = Modifier
                 .fillMaxWidth(),
-            query = searchQuery,
-            onQueryChange = { query ->
-                searchQuery = query
-            },
-            onSearch = { query ->
-                quotesViewModel.onSearchQueryChanged(query)
-            },
-            active = false,
-            onActiveChange = {
-                // TODO.
-            },
-            placeholder = {
-                Text(
-                    text = "Search quotes by name, tag..."
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = ""
-                )
-            }
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
+            items(
+                items = quoteList,
+                key = {quote -> quote.quoteID}
+            )
+            { quote ->
+                QuoteItem(quote, quotesViewModel)
+            }
         }
     }
 
+    @Composable
+    private fun QuoteItem(quote: Quote, quotesViewModel: QuotesViewModel)
+    {
+        val context = LocalContext.current
 
+        Card (
+            modifier = Modifier
+                .padding(vertical = 4.dp)
+                .heightIn(48.dp)
+                .fillMaxWidth()
+                .clickable { quotesViewModel.onPlayStopQuote(quote, context) },
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            shape = MaterialTheme.shapes.medium
+        ){
+            Row {
+                // Play/Pause Button.
+                QuotePlayIcon(quote)
 
+                // Quote File Name (TODO Replace with Title).
+                Text(
+                    text = quote.quoteFileName,
+                    fontSize = 18.sp)
+            }
+        }
+    }
 
+    @Composable
+    private fun QuotePlayIcon(quote: Quote)
+    {
+        // Determines icon button resource, based upon the current state.
+        // (Is Playing).
+        val iconID = if (quote.isPlaying)
+        {
+            R.drawable.stop_filled
+        }
+        else
+        {
+            R.drawable.play_filled
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
+        IconButton(
+            onClick = {},
+            enabled = false,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = iconID),
+                contentDescription = "",
+                modifier = Modifier.size(96.dp)
+            )
+        }
+    }
 
     //endregion
 }

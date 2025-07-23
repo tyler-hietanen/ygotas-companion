@@ -5,6 +5,7 @@
 package com.tyler_hietanen.yugioh_companion.presentation.viewmodels
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
@@ -31,12 +32,6 @@ class QuotesViewModel: ViewModel()
     private val _filteredQuoteList = mutableStateListOf<Quote>()
     val filteredQuoteList: List<Quote> = _filteredQuoteList
 
-    // Current search query (Basic text).
-    // While this should be the source of truth, to be displayed in search menu, it is only updated when the View calls the
-    // onSearchQueryChanged method.
-    private val _searchQuery = mutableStateOf("")
-    val searchQuery: State<String> = _searchQuery
-
     //endregion
 
     /***************************************************************************************************************************************
@@ -49,6 +44,12 @@ class QuotesViewModel: ViewModel()
 
     // Stores the latest (full, not filtered) list of quotes.
     private var _listOfQuotes: MutableList<Quote> = mutableListOf()
+
+    // Tracks the active quote (Being played).
+    private var _activeQuote: Quote? = null
+
+    // Tracks the active media player (to allow for pausing/release).
+    private var _mediaPlayer: MediaPlayer = MediaPlayer()
 
     //endregion
 
@@ -83,7 +84,6 @@ class QuotesViewModel: ViewModel()
 
         // Set values to default states.
         _isImportingQuotes.value = false
-        _searchQuery.value = ""
     }
 
     /***************************************************************************************************************************************
@@ -133,13 +133,100 @@ class QuotesViewModel: ViewModel()
 
             // Success or failure, finished. Reset variables.
             _isImportingQuotes.value = false
-            _searchQuery.value = ""
         }
     }
 
-    fun onSearchQueryChanged(query: String)
+    fun onPlayStopQuote(quote: Quote, context: Context)
     {
+        // Check if there is an active quote being played right now (Non-null resource).
+        if (_activeQuote != null)
+        {
+            // There's an active quote. Free up resources (Which also resets it).
+            resetMediaPlayer()
+        }
 
+        // Source the file path for the quote.
+        val filePath = QuotesFileHelper.getQuoteAbsolutePath(quote, context)
+        if (filePath != null)
+        {
+            // Valid path. Set quote.
+            _activeQuote = quote
+
+            // Flag that this quote is playing.
+            for (n in _filteredQuoteList.indices)
+            {
+                if (_filteredQuoteList[n].quoteID == quote.quoteID)
+                {
+                    _filteredQuoteList[n].isPlaying = true
+                    break
+                }
+            }
+
+            // Let's try to play it.
+            _mediaPlayer = MediaPlayer().apply {
+                try {
+                    setDataSource(filePath)
+                    prepareAsync()
+
+                    setOnPreparedListener { mediaPlayer ->
+                        try {
+                            mediaPlayer.start()
+                        } catch (e: IllegalStateException) {
+                            resetMediaPlayer()
+                        }
+                    }
+
+                    setOnCompletionListener {
+                        resetMediaPlayer()
+                    }
+
+                    setOnErrorListener { _, what, extra ->
+                        resetMediaPlayer()
+                        true
+                    }
+                } catch (e: Exception)
+                {
+                    resetMediaPlayer()
+                }
+            }
+        }
+    }
+
+    //endregion
+
+    /***************************************************************************************************************************************
+     *      Private Methods
+     **************************************************************************************************************************************/
+    //region Private Methods
+
+    private fun resetMediaPlayer()
+    {
+        // Attempt to stop playing.
+        try
+        {
+            // Stop the current media player.
+            _mediaPlayer.stop()
+
+            // Attempt to reset the quote, if it can be found.
+            for (n in _filteredQuoteList.indices)
+            {
+                if (_filteredQuoteList[n].quoteID == _activeQuote?.quoteID)
+                {
+                    _filteredQuoteList[n].isPlaying = false
+                    break
+                }
+            }
+
+            // Create a fresh media player instance.
+            _mediaPlayer = MediaPlayer()
+
+            // Reset quote.
+            _activeQuote = null
+        }
+        catch (ex: Exception)
+        {
+            // Did it's best. Does nothing else.
+        }
     }
 
     //endregion

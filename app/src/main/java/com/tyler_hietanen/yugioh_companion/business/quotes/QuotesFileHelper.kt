@@ -149,6 +149,35 @@ object QuotesFileHelper
         }
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    getQuoteAbsolutePath
+     *       Parameters:    quote
+     *                          - The quote to get the path to.
+     *                      context
+     *          Returns:    String?
+     *                          - Absolute file path (Set to null if not found).
+     *      Description:    Gets the absolute file path to the quote.
+     **************************************************************************************************************************************/
+    fun getQuoteAbsolutePath(quote: Quote, context: Context): String?
+    {
+        // Default path, set to an empty string.
+        var path = ""
+
+        // Find the absolute path.
+        val internalDirectory = File(context.filesDir, AppStorageConstants.QUOTES_DIRECTORY)
+        if (internalDirectory.exists())
+        {
+            // Attempt to get the file.
+            val quoteFile = File(internalDirectory, quote.quoteFileName)
+            if (quoteFile.exists())
+            {
+                path = quoteFile.absolutePath
+            }
+        }
+
+        return path
+    }
+
     //endregion
 
     /***************************************************************************************************************************************
@@ -412,7 +441,10 @@ object QuotesFileHelper
         // Check to see if there was metadata found (not empty). If there is, then it's likely a quote. Start building it.
         if (metaDataTagsList.isNotEmpty())
         {
+            // Create quote instance.
             returnQuote = Quote(quoteFileName = file.name)
+
+            // TODO Create a quote title, based on the name.
 
             // Loop through every bit of meta-data, assigning appropriately.
             for (metadataField in metaDataTagsList)
