@@ -116,15 +116,6 @@ class MainActivity : ComponentActivity()
             CompanionMaterialTheme {
                 MainActivityScreen(navController)
             }
-
-            // Only auto-navigates to destination if it's a new launch.
-            if (isNewLaunch)
-            {
-                LaunchedEffect(Unit) {
-                    delay(500)
-                    ApplicationNavigationHost.navigateToSingleNewScreen(navController, Destination.QUOTES, _applicationViewModel)
-                }
-            }
         }
     }
 
