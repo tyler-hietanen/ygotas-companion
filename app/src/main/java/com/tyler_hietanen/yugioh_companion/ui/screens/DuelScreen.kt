@@ -10,15 +10,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -79,7 +88,8 @@ object DuelScreen
                 playerOneName = duelist1.name,
                 playerOneLifePoints = duelist1.lifePoints,
                 playerTwoName = duelist2.name,
-                playerTwoLifePoints = duelist2.lifePoints
+                playerTwoLifePoints = duelist2.lifePoints,
+                duelViewModel = duelViewModel
             )
 
             HorizontalDivider(modifier = Modifier.padding(8.dp, 0.dp))
@@ -173,7 +183,12 @@ object DuelScreen
      *      Description:    Draws the player(s) section.
      **************************************************************************************************************************************/
     @Composable
-    private fun PlayerSection(playerOneName: String, playerOneLifePoints: Int, playerTwoName: String, playerTwoLifePoints: Int)
+    private fun PlayerSection(
+        playerOneName: String,
+        playerOneLifePoints: Int,
+        playerTwoName: String,
+        playerTwoLifePoints: Int,
+        duelViewModel: DuelViewModel,)
     {
         Row (
             modifier = Modifier
@@ -184,9 +199,13 @@ object DuelScreen
                     .weight(1f)
             ){
                 PlayerTitleText(
-                    name = playerOneName,
+                    initialName = playerOneName,
+                    playerSlot = PlayerSlot.PLAYER_ONE,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    onNameChange = { playerSlot, newName ->
+                        duelViewModel.onPlayerNameChanged(playerSlot, newName)
+                    }
                 )
                 LifePointsText(
                     lifePoints = playerOneLifePoints,
@@ -200,9 +219,13 @@ object DuelScreen
                     .weight(1f)
             ){
                 PlayerTitleText(
-                    name = playerTwoName,
+                    initialName = playerTwoName,
+                    playerSlot = PlayerSlot.PLAYER_TWO,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    onNameChange = { playerSlot, newName ->
+                        duelViewModel.onPlayerNameChanged(playerSlot, newName)
+                    }
                 )
                 LifePointsText(
                     lifePoints = playerTwoLifePoints,
@@ -223,22 +246,59 @@ object DuelScreen
      *      Description:    Draws a player title.
      **************************************************************************************************************************************/
     @Composable
-    private fun PlayerTitleText(name: String, modifier: Modifier)
+    private fun PlayerTitleText(initialName: String,
+                                playerSlot: PlayerSlot,
+                                modifier: Modifier,
+                                onNameChange: (playerSlot: PlayerSlot, newName: String) -> Unit)
     {
+        var currentName by remember(initialName) { mutableStateOf(initialName) }
+        val focusRequester = remember { FocusRequester() }
+        val keyboardController = LocalSoftwareKeyboardController.current
+        var isEditing by remember { mutableStateOf(false) }
+
         Card(
             modifier = Modifier
                 .padding(8.dp)
-                .clickable { /*TODO*/ },
+                .clickable {
+                    // Set editing to true, causing popup.
+                    isEditing = true
+                },
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             shape = MaterialTheme.shapes.medium
         ) {
-            Text(
-                text = name,
-                modifier = modifier
-                    .padding(4.dp),
-                textAlign = TextAlign.Center,
-                style = Typography.titleLarge,
-            )
+            if (isEditing)
+            {
+                LaunchedEffect(Unit) {
+                    // Request focus and show keyboard.
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                }
+                OutlinedTextField(
+                    value = currentName,
+                    onValueChange = {
+                        currentName = it
+                        onNameChange(playerSlot, it)
+                    },
+                    modifier = modifier
+                        .padding(4.dp)
+                        .focusRequester(focusRequester),
+                    keyboardActions = KeyboardActions(onDone = {
+                        isEditing = false
+                        keyboardController?.hide()
+                    }),
+                    singleLine = true
+                )
+            }
+            else
+            {
+                Text(
+                    text = currentName,
+                    modifier = modifier
+                        .padding(4.dp),
+                    textAlign = TextAlign.Center,
+                    style = Typography.titleLarge,
+                )
+            }
         }
     }
 

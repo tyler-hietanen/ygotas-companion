@@ -4,6 +4,7 @@
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.yugioh_companion.presentation.viewmodels
 
+import androidx.compose.animation.core.copy
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -344,6 +345,16 @@ class DuelViewModel(): ViewModel()
                 val settings = _settingsRepository.getCurrentAppSettings().copy(isMockingEnabled = isEnabled)
                 _settingsRepository.saveAppSettings(settings)
             }
+        }
+    }
+
+    fun onPlayerNameChanged(playerSlot: PlayerSlot, newName: String)
+    {
+        viewModelScope.launch {
+            // Get duelist and update.
+            val duelist = getDuelist(playerSlot)
+            duelist.name = newName
+            updateDuelist(playerSlot, duelist)
         }
     }
 
