@@ -348,12 +348,32 @@ class DuelViewModel(): ViewModel()
         }
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    onPlayerNameChanged
+     *       Parameters:    playerSlot
+     *                      newName
+     *          Returns:    None.
+     *      Description:    Player name has changed.
+     **************************************************************************************************************************************/
     fun onPlayerNameChanged(playerSlot: PlayerSlot, newName: String)
     {
         viewModelScope.launch {
+            // Check duelist name. If empty, replace.
+            val setName = if (newName == "")
+            {
+                when (playerSlot)
+                {
+                    PlayerSlot.PLAYER_ONE -> "Player 1"
+                    PlayerSlot.PLAYER_TWO -> "Player 2"
+                }
+            }
+            else
+            {
+                newName
+            }
             // Get duelist and update.
             val duelist = getDuelist(playerSlot)
-            duelist.name = newName
+            duelist.name = setName
             updateDuelist(playerSlot, duelist)
         }
     }
