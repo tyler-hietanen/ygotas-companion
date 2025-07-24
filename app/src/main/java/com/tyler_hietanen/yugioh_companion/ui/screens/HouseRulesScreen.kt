@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,9 +66,7 @@ object HouseRulesScreen
         }
         else
         {
-            HouseRulesScreen(
-                content = houseRulesContent!!,
-                houseRulesViewModel = houseRulesViewModel)
+            HouseRulesScreen(houseRulesContent!!)
         }
     }
 
@@ -131,7 +128,7 @@ object HouseRulesScreen
      *      Description:    Draws the house rules content screen.
      **************************************************************************************************************************************/
     @Composable
-    private fun HouseRulesScreen(content: String, houseRulesViewModel: HouseRulesViewModel)
+    private fun HouseRulesScreen(content: String)
     {
         Column(
             modifier = Modifier
