@@ -240,13 +240,28 @@ object QuotesScreen
         ){
             Row {
                 // Play/Pause Button.
-                QuotePlayIcon(quote)
+                QuotePlayIcon(quote = quote)
 
                 // Quote File Name (TODO Replace with Title).
                 Text(
                     text = quote.quoteFileName,
                     fontSize = 18.sp,
-                    modifier = Modifier.padding(4.dp))
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .weight(1f))
+
+                // Share icon.
+                IconButton(
+                    onClick = { quotesViewModel.onShareQuote(quote, context) },
+                    enabled = (!quote.isPlaying),
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.share_outlined),
+                        contentDescription = "",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     }

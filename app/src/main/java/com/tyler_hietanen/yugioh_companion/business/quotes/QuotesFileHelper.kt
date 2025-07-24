@@ -161,7 +161,7 @@ object QuotesFileHelper
     fun getQuoteAbsolutePath(quote: Quote, context: Context): String?
     {
         // Default path, set to an empty string.
-        var path = ""
+        var path: String? = null
 
         // Find the absolute path.
         val internalDirectory = File(context.filesDir, AppStorageConstants.QUOTES_DIRECTORY)
@@ -176,6 +176,68 @@ object QuotesFileHelper
         }
 
         return path
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    setupQuoteForShare
+     *       Parameters:    quote
+     *                          - The quote to copy.
+     *                      context
+     *          Returns:    File?
+     *                          - Absolute file (Set to null if not copied).
+     *      Description:    Copies the passed quote (if it can be copied) to a shared directory.
+     **************************************************************************************************************************************/
+    fun setupQuoteForShare(quote: Quote, context: Context): File?
+    {
+        // File to be shared (if it was copied).
+        var sourceFile: File? = null
+        var copiedFile: File? = null
+
+        // Look for matching file within the source directory.
+        val quoteDirectory = File(context.filesDir, AppStorageConstants.QUOTES_DIRECTORY)
+        if (quoteDirectory.exists())
+        {
+            // Attempt to get the file.
+            val quoteFile = File(quoteDirectory, quote.quoteFileName)
+            if (quoteFile.exists())
+            {
+                // Create file copy.
+                sourceFile = quoteFile
+            }
+        }
+
+        // Check if there was a match found.
+        if (sourceFile != null)
+        {
+            // Can copy. Let's get (or create) the share directory.
+            val shareDirectory = File(context.filesDir, AppStorageConstants.SHARE_DIRECTORY)
+            if (!shareDirectory.exists())
+            {
+                shareDirectory.mkdirs()
+            }
+            else
+            {
+                // Clean up directory by deleting contents within it.
+                deleteFilesRecursively(shareDirectory, false)
+            }
+
+            // Create the shared file and begin copying.
+            try
+            {
+                // Create file.
+                copiedFile = File(shareDirectory, sourceFile.name)
+
+                // Copy contents.
+                Files.copy(sourceFile.toPath(), copiedFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+            catch (_: Exception)
+            {
+                // Reset.
+                copiedFile = null
+            }
+        }
+
+        return copiedFile
     }
 
     //endregion
@@ -286,6 +348,9 @@ object QuotesFileHelper
                 val sourceDirectory = File(context.filesDir, AppStorageConstants.TEMP_DIRECTORY)
                 val targetDirectory = File(context.filesDir, AppStorageConstants.QUOTES_DIRECTORY)
                 copyAllFiles(sourceDirectory, targetDirectory)
+
+                // Clean up temp folder.
+                deleteFilesRecursively(sourceDirectory, false)
 
                 // If it got this far, set return list.
                 newQuoteList = quoteList.toList()

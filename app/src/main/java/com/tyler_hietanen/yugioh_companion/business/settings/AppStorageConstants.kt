@@ -19,6 +19,9 @@ object AppStorageConstants
     // Note: File names are the same as the files used for the import.
     const val QUOTES_DIRECTORY = "quotes"
 
+    // Folder used to share content.
+    const val SHARE_DIRECTORY = "share"
+
     // Defines a working directory, used for temporary files (if needed).
     const val TEMP_DIRECTORY = "temp"
 

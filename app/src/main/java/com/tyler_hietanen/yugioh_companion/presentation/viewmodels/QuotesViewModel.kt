@@ -5,11 +5,13 @@
 package com.tyler_hietanen.yugioh_companion.presentation.viewmodels
 
 import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tyler_hietanen.yugioh_companion.business.quotes.Quote
@@ -171,7 +173,7 @@ class QuotesViewModel: ViewModel()
                         setOnPreparedListener { mediaPlayer ->
                             try {
                                 mediaPlayer.start()
-                            } catch (e: IllegalStateException) {
+                            } catch (_: IllegalStateException) {
                                 resetMediaPlayer()
                             }
                         }
@@ -184,12 +186,64 @@ class QuotesViewModel: ViewModel()
                             resetMediaPlayer()
                             true
                         }
-                    } catch (e: Exception)
+                    } catch (_: Exception)
                     {
                         resetMediaPlayer()
                     }
                 }
             }
+        }
+    }
+
+    fun onShareQuote(quote: Quote, context: Context)
+    {
+        // Prepare file for sharing.
+        var didShare = false
+        val fileToShare = QuotesFileHelper.setupQuoteForShare(quote, context)
+        if (fileToShare != null)
+        {
+            // Create URI.
+            val authority = "${context.packageName}.fileProvider"
+            var contentUri: Uri? = null
+            try
+            {
+                contentUri = FileProvider.getUriForFile(context, authority, fileToShare)
+                didShare = true
+            }
+            catch (_: Exception)
+            {
+                // Intentionally empty.
+            }
+
+            // Attempt share.
+            if (didShare && (contentUri != null))
+            {
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "audio/mpeg"
+                    putExtra(Intent.EXTRA_STREAM, contentUri)
+
+                    // Grant read permission to the receiving app for this URI
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+
+                // Create a chooser to let the user pick the sharing app
+                val chooserIntent = Intent.createChooser(shareIntent, "Share '${fileToShare.name}' via...")
+                chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                if (chooserIntent.resolveActivity(context.packageManager) != null)
+                {
+                    context.startActivity(chooserIntent)
+                }
+                else
+                {
+                    didShare = false
+                }
+            }
+        }
+
+        if (!didShare)
+        {
+            _applicationViewModel.showUserMessage("Was unable to share file. Something went wrong - let Tyler know.")
         }
     }
 
@@ -231,7 +285,7 @@ class QuotesViewModel: ViewModel()
             // Reset quote.
             _activeQuote = null
         }
-        catch (ex: Exception)
+        catch (_: Exception)
         {
             // Did it's best. Does nothing else.
         }
