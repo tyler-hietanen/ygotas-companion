@@ -101,7 +101,7 @@ object QuotesFileHelper
                                 // Allocate buffer for read. And copy entire file contents.
                                 val buffer = ByteArray(1024)
                                 var len: Int
-                                while (zis.read(buffer).also { len = it} > 0)
+                                while (zis.read(buffer).also { len = it } > 0)
                                 {
                                     fos.write(buffer, 0, len)
                                 }
@@ -302,7 +302,7 @@ object QuotesFileHelper
         }
 
         // Assumes safety. Start by getting a list of files to copy (Only copies files, not directories).
-        val filesToCopy = sourceDirectory.listFiles { file -> file.isFile}
+        val filesToCopy = sourceDirectory.listFiles { file -> file.isFile }
         filesToCopy?.forEach { file ->
             val targetCopyFile = File(targetDirectory, file.name)
             try
@@ -503,9 +503,7 @@ object QuotesFileHelper
             }
 
             // Create quote instance.
-            returnQuote = Quote(quoteFileName = file.name)
-
-            // TODO Create a quote title, based on the name.
+            returnQuote = Quote(quoteFileName = file.name, quoteFriendlyName = extractFriendlyName(file.name))
 
             // Loop through every bit of meta-data, assigning appropriately.
             for (metadataField in metaDataTagsList)
@@ -514,11 +512,11 @@ object QuotesFileHelper
                 {
                     // Episode number, title and text can just be copied over directly.
                     TAG_NAME_EPISODE_NUMBER -> returnQuote.quoteSource = metadataField.value
-                    TAG_NAME_EPISODE_TITLE -> returnQuote.quoteEpisodeNumber = metadataField.value
-                    TAG_NAME_QUOTE_TEXT -> returnQuote.quoteText = metadataField.value
+                    TAG_NAME_EPISODE_TITLE  -> returnQuote.quoteEpisodeNumber = metadataField.value
+                    TAG_NAME_QUOTE_TEXT     -> returnQuote.quoteText = metadataField.value
 
                     // Tags is a bit more complex.
-                    TAG_NAME_TAGS ->
+                    TAG_NAME_TAGS           ->
                     {
                         // Create a cleaned up list of tags from the value, split based off of delimiter and removing extra spaces.
                         val tagsList: List<String> = metadataField.value.split(TAGS_DELIMITER)
@@ -531,7 +529,7 @@ object QuotesFileHelper
                         }
                     }
 
-                    else ->
+                    else                    ->
                     {
                         // Unknown tag type. Ignored entirely.
                     }
@@ -540,6 +538,34 @@ object QuotesFileHelper
         }
 
         return returnQuote
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    extractFriendlyName
+     *       Parameters:    fileName
+     *          Returns:    String
+     *                          - Extracted friendly name.
+     *      Description:    Attempts to extract a friendly name from the file name, grabbing content between the first '-' and last '.' characters.
+     **************************************************************************************************************************************/
+    private fun extractFriendlyName(fileName: String): String
+    {
+        var friendlyName = fileName
+
+        // Sources various indices of the file name.
+        val indexOfFriendlyNameStart = fileName.indexOf('-')
+        val indexOfFriendlyNameEnd = fileName.lastIndexOf('.')
+
+        // Ensure safety.
+        var canExtract = true
+        canExtract = canExtract && (indexOfFriendlyNameStart != -1)
+        canExtract = canExtract && (indexOfFriendlyNameEnd != -1)
+        canExtract = canExtract && ((indexOfFriendlyNameStart + 1) <= indexOfFriendlyNameEnd)
+        if (canExtract)
+        {
+            friendlyName = friendlyName.substring(indexOfFriendlyNameStart + 1, indexOfFriendlyNameEnd)
+        }
+
+        return friendlyName
     }
 
     //endregion

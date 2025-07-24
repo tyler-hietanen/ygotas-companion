@@ -242,9 +242,9 @@ object QuotesScreen
                 // Play/Pause Button.
                 QuotePlayIcon(quote = quote)
 
-                // Quote File Name (TODO Replace with Title).
+                // Quote Name.
                 Text(
-                    text = quote.quoteFileName,
+                    text = quote.quoteFriendlyName,
                     fontSize = 18.sp,
                     modifier = Modifier
                         .padding(4.dp)

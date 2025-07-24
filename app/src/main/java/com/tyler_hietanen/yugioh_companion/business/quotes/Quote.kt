@@ -11,10 +11,13 @@ data class Quote(
     // Quote File name.
     var quoteFileName: String,
 
-    // Source.
+    // Quote Friendly name.
+    var quoteFriendlyName: String,
+
+    // Source (Episode name, video, etc).
     var quoteSource: String? = null,
 
-    // Episode number (if relevant).
+    // Episode number (Set as number, or as a sequence of characters.).
     var quoteEpisodeNumber: String? = null,
 
     // Quote text.
@@ -28,7 +31,4 @@ data class Quote(
 
     // Whether this item is playing (true) or paused (false).
     var isPlaying: Boolean = false,
-
-    // Quote sound file duration.
-    var duration: Int = 0
 )
