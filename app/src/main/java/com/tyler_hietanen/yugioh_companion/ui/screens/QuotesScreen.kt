@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -159,6 +160,7 @@ object QuotesScreen
     {
         // Tracked variables.
         val listOfQuotes = quotesViewModel.filteredQuoteList
+        val context = LocalContext.current
 
         // Actually draw.
         Column(
@@ -168,19 +170,29 @@ object QuotesScreen
                 .fillMaxHeight(),
         ) {
             Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
                 // Play random quote button.
-                // TODO.
-
-                // List of filter options (Filter by tags).
-                // TODO.
-
-                // List of discovered quotes.
-                DrawQuoteList(listOfQuotes, quotesViewModel)
+                CompanionButtons.IconTextButton(
+                    modifier = Modifier,
+                    resourceID = R.drawable.dice_outlined,
+                    buttonText = "Play a random quote.",
+                    minSize = 48.dp,
+                    isEnabled = true,
+                    onClick = {
+                        quotesViewModel.onPlayRandomQuote(context)
+                    }
+                )
             }
+
+            HorizontalDivider(modifier = Modifier.padding(8.dp))
+
+            // List of filter options (Filter by tags).
+            // TODO.
+
+            // List of discovered quotes.
+            DrawQuoteList(listOfQuotes, quotesViewModel)
         }
     }
 
@@ -252,7 +264,8 @@ object QuotesScreen
                     fontSize = 16.sp,
                     modifier = Modifier
                         .padding(4.dp)
-                        .weight(1f))
+                        .weight(1f),
+                    fontWeight = FontWeight.SemiBold)
 
                 // Share icon.
                 IconButton(

@@ -18,6 +18,8 @@ import com.tyler_hietanen.yugioh_companion.business.quotes.Quote
 import com.tyler_hietanen.yugioh_companion.business.quotes.QuotesFileHelper
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import kotlinx.coroutines.launch
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 class QuotesViewModel: ViewModel()
 {
@@ -195,6 +197,31 @@ class QuotesViewModel: ViewModel()
         }
     }
 
+    /***************************************************************************************************************************************
+     *           Method:    onPlayRandomQuote
+     *       Parameters:    context
+     *          Returns:    None.
+     *      Description:    Plays a random quote.
+     **************************************************************************************************************************************/
+    fun onPlayRandomQuote(context: Context)
+    {
+        // Only allow if some content.
+        val filteredQuoteCount = filteredQuoteList.count()
+        if (filteredQuoteCount > 0)
+        {
+            val randomQuoteNumber = Random.nextInt(0, filteredQuoteCount)
+            val quote: Quote = filteredQuoteList[randomQuoteNumber]
+            onPlayQuote(quote, context)
+        }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    onShareQuote
+     *       Parameters:    quote
+     *                      context
+     *          Returns:    None.
+     *      Description:    Shares the selected quote by copying and opening a share intent.
+     **************************************************************************************************************************************/
     fun onShareQuote(quote: Quote, context: Context)
     {
         // Prepare file for sharing.
