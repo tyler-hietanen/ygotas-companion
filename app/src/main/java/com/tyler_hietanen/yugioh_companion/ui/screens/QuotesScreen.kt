@@ -37,7 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.yugioh_companion.R
@@ -200,6 +202,19 @@ object QuotesScreen
                     }
                 )
             }
+            HorizontalDivider(modifier = Modifier.padding(8.dp))
+
+            // List of quotes.
+            Text(
+                text = "Total Number of Quotes: " + listOfQuotes.count().toString(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontStyle = FontStyle.Italic
+            )
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // List of filter options (Filter by tags).
