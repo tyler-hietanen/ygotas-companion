@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.yugioh_companion.R
@@ -42,6 +43,7 @@ import com.tyler_hietanen.yugioh_companion.business.quotes.Quote
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.QuotesViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons
+import com.tyler_hietanen.yugioh_companion.ui.theme.CompanionMaterialTheme
 
 object QuotesScreen
 {
@@ -231,21 +233,23 @@ object QuotesScreen
             // Sets a border, if currently playing.
             border = if (quote.isPlaying)
             {
-                BorderStroke(4.dp, Color.LightGray)
+                BorderStroke(4.dp, MaterialTheme.colorScheme.primary)
             }
             else
             {
                 null
             }
         ){
-            Row {
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 // Play/Pause Button.
                 QuotePlayIcon(quote = quote)
 
                 // Quote Name.
                 Text(
                     text = quote.quoteFriendlyName,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     modifier = Modifier
                         .padding(4.dp)
                         .weight(1f))
