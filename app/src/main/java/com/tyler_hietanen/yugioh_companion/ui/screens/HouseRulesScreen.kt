@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,7 +67,9 @@ object HouseRulesScreen
         }
         else
         {
-            HouseRulesScreen(houseRulesContent!!)
+            HouseRulesScreen(
+                content = houseRulesContent!!,
+                houseRulesViewModel = houseRulesViewModel)
         }
     }
 
@@ -86,21 +89,6 @@ object HouseRulesScreen
     @Composable
     private fun EmptyHouseRulesScreen(houseRulesViewModel: HouseRulesViewModel)
     {
-        // Variables.
-        val isImporting by houseRulesViewModel.isImportingHouseRules
-        val context = LocalContext.current
-
-        // Sets up logic for picking a markdown file (Hopefully this is house rules).
-        val pickMarkdownFileLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent(),
-            onResult = { fileUri ->
-                fileUri?.let {
-                    // If non-null, reports change to View Model with chosen file.
-                    houseRulesViewModel.onImportHouseRules(context, fileUri)
-                }
-            }
-        )
-
         // Actually draws.
         Column (
             modifier = Modifier
@@ -132,17 +120,7 @@ object HouseRulesScreen
             )
 
             // Import house rules button.
-            CompanionButtons.IconTextButtonWithProgress(
-                modifier = Modifier,
-                resourceID = R.drawable.add_filled,
-                buttonText = "Import new House Rules.",
-                isLoading = isImporting,
-                minSize = 40.dp,
-                onClick = {
-                    // Launch file picker.
-                    pickMarkdownFileLauncher.launch("text/markdown")
-                }
-            )
+            LoadHouseRulesButton(houseRulesViewModel)
         }
     }
 
@@ -153,7 +131,7 @@ object HouseRulesScreen
      *      Description:    Draws the house rules content screen.
      **************************************************************************************************************************************/
     @Composable
-    private fun HouseRulesScreen(content: String)
+    private fun HouseRulesScreen(content: String, houseRulesViewModel: HouseRulesViewModel)
     {
         Column(
             modifier = Modifier
@@ -163,6 +141,8 @@ object HouseRulesScreen
         ) {
             // Show markdown content.
             MarkdownDisplay(markdownContent = content, context = LocalContext.current)
+
+            // TODO Figure out scrolling. Want to place an import button at bottom.
         }
     }
 
@@ -202,6 +182,44 @@ object HouseRulesScreen
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
                 .padding(8.dp)
+        )
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    LoadHouseRulesButton
+     *       Parameters:    None.
+     *          Returns:    None.
+     *      Description:    Draws the load house rules button. Contains logic for picking a .md file, for house rules.
+     **************************************************************************************************************************************/
+    @Composable
+    private fun LoadHouseRulesButton(houseRulesViewModel: HouseRulesViewModel)
+    {
+        // Variables.
+        val isImporting by houseRulesViewModel.isImportingHouseRules
+        val context = LocalContext.current
+
+        // Sets up logic for picking a markdown file (Hopefully this is house rules).
+        val pickMarkdownFileLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+            onResult = { fileUri ->
+                fileUri?.let {
+                    // If non-null, reports change to View Model with chosen file.
+                    houseRulesViewModel.onImportHouseRules(context, fileUri)
+                }
+            }
+        )
+
+        // Actually draws.
+        CompanionButtons.IconTextButtonWithProgress(
+            modifier = Modifier,
+            resourceID = R.drawable.add_filled,
+            buttonText = "Import new House Rules.",
+            isLoading = isImporting,
+            minSize = 40.dp,
+            onClick = {
+                // Launch file picker.
+                pickMarkdownFileLauncher.launch("text/markdown")
+            }
         )
     }
 
