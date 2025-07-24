@@ -199,19 +199,25 @@ class QuotesViewModel: ViewModel()
     /***************************************************************************************************************************************
      *           Method:    onPlayRandomQuote
      *       Parameters:    context
-     *          Returns:    None.
+     *          Returns:    Int
+     *                          - Index of the quote being played. Otherwise, -1.
      *      Description:    Plays a random quote.
      **************************************************************************************************************************************/
-    fun onPlayRandomQuote(context: Context)
+    fun onPlayRandomQuote(context: Context): Int
     {
+        var playedQuoteIndex = -1
+
         // Only allow if some content.
         val filteredQuoteCount = filteredQuoteList.count()
         if (filteredQuoteCount > 0)
         {
             val randomQuoteNumber = Random.nextInt(0, filteredQuoteCount)
             val quote: Quote = filteredQuoteList[randomQuoteNumber]
+            playedQuoteIndex = randomQuoteNumber
             onPlayQuote(quote, context)
         }
+
+        return playedQuoteIndex
     }
 
     /***************************************************************************************************************************************

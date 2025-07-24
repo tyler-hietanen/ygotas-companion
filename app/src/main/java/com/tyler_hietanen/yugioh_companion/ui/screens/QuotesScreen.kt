@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -30,13 +32,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tyler_hietanen.yugioh_companion.R
@@ -44,7 +45,7 @@ import com.tyler_hietanen.yugioh_companion.business.quotes.Quote
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.QuotesViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons
-import com.tyler_hietanen.yugioh_companion.ui.theme.CompanionMaterialTheme
+import kotlinx.coroutines.launch
 
 object QuotesScreen
 {
@@ -162,6 +163,10 @@ object QuotesScreen
         val listOfQuotes = quotesViewModel.filteredQuoteList
         val context = LocalContext.current
 
+        // State for programmatic scrolling
+        val listState = rememberLazyListState()
+        val coroutineScope = rememberCoroutineScope()
+
         // Actually draw.
         Column(
             modifier = Modifier
@@ -171,7 +176,7 @@ object QuotesScreen
         ) {
             Row (
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
                 // Play random quote button.
                 CompanionButtons.IconTextButton(
@@ -181,18 +186,27 @@ object QuotesScreen
                     minSize = 48.dp,
                     isEnabled = true,
                     onClick = {
-                        quotesViewModel.onPlayRandomQuote(context)
+                        coroutineScope.launch {
+                            val targetIndex = quotesViewModel.onPlayRandomQuote(context)
+                            if (targetIndex != -1)
+                            {
+                                // Scroll to quote being played.
+                                if (listOfQuotes.size > targetIndex)
+                                {
+                                    listState.animateScrollToItem(index = targetIndex)
+                                }
+                            }
+                        }
                     }
                 )
             }
-
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // List of filter options (Filter by tags).
             // TODO.
 
             // List of discovered quotes.
-            DrawQuoteList(listOfQuotes, quotesViewModel)
+            DrawQuoteList(listOfQuotes, quotesViewModel, listState)
         }
     }
 
@@ -204,9 +218,13 @@ object QuotesScreen
      *      Description:    Draws full quote list.
      **************************************************************************************************************************************/
     @Composable
-    private fun DrawQuoteList(quoteList: List<Quote>, quotesViewModel: QuotesViewModel)
+    private fun DrawQuoteList(
+        quoteList: List<Quote>,
+        quotesViewModel: QuotesViewModel,
+        listState: LazyListState)
     {
         LazyColumn (
+            state = listState,
             modifier = Modifier
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
