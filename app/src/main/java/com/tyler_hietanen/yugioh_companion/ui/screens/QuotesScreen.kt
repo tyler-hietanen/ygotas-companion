@@ -260,10 +260,6 @@ object QuotesScreen
     @Composable
     private fun QuotePlayIcon(quote: Quote)
     {
-        if (quote.quoteID == 0)
-        {
-            val breakFlag = true
-        }
         // Determines icon button resource, based upon the current state.
         // (Is Playing).
         val iconID = if (quote.isPlaying)
