@@ -19,7 +19,6 @@ import com.tyler_hietanen.yugioh_companion.business.quotes.QuotesFileHelper
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import kotlinx.coroutines.launch
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 class QuotesViewModel: ViewModel()
 {

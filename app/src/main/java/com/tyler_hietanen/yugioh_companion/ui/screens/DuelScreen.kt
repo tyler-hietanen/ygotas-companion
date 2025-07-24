@@ -4,10 +4,14 @@
  ******************************************************************************************************************************************/
 package com.tyler_hietanen.yugioh_companion.ui.screens
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -25,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -40,6 +45,7 @@ import com.tyler_hietanen.yugioh_companion.business.duel.PlayerSlot
 import com.tyler_hietanen.yugioh_companion.presentation.ApplicationViewModel
 import com.tyler_hietanen.yugioh_companion.presentation.viewmodels.DuelViewModel
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconButton
+import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.IconTextButton
 import com.tyler_hietanen.yugioh_companion.ui.layout.CompanionButtons.TextButton
 import com.tyler_hietanen.yugioh_companion.ui.theme.Typography
 
@@ -74,16 +80,22 @@ object DuelScreen
             modifier = Modifier
                 .verticalScroll(scrollState)
         ) {
-            // Reset button (always enabled).
-            TextButton(
-                modifier = Modifier
-                    .fillMaxWidth(1f),
-                buttonText = "Reset Duel",
-                isEnabled = true,
-                onClick = {
-                    duelViewModel.onResetDuel()
-                }
-            )
+            Column (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                // Reset button (always enabled).
+                IconTextButton(modifier = Modifier,
+                    resourceID = R.drawable.swords_filled,
+                    buttonText = "Reset Duel",
+                    minSize = 48.dp,
+                    isEnabled = true,
+                    onClick = {
+                        duelViewModel.onResetDuel()
+                    }
+                )
+            }
+            HorizontalDivider(modifier = Modifier.padding(8.dp, 0.dp))
 
             // Player section.
             PlayerSection(
@@ -93,7 +105,6 @@ object DuelScreen
                 playerTwoLifePoints = duelist2.lifePoints,
                 duelViewModel = duelViewModel
             )
-
             HorizontalDivider(modifier = Modifier.padding(8.dp, 0.dp))
 
             // Life Point Addition, Subtraction and Running section.
@@ -115,7 +126,6 @@ object DuelScreen
                 onClearClick = { duelViewModel.onClearRunningLifePoints() },
                 onCoinFlipClick = { duelViewModel.onSimulateCoinFlip() },
             )
-
             HorizontalDivider(modifier = Modifier.padding(8.dp))
 
             // Number button(s)
@@ -195,6 +205,7 @@ object DuelScreen
         Row (
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(8.dp)
         ){
             Column (
                 modifier = Modifier
@@ -330,7 +341,7 @@ object DuelScreen
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             style = Typography.titleLarge,
-            fontSize = fontSize
+            fontSize = fontSize,
         )
     }
 
@@ -430,7 +441,7 @@ object DuelScreen
         IconButton(
             modifier = Modifier,
             resourceID = iconID,
-            minSize = 48.dp,
+            minSize = 40.dp,
             isEnabled = doEnable,
             onClick = {
                 onClick(playerSlotTarget)
@@ -451,7 +462,8 @@ object DuelScreen
     {
         Row (
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ){
             IconButton(
                 modifier = Modifier
@@ -466,7 +478,7 @@ object DuelScreen
                 modifier = Modifier
                     .weight(3f),
                 buttonText = "CLR",
-                minSize = 64.dp,
+                minSize = 60.dp,
                 isEnabled = isLocked,
                 onClick = {
                     onClearClick()
