@@ -73,13 +73,7 @@ class QuotesViewModel: ViewModel()
         val loadedQuoteList: List<Quote> = QuotesFileHelper.requestQuoteConsolidation(false, context)
         if (loadedQuoteList.isNotEmpty())
         {
-            // Copy over internal values to source of truth.
-            _listOfQuotes.clear()
-            _listOfQuotes.addAll(loadedQuoteList)
-
-            // Also copy to view source.
-            _filteredQuoteList.clear()
-            _filteredQuoteList.addAll(loadedQuoteList)
+            updateFilteredQuotes(loadedQuoteList)
         }
 
         // Set values to default states.
@@ -111,13 +105,7 @@ class QuotesViewModel: ViewModel()
                 didExtractQuotes = newQuoteList.isNotEmpty()
                 if (didExtractQuotes)
                 {
-                    // Copy over internal values to source of truth.
-                    _listOfQuotes.clear()
-                    _listOfQuotes.addAll(newQuoteList)
-
-                    // Also copy to view source.
-                    _filteredQuoteList.clear()
-                    _filteredQuoteList.addAll(newQuoteList)
+                    updateFilteredQuotes(newQuoteList)
 
                     // Let user know.
                     _applicationViewModel.showUserMessage("New import package accepted and merged. Enjoy!")
@@ -247,6 +235,26 @@ class QuotesViewModel: ViewModel()
         {
             // Did it's best. Does nothing else.
         }
+    }
+
+    /***************************************************************************************************************************************
+     *           Method:    updateFilteredQuotes
+     *       Parameters:    listOfQuotes
+     *          Returns:    None.
+     *      Description:    Resets media player resources. Will also stop a currently-playing one.
+     **************************************************************************************************************************************/
+    private fun updateFilteredQuotes(listOfQuotes: List<Quote>)
+    {
+        // Copy over internal values to source of truth.
+        _listOfQuotes.clear()
+        _listOfQuotes.addAll(listOfQuotes)
+
+        // Also copy to view source.
+        _filteredQuoteList.clear()
+        _filteredQuoteList.addAll(listOfQuotes)
+
+        // Sort.
+        _filteredQuoteList.sortBy { it.quoteSource }
     }
 
     //endregion
