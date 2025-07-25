@@ -293,7 +293,7 @@ object QuotesScreen
 
                 // Quote Name.
                 Text(
-                    text = "(" + quote.quoteID + ") " + quote.quoteFriendlyName,
+                    text = quote.quoteFriendlyName,
                     fontSize = 16.sp,
                     modifier = Modifier
                         .padding(4.dp)

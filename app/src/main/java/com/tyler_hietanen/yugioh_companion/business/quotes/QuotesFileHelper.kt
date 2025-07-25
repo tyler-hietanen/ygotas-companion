@@ -552,17 +552,14 @@ object QuotesFileHelper
         var friendlyName = fileName
 
         // Sources various indices of the file name.
-        val indexOfFriendlyNameStart = fileName.indexOf('-')
         val indexOfFriendlyNameEnd = fileName.lastIndexOf('.')
 
         // Ensure safety.
         var canExtract = true
-        canExtract = canExtract && (indexOfFriendlyNameStart != -1)
         canExtract = canExtract && (indexOfFriendlyNameEnd != -1)
-        canExtract = canExtract && ((indexOfFriendlyNameStart + 1) <= indexOfFriendlyNameEnd)
         if (canExtract)
         {
-            friendlyName = friendlyName.substring(indexOfFriendlyNameStart + 1, indexOfFriendlyNameEnd)
+            friendlyName = friendlyName.substring(0, indexOfFriendlyNameEnd)
         }
 
         return friendlyName
