@@ -289,7 +289,7 @@ object QuotesScreen
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Play/Pause Button.
-                QuotePlayIcon(quote = quote)
+                QuotePlayIcon(quote = quote, quotesViewModel = quotesViewModel)
 
                 // Quote Name.
                 Text(
@@ -323,8 +323,10 @@ object QuotesScreen
      *      Description:    Draws a quote icon, based on whether it's currently playing or not.
      **************************************************************************************************************************************/
     @Composable
-    private fun QuotePlayIcon(quote: Quote)
+    private fun QuotePlayIcon(quote: Quote, quotesViewModel: QuotesViewModel)
     {
+        val context = LocalContext.current
+
         // Determines icon button resource, based upon the current state.
         // (Is Playing).
         val iconID = if (quote.isPlaying)
@@ -337,8 +339,8 @@ object QuotesScreen
         }
 
         IconButton(
-            onClick = {},
-            enabled = false,
+            onClick = { quotesViewModel.onPlayQuote(quote, context)},
+            enabled = true,
             modifier = Modifier.padding(8.dp)
         ) {
             Icon(
